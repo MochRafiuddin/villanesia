@@ -139,9 +139,9 @@ class CAboutUs extends Controller
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';                
-                $btn .= '<a href="javascript:void(0)" data-toggle="modal" data-id="'.$row->id.'" data-id_ref="'.$row->id_ref_bahasa.'" data-original-title="Edit" class="mr-2 text-success editPost"><span class="mdi mdi-adjust"></span></a>';
-                $btn .= '<a href="'.url('about-us/detail/'.$row->id).'" class="text-warning mr-2"><span class="mdi mdi-information-outline"></span></a>';                
-                $btn .= '<a href="'.url('about-us/show/'.$row->id).'" class="text-danger mr-2"><span class="mdi mdi-pen"></span></a>';                
+                $btn .= '<a href="javascript:void(0)" data-toggle="modal" data-id="'.$row->id.'" data-id_ref="'.$row->id_ref_bahasa.'" data-original-title="Edit" class="mr-2 text-success editPost"><span class="mdi mdi-adjust" data-toggle="tooltip" data-placement="Top" title="Ganti Bahasa"></span></a>';
+                $btn .= '<a href="'.url('about-us/detail/'.$row->id).'" class="text-warning mr-2"><span class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="Top" title="Detail Data"></span></a>';                
+                $btn .= '<a href="'.url('about-us/show/'.$row->id).'" class="text-danger mr-2"><span class="mdi mdi-pen" data-toggle="tooltip" data-placement="Top" title="Edit Data"></span></a>';                
                 return $btn;
             })
             ->addColumn('bahasa', function ($row) {                                

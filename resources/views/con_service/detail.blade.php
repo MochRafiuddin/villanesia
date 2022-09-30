@@ -11,7 +11,7 @@ $name[] = 'gambar';
     <div class="content-wrapper">
         <div class="card">
             <div class="card-body">
-                <h6 class="card-title">{{$titlePage}} Promosi Wisata</h6>
+                <h6 class="card-title">{{$titlePage}} Concierge Service</h6>
                 <form action="" method="post" enctype="multipart/form-data">
                     @csrf
                     <div class="row">
@@ -60,7 +60,7 @@ $name[] = 'gambar';
                             <img class="rounded" width="40%" src="{{asset('upload/con_service/'.$data->gambar)}}" alt="{{$data->nama_con_service}}">
                         </div>                        
                     </div>
-                    <a class="btn btn-success" href="{{url('promosi-wisata')}}">Kembali</a>
+                    <a class="btn btn-success" href="{{url('concierge-service')}}">Kembali</a>
                 </form>
             </div>
         </div>

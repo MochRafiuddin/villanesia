@@ -30,16 +30,14 @@ $name[] = 'gambar';
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Isi</label>
-                            <input type="text" class="form-control @error($name[1]) is-invalid @enderror"
-                                value="{{Helper::showData($data,$name[1])}}" name="{{$name[1]}}"/>
+                            <label for="exampleInputEmail1">Isi</label>                            
+                            <textarea class="" name="{{$name[1]}}" id="tinyMceExample">{{Helper::showData($data,$name[1])}}</textarea>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Gambar</label>
-                            <!-- <input type="text" class="form-control @error($name[1]) is-invalid @enderror" value="{{Helper::showData($data,$name[1])}}" name="{{$name[1]}}" /> -->
-                            <input type="file" class="dropify form-control @error($name[2]) is-invalid @enderror" name="{{$name[2]}}"/>                            
+                            <label for="exampleInputEmail1">Gambar</label>                            
+                            <input type="file" class="dropify form-control" name="{{$name[2]}}" @if($data) data-default-file="{{asset('upload/about_us/'.$data->gambar)}}" @endif/>                            
                         </div>                        
                     </div>
                     <input type="submit" class="btn btn-success" value="Simpan" />
@@ -51,4 +49,8 @@ $name[] = 'gambar';
 @endsection
 @push('js')
 <script src="{{asset('/')}}assets/js/dropify.js"></script>
+<script src="{{asset('/')}}assets/vendors/tinymce/tinymce.min.js"></script>
+<script type='text/javascript'>
+    tinymce.init({ selector:'textarea', menubar:'', theme: 'modern'});
+</script>
 @endpush

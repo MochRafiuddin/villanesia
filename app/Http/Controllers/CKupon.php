@@ -50,7 +50,6 @@ class CKupon extends Controller
             'tanggal_mulai' => 'required',
             'tanggal_selesai' => 'required',
             'kuota_kupon' => 'required',
-            'kuota_terpakai' => 'required',
             'satuan' => 'required',
             'nominal' => 'required',
             'maks_diskon' => 'required',
@@ -69,7 +68,7 @@ class CKupon extends Controller
         $tipe->tanggal_mulai = date('Y-m-d',strtotime($request->tanggal_mulai));
         $tipe->tanggal_selesai = date('Y-m-d',strtotime($request->tanggal_selesai));
         $tipe->kuota_kupon = $request->kuota_kupon;
-        $tipe->kuota_terpakai = $request->kuota_terpakai;
+        $tipe->kuota_terpakai = $request->kuota_kupon;
         $tipe->satuan = $request->satuan;
         $tipe->nominal = $request->nominal;
         $tipe->maks_diskon = $request->maks_diskon;
@@ -86,7 +85,6 @@ class CKupon extends Controller
             'tanggal_mulai' => 'required',
             'tanggal_selesai' => 'required',
             'kuota_kupon' => 'required',
-            'kuota_terpakai' => 'required',
             'satuan' => 'required',
             'nominal' => 'required',
             'maks_diskon' => 'required',
@@ -104,7 +102,6 @@ class CKupon extends Controller
             'tanggal_mulai' => date('Y-m-d',strtotime($request->tanggal_mulai)),
             'tanggal_selesai' => date('Y-m-d',strtotime($request->tanggal_selesai)),
             'kuota_kupon' => $request->kuota_kupon,
-            'kuota_terpakai' => $request->kuota_terpakai,
             'satuan' => $request->satuan,
             'nominal' => $request->nominal,
             'maks_diskon' => $request->maks_diskon,
@@ -115,7 +112,14 @@ class CKupon extends Controller
     }
     public function delete($id)
     {
-        MKupon::updateDeleted($id);
+        // MKupon::updateDeleted($id);
+        $data = MKupon::find($id);
+        $bahasa = MBahasa::where('id_bahasa',$data->id_bahasa)->first();        
+        if ($bahasa->is_default==1) {
+            MKupon::where('id_ref_bahasa',$data->id_ref_bahasa)->update(['deleted'=>0]);            
+        }else{
+            MKupon::where('id_kupon',$id)->update(['deleted'=>0]);
+        }
         return redirect()->route('kupon-index')->with('msg','Sukses Menambahkan Data');
 
     }
@@ -125,9 +129,9 @@ class CKupon extends Controller
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';                                     
-                $btn .= '<a href="'.url('kupon/detail/'.$row->id_kupon).'" class="text-warning mr-2"><span class="mdi mdi-information-outline"></span></a>';                
-                $btn .= '<a href="'.url('kupon/show/'.$row->id_kupon).'" class="text-danger mr-2"><span class="mdi mdi-pen"></span></a>';                
-                $btn .= '<a href="'.url('kupon/delete/'.$row->id_kupon).'" class="text-primary delete"><span class="mdi mdi-delete"></span></a>';
+                $btn .= '<a href="'.url('kupon/detail/'.$row->id_kupon).'" class="text-warning mr-2"><span class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="Top" title="Detail Data"></span></a>';                
+                $btn .= '<a href="'.url('kupon/show/'.$row->id_kupon).'" class="text-danger mr-2"><span class="mdi mdi-pen" data-toggle="tooltip" data-placement="Top" title="Edit Data"></span></a>';                
+                $btn .= '<a href="'.url('kupon/delete/'.$row->id_kupon).'" class="text-primary delete"><span class="mdi mdi-delete" data-toggle="tooltip" data-placement="Top" title="Hapus Data"></span></a>';
                 return $btn;
             })
             ->editColumn('tanggal_mulai', function ($row) {

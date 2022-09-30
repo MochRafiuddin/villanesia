@@ -4,7 +4,6 @@
 use App\Traits\Helper;  
 $name[] = 'nama_amenities';
 $name[] = 'icon';
-$name[] = 'gambar';
 ?>
 <div class="main-panel">
     <div class="content-wrapper">
@@ -27,19 +26,11 @@ $name[] = 'gambar';
                             <input type="text" class="form-control @error($name[0]) is-invalid @enderror"
                                 value="{{Helper::showData($data,$name[0])}}" name="{{$name[0]}}" />
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <label for="exampleInputEmail1">Icon</label>
-                            <input type="text" class="form-control @error($name[1]) is-invalid @enderror"
-                                value="{{Helper::showData($data,$name[1])}}" name="{{$name[1]}}" />
-                        </div>
                     </div>                    
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Gambar</label>
-                            <!-- <input type="text" class="form-control @error($name[1]) is-invalid @enderror" value="{{Helper::showData($data,$name[1])}}" name="{{$name[1]}}" /> -->
-                            <input type="file" class="dropify form-control @error($name[2]) is-invalid @enderror" name="{{$name[2]}}" @if($data) data-default-file="{{asset('upload/amenities/'.$data->gambar)}}" @endif/>                            
+                            <label for="exampleInputEmail1">Icon</label>                            
+                            <input type="file" class="dropify form-control" name="{{$name[1]}}" @if($data) data-default-file="{{asset('upload/amenities/'.$data->icon)}}" @endif/>                            
                         </div>                        
                     </div>
                     <input type="submit" class="btn btn-success" value="Simpan" />

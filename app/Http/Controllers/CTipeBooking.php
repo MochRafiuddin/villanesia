@@ -110,8 +110,14 @@ class CTipeBooking extends Controller
         return redirect()->route('tipe-booking-index')->with('msg','Sukses Menambahkan Data');
     }
     public function delete($id)
-    {
-        MTipeBooking::updateDeleted($id);
+    {        
+        $data = MTipeBooking::find($id);
+        $bahasa = MBahasa::where('id_bahasa',$data->id_bahasa)->first();        
+        if ($bahasa->is_default==1) {
+            MTipeBooking::where('id_ref_bahasa',$data->id_ref_bahasa)->update(['deleted'=>0]);            
+        }else{
+            MTipeBooking::where('id_tipe_booking',$id)->update(['deleted'=>0]);
+        }
         return redirect()->route('tipe-booking-index')->with('msg','Sukses Menambahkan Data');
 
     }
@@ -121,10 +127,10 @@ class CTipeBooking extends Controller
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';                
-                $btn .= '<a href="javascript:void(0)" data-toggle="modal" data-id="'.$row->id_tipe_booking.'" data-id_ref="'.$row->id_ref_bahasa.'" data-original-title="Edit" class="mr-2 text-success editPost"><span class="mdi mdi-adjust"></span></a>';
-                $btn .= '<a href="'.url('tipe-booking/detail/'.$row->id_tipe_booking).'" class="text-warning mr-2"><span class="mdi mdi-information-outline"></span></a>';                
-                $btn .= '<a href="'.url('tipe-booking/show/'.$row->id_tipe_booking).'" class="text-danger mr-2"><span class="mdi mdi-pen"></span></a>';                
-                $btn .= '<a href="'.url('tipe-booking/delete/'.$row->id_tipe_booking).'" class="text-primary delete"><span class="mdi mdi-delete"></span></a>';
+                $btn .= '<a href="javascript:void(0)" data-toggle="modal" data-id="'.$row->id_tipe_booking.'" data-id_ref="'.$row->id_ref_bahasa.'" data-original-title="Edit" class="mr-2 text-success editPost"><span class="mdi mdi-adjust" data-toggle="tooltip" data-placement="Top" title="Ganti Bahasa"></span></a>';
+                $btn .= '<a href="'.url('tipe-booking/detail/'.$row->id_tipe_booking).'" class="text-warning mr-2"><span class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="Top" title="Detail Data"></span></a>';                
+                $btn .= '<a href="'.url('tipe-booking/show/'.$row->id_tipe_booking).'" class="text-danger mr-2"><span class="mdi mdi-pen" data-toggle="tooltip" data-placement="Top" title="Edit Data"></span></a>';                
+                $btn .= '<a href="'.url('tipe-booking/delete/'.$row->id_tipe_booking).'" class="text-primary delete"><span class="mdi mdi-delete" data-toggle="tooltip" data-placement="Top" title="Hapus Data"></span></a>';
                 return $btn;
             })
             ->addColumn('bahasa', function ($row) {                                

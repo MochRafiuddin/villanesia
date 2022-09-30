@@ -31,32 +31,8 @@ $name[] = 'gambar';
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Icon</label><br>
-                            <i class="fa {{$data->icon}}"></i>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <label for="exampleInputEmail1">Tampil Depan</label>                            
-                            <div class="form-check">
-                              <label class="form-check-label">
-                                <input type="radio" class="form-check-input" name="{{$name[2]}}" id="{{$name[2]}}" value="0" {{Helper::showDataChecked($data,$name[2],0)}} disabled="">
-                                Tidak
-                              </label>
-                            </div>                                                    
-                            <div class="form-check">
-                              <label class="form-check-label">
-                                <input type="radio" class="form-check-input" name="{{$name[2]}}" id="{{$name[2]}}" value="1" {{Helper::showDataChecked($data,$name[2],1)}} disabled="">
-                                Tampil
-                              </label>
-                            </div>                          
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <label for="exampleInputEmail1">Gambar</label><br>
-                            <!-- <input type="text" class="form-control @error($name[1]) is-invalid @enderror" value="{{Helper::showData($data,$name[1])}}" name="{{$name[1]}}" /> -->
-                            <img class="rounded" width="40%" src="{{asset('upload/fasilitas/'.$data->gambar)}}" alt="{{$data->nama_fasilitas}}">
+                            <label for="exampleInputEmail1">Icon</label><br>                            
+                            <img class="rounded" width="20%" src="{{asset('upload/fasilitas/'.$data->icon)}}" alt="{{$data->nama_fasilitas}}">
                         </div>                        
                     </div>
                     <a class="btn btn-success" href="{{url('fasilitas')}}">Kembali</a>

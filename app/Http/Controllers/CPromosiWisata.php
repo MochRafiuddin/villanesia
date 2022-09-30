@@ -69,7 +69,7 @@ class CPromosiWisata extends Controller
     {
         $validator = Validator::make($request->all(),[
             'nama_pro_wisata' => 'required', 
-            'gambar'          => 'mimes:jpeg,jpg,png,gif|required|max:10000',
+            'gambar'          => 'mimes:jpeg,jpg,png,gif|max:10000',
             'detail'          => 'required',
             'show'            => 'required',
             'text_to_wa'      => 'required',
@@ -81,8 +81,13 @@ class CPromosiWisata extends Controller
                         ->withErrors($validator->errors());
         }
         
-        $gambar = round(microtime(true) * 1000).'.'.$request->file('gambar')->extension();
-        $request->file('gambar')->move(public_path('upload/promosi_wisata'), $gambar);           
+        if ($request->file('gambar')) {
+            $gambar = round(microtime(true) * 1000).'.'.$request->file('gambar')->extension();
+            $request->file('gambar')->move(public_path('upload/promosi_wisata'), $gambar);           
+        }else {
+            $gambar = "";
+        }
+        
         if ($request->id) {
             $tipe = new MPromosiWisata();
             $tipe->nama_pro_wisata = $request->nama_pro_wisata;                    
@@ -136,9 +141,15 @@ class CPromosiWisata extends Controller
     }
     public function delete($id)
     {
-        MPromosiWisata::updateDeleted($id);
+        // MPromosiWisata::updateDeleted($id);
+        $data = MPromosiWisata::find($id);
+        $bahasa = MBahasa::where('id_bahasa',$data->id_bahasa)->first();        
+        if ($bahasa->is_default==1) {
+            MPromosiWisata::where('id_ref_bahasa',$data->id_ref_bahasa)->update(['deleted'=>0]);            
+        }else{
+            MPromosiWisata::where('id_pro_wisata',$id)->update(['deleted'=>0]);
+        }
         return redirect()->route('promosi-wisata-index')->with('msg','Sukses Menambahkan Data');
-
     }
     public function data()
     {
@@ -146,10 +157,10 @@ class CPromosiWisata extends Controller
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';                
-                $btn .= '<a href="javascript:void(0)" data-toggle="modal" data-id="'.$row->id_pro_wisata.'" data-id_ref="'.$row->id_ref_bahasa.'" data-original-title="Edit" class="mr-2 text-success editPost"><span class="mdi mdi-adjust"></span></a>';
-                $btn .= '<a href="'.url('promosi-wisata/detail/'.$row->id_pro_wisata).'" class="text-warning mr-2"><span class="mdi mdi-information-outline"></span></a>';                
-                $btn .= '<a href="'.url('promosi-wisata/show/'.$row->id_pro_wisata).'" class="text-danger mr-2"><span class="mdi mdi-pen"></span></a>';                
-                $btn .= '<a href="'.url('promosi-wisata/delete/'.$row->id_pro_wisata).'" class="text-primary delete"><span class="mdi mdi-delete"></span></a>';
+                $btn .= '<a href="javascript:void(0)" data-toggle="modal" data-id="'.$row->id_pro_wisata.'" data-id_ref="'.$row->id_ref_bahasa.'" data-original-title="Edit" class="mr-2 text-success editPost"><span class="mdi mdi-adjust" data-toggle="tooltip" data-placement="Top" title="Ganti Bahasa"></span></a>';
+                $btn .= '<a href="'.url('promosi-wisata/detail/'.$row->id_pro_wisata).'" class="text-warning mr-2"><span class="mdi mdi-information-outline" mdi-information-outline" data-toggle="tooltip" data-placement="Top" title="Detail Data"></span></a>';                
+                $btn .= '<a href="'.url('promosi-wisata/show/'.$row->id_pro_wisata).'" class="text-danger mr-2"><span class="mdi mdi-pen" data-toggle="tooltip" data-placement="Top" title="Edit Data"></span></a>';                
+                $btn .= '<a href="'.url('promosi-wisata/delete/'.$row->id_pro_wisata).'" class="text-primary delete"><span class="mdi mdi-delete" data-toggle="tooltip" data-placement="Top" title="Hapus Data"></span></a>';
                 return $btn;
             })
             ->addColumn('bahasa', function ($row) {                                

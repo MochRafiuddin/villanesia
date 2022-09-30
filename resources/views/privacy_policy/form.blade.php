@@ -27,13 +27,13 @@ $name[] = 'isi';
                             <select class="form-control js-example-basic-single" name="{{$name[0]}}" id="{{$name[0]}}"
                                      style="width:100%">      
                                 <option value="" selected disabled>Pilih Tipe</option> 
-                                @if($data)                                
-                                <option value="1" {{(old($name[0]) == 1) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[0],1)}}>
+                                @if($data != null && $data->id_tipe==1)                                
+                                <option value="1" {{(old($name[0]) == 1) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[0],1)}} {{Helper::showDataSelected($tipe,$name[0],1)}}>
                                         Privacy Police
                                 </option>                                
                                 @endif                               
-                                <option value="2" {{(old($name[0]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[0],2)}}>
-                                        Seperti FAQ
+                                <option value="2" {{(old($name[0]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[0],2)}} {{Helper::showDataSelected($tipe,$name[0],2)}}>
+                                        Detail
                                 </option>
                              </select>                
                         </div>
@@ -60,4 +60,8 @@ $name[] = 'isi';
 @endsection
 @push('js')
 <script src="{{asset('/')}}assets/js/dropify.js"></script>
+<script src="{{asset('/')}}assets/vendors/tinymce/tinymce.min.js"></script>
+<script type='text/javascript'>
+    tinymce.init({ selector:'textarea', menubar:'', theme: 'modern'});
+</script>
 @endpush

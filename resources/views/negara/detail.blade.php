@@ -19,13 +19,12 @@ $name[] = 'gambar';
                                 value="{{Helper::showData($data,$name[0])}}" name="{{$name[0]}}" readonly/>
                         </div>
                     </div>
-                    <div class="row">
+                    <!-- <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Gambar</label><br>
-                            <!-- <input type="text" class="form-control @error($name[1]) is-invalid @enderror" value="{{Helper::showData($data,$name[1])}}" name="{{$name[1]}}" /> -->
+                            <label for="exampleInputEmail1">Gambar</label><br>                            
                             <img class="rounded" width="40%" src="{{asset('upload/negara/'.$data->gambar)}}" alt="{{$data->nama_negara}}">
                         </div>                        
-                    </div>
+                    </div> -->
                     <a class="btn btn-success" href="{{url('negara')}}">Kembali</a>
                 </form>
             </div>

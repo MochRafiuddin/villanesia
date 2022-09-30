@@ -69,9 +69,7 @@ class CFasilitas extends Controller
     {
         $validator = Validator::make($request->all(),[
             'nama_fasilitas' => 'required', 
-            'gambar'         => 'mimes:jpeg,jpg,png,gif|required|max:10000',
-            'icon'           => 'required',
-            'tampil_depan'   => 'required'
+            'icon'         => 'mimes:jpeg,jpg,png,gif|max:10000',
         ]);
         
         if ($validator->fails()) {
@@ -79,24 +77,23 @@ class CFasilitas extends Controller
                         ->withInput($request->all())
                         ->withErrors($validator->errors());
         }
-        
-        $gambar = round(microtime(true) * 1000).'.'.$request->file('gambar')->extension();
-        $request->file('gambar')->move(public_path('upload/fasilitas'), $gambar);           
+        if ($request->file('icon')) {            
+            $gambar = round(microtime(true) * 1000).'.'.$request->file('icon')->extension();
+            $request->file('icon')->move(public_path('upload/fasilitas'), $gambar);           
+        }else{
+            $gambar ="";
+        }
         if ($request->id) {
             $tipe = new MFasilitas();
             $tipe->nama_fasilitas = $request->nama_fasilitas;
-            $tipe->icon = $request->icon;
-            $tipe->tampil_depan = $request->tampil_depan;
-            $tipe->gambar = $gambar;
+            $tipe->icon = $gambar;                      
             $tipe->id_bahasa = $request->id_bahasa;
             $tipe->id_ref_bahasa = $request->id;
             $tipe->save();
         }else{
             $tipe = new MFasilitas();
             $tipe->nama_fasilitas = $request->nama_fasilitas;
-            $tipe->icon = $request->icon;
-            $tipe->tampil_depan = $request->tampil_depan;
-            $tipe->gambar = $gambar;
+            $tipe->icon = $gambar;            
             $tipe->id_bahasa = $request->id_bahasa;
             $tipe->save();
     
@@ -109,9 +106,7 @@ class CFasilitas extends Controller
     {
         $validator = Validator::make($request->all(),[
             'nama_fasilitas' => 'required', 
-            'gambar'         => 'mimes:jpeg,jpg,png,gif|max:10000',
-            'icon'           => 'required',
-            'tampil_depan'   => 'required'
+            'icon'         => 'mimes:jpeg,jpg,png,gif|max:10000',
 
         ]);
         
@@ -121,19 +116,26 @@ class CFasilitas extends Controller
                         ->withErrors($validator->errors());
         }
         
-        if ($request->gambar) {            
-            $gambar = round(microtime(true) * 1000).'.'.$request->file('gambar')->extension();
-            $request->file('gambar')->move(public_path('upload/fasilitas'), $gambar);
-            MFasilitas::where('id_fasilitas',$request->id)->update(['nama_fasilitas'=>$request->nama_fasilitas, 'gambar'=>$gambar, 'icon'=>$request->icon, 'tampil_depan'=>$request->tampil_depan]);            
+        if ($request->icon) {            
+            $icon = round(microtime(true) * 1000).'.'.$request->file('icon')->extension();
+            $request->file('icon')->move(public_path('upload/fasilitas'), $icon);
+            MFasilitas::where('id_fasilitas',$request->id)->update(['nama_fasilitas'=>$request->nama_fasilitas, 'icon'=>$icon]);            
         }else{
-            MFasilitas::where('id_fasilitas',$request->id)->update(['nama_fasilitas'=>$request->nama_fasilitas, 'icon'=>$request->icon, 'tampil_depan'=>$request->tampil_depan]);            
+            MFasilitas::where('id_fasilitas',$request->id)->update(['nama_fasilitas'=>$request->nama_fasilitas]);            
         }
 
         return redirect()->route('fasilitas-index')->with('msg','Sukses Menambahkan Data');
     }
     public function delete($id)
     {
-        MFasilitas::updateDeleted($id);
+        // MFasilitas::updateDeleted($id);
+        $data = MFasilitas::find($id);
+        $bahasa = MBahasa::where('id_bahasa',$data->id_bahasa)->first();        
+        if ($bahasa->is_default==1) {
+            MFasilitas::where('id_ref_bahasa',$data->id_ref_bahasa)->update(['deleted'=>0]);            
+        }else{
+            MFasilitas::where('id_fasilitas',$id)->update(['deleted'=>0]);
+        }
         return redirect()->route('fasilitas-index')->with('msg','Sukses Menambahkan Data');
 
     }
@@ -143,21 +145,17 @@ class CFasilitas extends Controller
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';                
-                $btn .= '<a href="javascript:void(0)" data-toggle="modal" data-id="'.$row->id_fasilitas.'" data-id_ref="'.$row->id_ref_bahasa.'" data-original-title="Edit" class="mr-2 text-success editPost"><span class="mdi mdi-adjust"></span></a>';
-                $btn .= '<a href="'.url('fasilitas/detail/'.$row->id_fasilitas).'" class="text-warning mr-2"><span class="mdi mdi-information-outline"></span></a>';                
-                $btn .= '<a href="'.url('fasilitas/show/'.$row->id_fasilitas).'" class="text-danger mr-2"><span class="mdi mdi-pen"></span></a>';                
-                $btn .= '<a href="'.url('fasilitas/delete/'.$row->id_fasilitas).'" class="text-primary delete"><span class="mdi mdi-delete"></span></a>';
+                $btn .= '<a href="javascript:void(0)" data-toggle="modal" data-id="'.$row->id_fasilitas.'" data-id_ref="'.$row->id_ref_bahasa.'" data-original-title="Edit" class="mr-2 text-success editPost"><span class="mdi mdi-adjust" data-toggle="tooltip" data-placement="Top" title="Ganti Bahasa"></span></a>';
+                $btn .= '<a href="'.url('fasilitas/detail/'.$row->id_fasilitas).'" class="text-warning mr-2"><span class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="Top" title="Detail Data"></span></a>';                
+                $btn .= '<a href="'.url('fasilitas/show/'.$row->id_fasilitas).'" class="text-danger mr-2"><span class="mdi mdi-pen" data-toggle="tooltip" data-placement="Top" title="Edit Data"></span></a>';                
+                $btn .= '<a href="'.url('fasilitas/delete/'.$row->id_fasilitas).'" class="text-primary delete"><span class="mdi mdi-delete" data-toggle="tooltip" data-placement="Top" title="Hapus Data"></span></a>';
                 return $btn;
             })
             ->addColumn('bahasa', function ($row) {                                
                 $bahasa = MBahasa::where('id_bahasa',$row->id_bahasa)->first();
                 $btn = '<i class="flag-icon '.$bahasa->logo.'"></i> '.$bahasa->nama_bahasa;                
                 return $btn;
-            })
-            ->addColumn('icon', function ($row) {                                                
-                $btn = '<i class="fa '.$row->icon.'"></i> ';                
-                return $btn;
-            })
+            })            
             ->rawColumns(['action','bahasa','icon'])
             ->addIndexColumn()
             ->toJson();

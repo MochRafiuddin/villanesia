@@ -21,6 +21,7 @@ use App\Http\Controllers\CAboutUs;
 use App\Http\Controllers\CFaq;
 use App\Http\Controllers\CTermConditionDetail;
 use App\Http\Controllers\CPrivacyPolicyDetail;
+use App\Http\Controllers\CProperti;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -268,4 +269,21 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/privacy-policy/delete/{id}', [CPrivacyPolicyDetail::class,'delete']);
     Route::get('/privacy-policy/create-bahasa/{id}/{kode}', [CPrivacyPolicyDetail::class,'create_bahasa']);
     Route::get('/privacy-policy/bahasa', [CPrivacyPolicyDetail::class,'bahasa']);
+
+    //properti
+    Route::get('/properti', [CProperti::class,'index'])->name('properti-index');
+    Route::get('/properti/data', [CProperti::class,'data']);
+    Route::get('/properti-add', [CProperti::class,'add']);
+    Route::get('/properti-add/{id}', [CProperti::class,'addByTipe']);
+    Route::post('/properti/create-save', [CProperti::class,'create_save']);
+    Route::post('/properti/periode-save', [CProperti::class,'periode_save']);
+    Route::post('/properti/show-save/{id}', [CProperti::class,'show_save']);
+    Route::get('/properti/show/{id}', [CProperti::class,'show']);
+    Route::get('/properti/detail/{id}', [CProperti::class,'detail']);
+    Route::get('/properti/periode-delete', [CProperti::class,'periode_delete']);
+    Route::get('/properti/create-bahasa/{id}/{kode}', [CProperti::class,'create_bahasa']);
+    Route::get('/properti/bahasa', [CProperti::class,'bahasa']);
+    Route::get('/properti/delete/{id}', [CProperti::class,'delete']);
+    Route::post('/properti/upload', [CProperti::class,'upload']);
+    Route::get('/properti/delete-img/{id}', [CProperti::class,'delete_img']);
 });

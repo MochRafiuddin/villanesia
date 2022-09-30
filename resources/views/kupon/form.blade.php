@@ -8,7 +8,6 @@ $name[] = 'deskripsi';
 $name[] = 'tanggal_mulai';
 $name[] = 'tanggal_selesai';
 $name[] = 'kuota_kupon';
-$name[] = 'kuota_terpakai';
 $name[] = 'satuan';
 $name[] = 'nominal';
 $name[] = 'maks_diskon';
@@ -73,24 +72,17 @@ $name[] = 'maks_diskon';
                             <input type="text" class="form-control @error($name[5]) is-invalid @enderror"
                                 value="{{Helper::showData($data,$name[5])}}" name="{{$name[5]}}"/>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col">
-                            <label for="exampleInputEmail1">Kuota Tersisa</label>
-                            <input type="text" class="form-control @error($name[6]) is-invalid @enderror"
-                                value="{{Helper::showData($data,$name[6])}}" name="{{$name[6]}}"/>
-                        </div>
-                    </div>
+                    </div>                    
                     <div class="row">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">Satuan</label>
-                            <select class="form-control js-example-basic-single" name="{{$name[7]}}" id="{{$name[7]}}"
+                            <select class="form-control js-example-basic-single" name="{{$name[6]}}" id="{{$name[6]}}"
                                      style="width:100%">                           
                                 <option value="" selected disabled>Pilih Satuan</option>                                
-                                <option value="1" {{(old($name[7]) == 1) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[7],1)}}>
+                                <option value="1" {{(old($name[6]) == 1) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[6],1)}}>
                                         Persen
                                 </option>                                
-                                <option value="2" {{(old($name[7]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[7],2)}}>
+                                <option value="2" {{(old($name[6]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[6],2)}}>
                                         Rupiah
                                 </option>
                              </select>                
@@ -99,15 +91,15 @@ $name[] = 'maks_diskon';
                     <div class="row">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">Nominal</label>
-                            <input type="text" class="form-control @error($name[8]) is-invalid @enderror"
-                            value="{{Helper::showData($data,$name[8])}}" name="{{$name[8]}}"/>
+                            <input type="text" class="form-control @error($name[7]) is-invalid @enderror"
+                            value="{{Helper::showData($data,$name[7])}}" name="{{$name[7]}}"/>
                         </div>
                     </div>                                        
                     <div class="row">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">Maks Diskon</label>
-                            <input type="text" class="form-control @error($name[9]) is-invalid @enderror"
-                                value="{{Helper::showData($data,$name[9])}}" name="{{$name[9]}}"/>
+                            <input type="text" class="form-control @error($name[8]) is-invalid @enderror"
+                                value="{{Helper::showData($data,$name[8])}}" name="{{$name[8]}}" placeholder="Diisi maksimal nilai rupiahnya"/>
                         </div>
                     </div>
                     <input type="submit" class="btn btn-success" value="Simpan" />

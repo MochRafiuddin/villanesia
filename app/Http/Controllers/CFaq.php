@@ -120,7 +120,14 @@ class CFaq extends Controller
     }
     public function delete($id)
     {
-        MFaq::updateDeleted($id);
+        // MFaq::updateDeleted($id);
+        $data = MFaq::find($id);        
+        $bahasa = MBahasa::where('id_bahasa',$data->id_bahasa)->first();        
+        if ($bahasa->is_default==1) {
+            MFaq::where('id_ref_bahasa',$data->id_ref_bahasa)->update(['deleted'=>0]);            
+        }else{
+            MFaq::where('id',$id)->update(['deleted'=>0]);
+        }
         return redirect()->route('faq-index')->with('msg','Sukses Menambahkan Data');
 
     }
@@ -131,10 +138,10 @@ class CFaq extends Controller
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';                
-                $btn .= '<a href="javascript:void(0)" data-toggle="modal" data-id="'.$row->id.'" data-id_ref="'.$row->id_ref_bahasa.'" data-original-title="Edit" class="mr-2 text-success editPost"><span class="mdi mdi-adjust"></span></a>';
-                $btn .= '<a href="'.url('faq/detail/'.$row->id).'" class="text-warning mr-2"><span class="mdi mdi-information-outline"></span></a>';                
-                $btn .= '<a href="'.url('faq/show/'.$row->id).'" class="text-danger mr-2"><span class="mdi mdi-pen"></span></a>';
-                $btn .= '<a href="'.url('faq/delete/'.$row->id).'" class="text-primary delete"><span class="mdi mdi-delete"></span></a>';
+                $btn .= '<a href="javascript:void(0)" data-toggle="modal" data-id="'.$row->id.'" data-id_ref="'.$row->id_ref_bahasa.'" data-original-title="Edit" class="mr-2 text-success editPost"><span class="mdi mdi-adjust" data-toggle="tooltip" data-placement="Top" title="Ganti Bahasa"></span></a>';
+                $btn .= '<a href="'.url('faq/detail/'.$row->id).'" class="text-warning mr-2"><span class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="Top" title="Detail Data"></span></a>';                
+                $btn .= '<a href="'.url('faq/show/'.$row->id).'" class="text-danger mr-2"><span class="mdi mdi-pen" data-toggle="tooltip" data-placement="Top" title="Edit Data"></span></a>';
+                $btn .= '<a href="'.url('faq/delete/'.$row->id).'" class="text-primary delete"><span class="mdi mdi-delete" data-toggle="tooltip" data-placement="Top" title="Hapus Data"></span></a>';
                 return $btn;
             })
             ->addColumn('bahasa', function ($row) {                                

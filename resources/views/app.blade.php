@@ -46,6 +46,7 @@
 <script src="{{asset('/')}}assets/js/template.js"></script>
 <script src="{{asset('/')}}assets/js/settings.js"></script>
 <script src="{{asset('/')}}assets/js/todolist.js"></script>
+<script src="{{asset('/')}}assets/js/tooltips.js"></script>
 <script src="{{asset('/')}}assets/js/sweetalert2.min.js"></script>
 <script src="{{asset('/')}}assets/js/autoNumeric.js"></script>
 <script src="{{asset('/')}}assets/vendors/datepicker/js/bootstrap-datepicker.min.js"></script>

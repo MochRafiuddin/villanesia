@@ -20,30 +20,30 @@ $name[] = 'isi';
                             <input type="hidden" name="id" value="{{$id}}">
                             <input type="hidden" name="id_bahasa" value="{{$bahasa->id_bahasa}}">
                         </div>
-                    </div>
+                    </div>                    
                     <div class="row">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">Tipe</label>
                             <select class="form-control js-example-basic-single" name="{{$name[0]}}" id="{{$name[0]}}"
                                      style="width:100%">      
                                 <option value="" selected disabled>Pilih Tipe</option> 
-                                @if($data)
-                                <option value="1" {{(old($name[0]) == 1) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[0],1)}}>
+                                @if($data != null && $data->id_tipe==1)
+                                <option value="1" {{(old($name[0]) == 1) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[0],1)}} {{Helper::showDataSelected($tipe,$name[0],1)}}>
                                         Term & Condition
                                 </option> 
                                 @endif                               
-                                <option value="2" {{(old($name[0]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[0],2)}}>
+                                <option value="2" {{(old($name[0]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[0],2)}} {{Helper::showDataSelected($tipe,$name[0],2)}}>
                                         Booking on Villanesia
                                 </option>
-                                <option value="3" {{(old($name[0]) == 3) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[0],3)}}>
+                                <option value="3" {{(old($name[0]) == 3) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[0],3)}} {{Helper::showDataSelected($tipe,$name[0],3)}}>
                                         Hosting on Villanesia
                                 </option>
-                                <option value="4" {{(old($name[0]) == 4) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[0],4)}}>
+                                <option value="4" {{(old($name[0]) == 4) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[0],4)}} {{Helper::showDataSelected($tipe,$name[0],4)}}>
                                         General Terms
                                 </option>
                              </select>                
                         </div>
-                    </div>                   
+                    </div>                    
                     <div class="row">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">Judul</label>
@@ -66,4 +66,8 @@ $name[] = 'isi';
 @endsection
 @push('js')
 <script src="{{asset('/')}}assets/js/dropify.js"></script>
+<script src="{{asset('/')}}assets/vendors/tinymce/tinymce.min.js"></script>
+<script type='text/javascript'>
+    tinymce.init({ selector:'textarea', menubar:'', theme: 'modern'});
+</script>
 @endpush

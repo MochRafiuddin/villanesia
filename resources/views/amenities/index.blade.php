@@ -19,7 +19,6 @@
                                         <th>No</th>
                                         <th>Bahasa</th>
                                         <th>Nama</th>
-                                        <th>Icon</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -89,11 +88,7 @@
                     {
                         data: 'nama_amenities',
                         name: 'nama_amenities',                        
-                    },
-                    {
-                        data: 'icon',
-                        name: 'icon',                        
-                    },                    
+                    },  
                     {
                         data: 'action',
                         name: 'action',

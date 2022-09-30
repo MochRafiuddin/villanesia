@@ -24,6 +24,7 @@ class CPrivacyPolicyDetail extends Controller
         return view('privacy_policy.form')
             ->with('data',null)
             ->with('id',null)
+            ->with('tipe',null)
             ->with('bahasa',$bahasa)
             ->with('title','Privacy Policy')
             ->with('titlePage','Tambah')
@@ -31,11 +32,13 @@ class CPrivacyPolicyDetail extends Controller
     }
     public function create_bahasa($id,$kode)
     {        
+        $tipe = MPrivacyPolicyDetail::find($id);        
         $bahasa = MBahasa::where('id_bahasa',$kode)->first();        
         $url = url('privacy-policy/create-save');
         return view('privacy_policy.form')
             ->with('data',null)
             ->with('id',$id)
+            ->with('tipe',$tipe)
             ->with('bahasa',$bahasa)
             ->with('title','Privacy Policy')
             ->with('titlePage','Tambah')
@@ -49,6 +52,7 @@ class CPrivacyPolicyDetail extends Controller
         return view('privacy_policy.form')
             ->with('data',$data)
             ->with('id',$id)
+            ->with('tipe',null)
             ->with('bahasa',$bahasa)
             ->with('title','Privacy Policy')
             ->with('titlePage','Edit')
@@ -61,6 +65,7 @@ class CPrivacyPolicyDetail extends Controller
         return view('privacy_policy.detail')
             ->with('data',$data)
             ->with('id',$id)
+            ->with('tipe',null)
             ->with('bahasa',$bahasa)
             ->with('title','Privacy Policy')
             ->with('titlePage','Detail');
@@ -120,7 +125,14 @@ class CPrivacyPolicyDetail extends Controller
     }
     public function delete($id)
     {
-        MPrivacyPolicyDetail::updateDeleted($id);
+        $data = MPrivacyPolicyDetail::find($id);        
+        $bahasa = MBahasa::where('id_bahasa',$data->id_bahasa)->first();        
+        if ($bahasa->is_default==1) {
+            MPrivacyPolicyDetail::where('id_ref_bahasa',$data->id_ref_bahasa)->update(['deleted'=>0]);            
+        }else{
+            MPrivacyPolicyDetail::where('id',$id)->update(['deleted'=>0]);
+        }
+        // MPrivacyPolicyDetail::updateDeleted($id);
         return redirect()->route('privacy-policy-index')->with('msg','Sukses Menambahkan Data');
 
     }
@@ -131,11 +143,11 @@ class CPrivacyPolicyDetail extends Controller
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';                
-                $btn .= '<a href="javascript:void(0)" data-toggle="modal" data-id="'.$row->id.'" data-id_ref="'.$row->id_ref_bahasa.'" data-original-title="Edit" class="mr-2 text-success editPost"><span class="mdi mdi-adjust"></span></a>';
-                $btn .= '<a href="'.url('privacy-policy/detail/'.$row->id).'" class="text-warning mr-2"><span class="mdi mdi-information-outline"></span></a>';                
-                $btn .= '<a href="'.url('privacy-policy/show/'.$row->id).'" class="text-danger mr-2"><span class="mdi mdi-pen"></span></a>';
+                $btn .= '<a href="javascript:void(0)" data-toggle="modal" data-id="'.$row->id.'" data-id_ref="'.$row->id_ref_bahasa.'" data-original-title="Edit" class="mr-2 text-success editPost"><span class="mdi mdi-adjust" data-toggle="tooltip" data-placement="Top" title="Ganti Bahasa"></span></a>';
+                $btn .= '<a href="'.url('privacy-policy/detail/'.$row->id).'" class="text-warning mr-2"><span class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="Top" title="Detail Data"></span></a>';                
+                $btn .= '<a href="'.url('privacy-policy/show/'.$row->id).'" class="text-danger mr-2"><span class="mdi mdi-pen" data-toggle="tooltip" data-placement="Top" title="Edit Data"></span></a>';
                 if ($row->id_tipe!=1) {                    
-                    $btn .= '<a href="'.url('privacy-policy/delete/'.$row->id).'" class="text-primary delete"><span class="mdi mdi-delete"></span></a>';
+                    $btn .= '<a href="'.url('privacy-policy/delete/'.$row->id).'" class="text-primary delete"><span class="mdi mdi-delete" data-toggle="tooltip" data-placement="Top" title="Hapus Data"></span></a>';
                 }
                 return $btn;
             })
@@ -148,7 +160,7 @@ class CPrivacyPolicyDetail extends Controller
                 if ($row->id_tipe==1) {
                     $btn = "Privacy Police";
                 }else{
-                    $btn = "Seperti FAQ";
+                    $btn = "Detail";
                 }
                 return $btn;
             })

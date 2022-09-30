@@ -34,13 +34,13 @@ $name[] = 'gambar';
                             <label for="exampleInputEmail1">Tampil</label>                            
                             <div class="form-check">
                               <label class="form-check-label">
-                                <input type="radio" class="form-check-input @error($name[1]) is-invalid @enderror" name="{{$name[1]}}" id="{{$name[1]}}" value="0" {{Helper::showDataChecked($data,$name[1],0)}} @if($data==null) checked @endif>
+                                <input type="radio" class="form-check-input @error($name[1]) is-invalid @enderror" name="{{$name[1]}}" id="{{$name[1]}}" value="0" {{Helper::showDataChecked($data,$name[1],0)}}>
                                 Tidak Tampil
                               </label>
                             </div>                                                    
                             <div class="form-check">
                               <label class="form-check-label">
-                                <input type="radio" class="form-check-input @error($name[1]) is-invalid @enderror" name="{{$name[1]}}" id="{{$name[1]}}" value="1" {{Helper::showDataChecked($data,$name[1],1)}}>
+                                <input type="radio" class="form-check-input @error($name[1]) is-invalid @enderror" name="{{$name[1]}}" id="{{$name[1]}}" value="1" {{Helper::showDataChecked($data,$name[1],1)}} @if($data==null) checked @endif>
                                 Tampil
                               </label>
                             </div>                          

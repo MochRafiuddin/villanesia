@@ -69,8 +69,7 @@ class CAmenities extends Controller
     {
         $validator = Validator::make($request->all(),[
             'nama_amenities' => 'required', 
-            'gambar'         => 'mimes:jpeg,jpg,png,gif|required|max:10000',
-            'icon'           => 'required',
+            'icon'         => 'mimes:jpeg,jpg,png,gif|max:10000',            
         ]);
         
         if ($validator->fails()) {
@@ -79,21 +78,23 @@ class CAmenities extends Controller
                         ->withErrors($validator->errors());
         }
         
-        $gambar = round(microtime(true) * 1000).'.'.$request->file('gambar')->extension();
-        $request->file('gambar')->move(public_path('upload/amenities'), $gambar);           
+        if ($request->file('icon')) {
+            $gambar = round(microtime(true) * 1000).'.'.$request->file('icon')->extension();
+            $request->file('icon')->move(public_path('upload/amenities'), $gambar);
+        }else{
+            $gambar ="";
+        }
         if ($request->id) {
             $tipe = new MAmenities();
             $tipe->nama_amenities = $request->nama_amenities;
-            $tipe->icon = $request->icon;            
-            $tipe->gambar = $gambar;
+            $tipe->icon = $gambar;
             $tipe->id_bahasa = $request->id_bahasa;
             $tipe->id_ref_bahasa = $request->id;
             $tipe->save();
         }else{
             $tipe = new MAmenities();
             $tipe->nama_amenities = $request->nama_amenities;
-            $tipe->icon = $request->icon;            
-            $tipe->gambar = $gambar;
+            $tipe->icon = $gambar;
             $tipe->id_bahasa = $request->id_bahasa;
             $tipe->save();
     
@@ -106,8 +107,7 @@ class CAmenities extends Controller
     {
         $validator = Validator::make($request->all(),[
             'nama_amenities' => 'required', 
-            'gambar'         => 'mimes:jpeg,jpg,png,gif|max:10000',
-            'icon'           => 'required',
+            'icon'         => 'mimes:jpeg,jpg,png,gif|max:10000',            
         ]);
         
         if ($validator->fails()) {
@@ -116,19 +116,26 @@ class CAmenities extends Controller
                         ->withErrors($validator->errors());
         }
         
-        if ($request->gambar) {            
-            $gambar = round(microtime(true) * 1000).'.'.$request->file('gambar')->extension();
-            $request->file('gambar')->move(public_path('upload/amenities'), $gambar);
-            MAmenities::where('id_amenities',$request->id)->update(['nama_amenities'=>$request->nama_amenities, 'gambar'=>$gambar, 'icon'=>$request->icon]);            
+        if ($request->icon) {            
+            $icon = round(microtime(true) * 1000).'.'.$request->file('icon')->extension();
+            $request->file('icon')->move(public_path('upload/amenities'), $icon);
+            MAmenities::where('id_amenities',$request->id)->update(['nama_amenities'=>$request->nama_amenities, 'icon'=>$icon]);            
         }else{
-            MAmenities::where('id_amenities',$request->id)->update(['nama_amenities'=>$request->nama_amenities, 'icon'=>$request->icon]);            
+            MAmenities::where('id_amenities',$request->id)->update(['nama_amenities'=>$request->nama_amenities]);            
         }
 
         return redirect()->route('amenities-index')->with('msg','Sukses Menambahkan Data');
     }
     public function delete($id)
     {
-        MAmenities::updateDeleted($id);
+        // MAmenities::updateDeleted($id);
+        $data = MAmenities::find($id);
+        $bahasa = MBahasa::where('id_bahasa',$data->id_bahasa)->first();        
+        if ($bahasa->is_default==1) {
+            MAmenities::where('id_ref_bahasa',$data->id_ref_bahasa)->update(['deleted'=>0]);            
+        }else{
+            MAmenities::where('id_amenities',$id)->update(['deleted'=>0]);
+        }
         return redirect()->route('amenities-index')->with('msg','Sukses Menambahkan Data');
 
     }
@@ -138,10 +145,10 @@ class CAmenities extends Controller
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';                
-                $btn .= '<a href="javascript:void(0)" data-toggle="modal" data-id="'.$row->id_amenities.'" data-id_ref="'.$row->id_ref_bahasa.'" data-original-title="Edit" class="mr-2 text-success editPost"><span class="mdi mdi-adjust"></span></a>';
-                $btn .= '<a href="'.url('amenities/detail/'.$row->id_amenities).'" class="text-warning mr-2"><span class="mdi mdi-information-outline"></span></a>';                
-                $btn .= '<a href="'.url('amenities/show/'.$row->id_amenities).'" class="text-danger mr-2"><span class="mdi mdi-pen"></span></a>';                
-                $btn .= '<a href="'.url('amenities/delete/'.$row->id_amenities).'" class="text-primary delete"><span class="mdi mdi-delete"></span></a>';
+                $btn .= '<a href="javascript:void(0)" data-toggle="modal" data-id="'.$row->id_amenities.'" data-id_ref="'.$row->id_ref_bahasa.'" data-original-title="Edit" class="mr-2 text-success editPost"><span class="mdi mdi-adjust" data-toggle="tooltip" data-placement="Top" title="Ganti Bahasa"></span></a>';
+                $btn .= '<a href="'.url('amenities/detail/'.$row->id_amenities).'" class="text-warning mr-2"><span class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="Top" title="Detail Data"></span></a>';                
+                $btn .= '<a href="'.url('amenities/show/'.$row->id_amenities).'" class="text-danger mr-2"><span class="mdi mdi-pen" data-toggle="tooltip" data-placement="Top" title="Edit Data"></span></a>';                
+                $btn .= '<a href="'.url('amenities/delete/'.$row->id_amenities).'" class="text-primary delete"><span class="mdi mdi-delete" data-toggle="tooltip" data-placement="Top" title="Hapus Data"></span></a>';
                 return $btn;
             })
             ->addColumn('bahasa', function ($row) {                                
@@ -149,11 +156,7 @@ class CAmenities extends Controller
                 $btn = '<i class="flag-icon '.$bahasa->logo.'"></i> '.$bahasa->nama_bahasa;                
                 return $btn;
             })
-            ->addColumn('icon', function ($row) {                                                
-                $btn = '<i class="fa '.$row->icon.'"></i> ';                
-                return $btn;
-            })
-            ->rawColumns(['action','bahasa','icon'])
+            ->rawColumns(['action','bahasa'])
             ->addIndexColumn()
             ->toJson();
     }

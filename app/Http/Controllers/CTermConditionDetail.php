@@ -24,6 +24,7 @@ class CTermConditionDetail extends Controller
         return view('term_condition.form')
             ->with('data',null)
             ->with('id',null)
+            ->with('tipe',null)
             ->with('bahasa',$bahasa)
             ->with('title','Term Condition')
             ->with('titlePage','Tambah')
@@ -31,10 +32,12 @@ class CTermConditionDetail extends Controller
     }
     public function create_bahasa($id,$kode)
     {        
-        $bahasa = MBahasa::where('id_bahasa',$kode)->first();        
+        $bahasa = MBahasa::where('id_bahasa',$kode)->first();  
+        $tipe = MTermConditionDetail::find($id);
         $url = url('term-condition/create-save');
         return view('term_condition.form')
             ->with('data',null)
+            ->with('tipe',$tipe)
             ->with('id',$id)
             ->with('bahasa',$bahasa)
             ->with('title','Term Condition')
@@ -49,6 +52,7 @@ class CTermConditionDetail extends Controller
         return view('term_condition.form')
             ->with('data',$data)
             ->with('id',$id)
+            ->with('tipe',null)
             ->with('bahasa',$bahasa)
             ->with('title','Term Condition')
             ->with('titlePage','Edit')
@@ -120,7 +124,14 @@ class CTermConditionDetail extends Controller
     }
     public function delete($id)
     {
-        MTermConditionDetail::updateDeleted($id);
+        // MTermConditionDetail::updateDeleted($id);
+        $data = MTermConditionDetail::find($id);        
+        $bahasa = MBahasa::where('id_bahasa',$data->id_bahasa)->first();        
+        if ($bahasa->is_default==1) {
+            MTermConditionDetail::where('id_ref_bahasa',$data->id_ref_bahasa)->update(['deleted'=>0]);            
+        }else{
+            MTermConditionDetail::where('id',$id)->update(['deleted'=>0]);
+        }
         return redirect()->route('term-condition-index')->with('msg','Sukses Menambahkan Data');
 
     }
@@ -131,11 +142,11 @@ class CTermConditionDetail extends Controller
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';                
-                $btn .= '<a href="javascript:void(0)" data-toggle="modal" data-id="'.$row->id.'" data-id_ref="'.$row->id_ref_bahasa.'" data-original-title="Edit" class="mr-2 text-success editPost"><span class="mdi mdi-adjust"></span></a>';
-                $btn .= '<a href="'.url('term-condition/detail/'.$row->id).'" class="text-warning mr-2"><span class="mdi mdi-information-outline"></span></a>';                
-                $btn .= '<a href="'.url('term-condition/show/'.$row->id).'" class="text-danger mr-2"><span class="mdi mdi-pen"></span></a>';
+                $btn .= '<a href="javascript:void(0)" data-toggle="modal" data-id="'.$row->id.'" data-id_ref="'.$row->id_ref_bahasa.'" data-original-title="Edit" class="mr-2 text-success editPost"><span class="mdi mdi-adjust" data-toggle="tooltip" data-placement="Top" title="Ganti Bahasa"></span></a>';
+                $btn .= '<a href="'.url('term-condition/detail/'.$row->id).'" class="text-warning mr-2"><span class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="Top" title="Detail Data"></span></a>';                
+                $btn .= '<a href="'.url('term-condition/show/'.$row->id).'" class="text-danger mr-2"><span class="mdi mdi-pen" data-toggle="tooltip" data-placement="Top" title="Edit Data"></span></a>';
                 if ($row->id_tipe!=1) {                    
-                    $btn .= '<a href="'.url('term-condition/delete/'.$row->id).'" class="text-primary delete"><span class="mdi mdi-delete"></span></a>';
+                    $btn .= '<a href="'.url('term-condition/delete/'.$row->id).'" class="text-primary delete"><span class="mdi mdi-delete" data-toggle="tooltip" data-placement="Top" title="Hapus Data"></span></a>';
                 }
                 return $btn;
             })
