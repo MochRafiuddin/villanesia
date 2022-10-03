@@ -9,7 +9,7 @@ $name[] = 'no_telfon';
     <div class="content-wrapper">
         <div class="card">
             <div class="card-body">
-                <h6 class="card-title">{{$titlePage}} Provinsi</h6>
+                <h6 class="card-title">{{$titlePage}} Bank</h6>
                 <form action="" method="post" enctype="multipart/form-data">
                     @csrf                    
                     <div class="row">
@@ -26,7 +26,7 @@ $name[] = 'no_telfon';
                                 value="{{Helper::showData($data,$name[1])}}" name="{{$name[1]}}" readonly/>
                         </div>
                     </div>                    
-                    <a class="btn btn-success" href="{{url('bank')}}">Kembali</a>
+                    <a class="btn btn-success" href="{{url('master-bank')}}">Kembali</a>
                 </form>
             </div>
         </div>

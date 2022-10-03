@@ -27,7 +27,7 @@
                     <li class="nav-item"> <a class="nav-link" href="{{url('/promosi-kendaraan')}}">Promosi Kendaraan</a></li>
                     <li class="nav-item"> <a class="nav-link" href="{{url('/promosi-wisata')}}">Promosi Wisata</a></li>
                     <li class="nav-item"> <a class="nav-link" href="{{url('/concierge-service')}}">Concierge Sevice</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="{{url('/bank')}}">Bank</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="{{url('/master-bank')}}">Bank</a></li>
                     <li class="nav-item"> <a class="nav-link" href="{{url('/bank-admin')}}">Bank Admin</a></li>
                     <li class="nav-item"> <a class="nav-link" href="{{url('/ads')}}">Ads</a></li>
                     <li class="nav-item"> <a class="nav-link" href="{{url('/kupon')}}">Kupon</a></li>

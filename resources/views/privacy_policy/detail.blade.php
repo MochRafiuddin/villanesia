@@ -30,7 +30,7 @@ $name[] = 'isi';
                                         Privacy Police
                                 </option>                                
                                 <option value="2" {{(old($name[0]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[0],2)}}>
-                                        Seperti FAQ
+                                        Detail
                                 </option>                                
                              </select>                
                         </div>

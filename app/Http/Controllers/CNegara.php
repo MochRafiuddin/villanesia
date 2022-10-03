@@ -86,14 +86,7 @@ class CNegara extends Controller
     }
     public function delete($id)
     {
-        // MNegara::updateDeleted($id);
-        $data = MNegara::find($id);
-        $bahasa = MBahasa::where('id_bahasa',$data->id_bahasa)->first();        
-        if ($bahasa->is_default==1) {
-            MNegara::where('id_ref_bahasa',$data->id_ref_bahasa)->update(['deleted'=>0]);            
-        }else{
-            MNegara::where('id_negara',$id)->update(['deleted'=>0]);
-        }
+        MNegara::updateDeleted($id);        
         return redirect()->route('negara-index')->with('msg','Sukses Menambahkan Data');
 
     }

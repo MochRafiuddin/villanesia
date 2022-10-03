@@ -59,7 +59,7 @@ class CBank extends Controller
         $tipe->no_telfon = $request->no_telfon;            
         $tipe->save();        
 
-        return redirect()->route('bank-index')->with('msg','Sukses Menambahkan Data');
+        return redirect()->route('master-bank-index')->with('msg','Sukses Menambahkan Data');
     }
     public function show_save(Request $request)
     {
@@ -76,12 +76,12 @@ class CBank extends Controller
         
         MBank::where('id_bank',$request->id)->update(['nama_bank'=>$request->nama_bank,'no_telfon'=>$request->no_telfon]);                    
 
-        return redirect()->route('bank-index')->with('msg','Sukses Menambahkan Data');
+        return redirect()->route('master-bank-index')->with('msg','Sukses Menambahkan Data');
     }
     public function delete($id)
     {
         MBank::updateDeleted($id);
-        return redirect()->route('bank-index')->with('msg','Sukses Menambahkan Data');
+        return redirect()->route('master-bank-index')->with('msg','Sukses Menambahkan Data');
 
     }
     public function data()
@@ -90,9 +90,9 @@ class CBank extends Controller
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';                                
-                $btn .= '<a href="'.url('bank/detail/'.$row->id_bank).'" class="text-warning mr-2"><span class="mdi mdi-information-outline"></span></a>';                
-                $btn .= '<a href="'.url('bank/show/'.$row->id_bank).'" class="text-danger mr-2"><span class="mdi mdi-pen"></span></a>';                
-                $btn .= '<a href="'.url('bank/delete/'.$row->id_bank).'" class="text-primary delete"><span class="mdi mdi-delete"></span></a>';
+                $btn .= '<a href="'.url('bank/detail/'.$row->id_bank).'" class="text-warning mr-2"><span class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="Top" title="Detail Data"></span></a>';                
+                $btn .= '<a href="'.url('bank/show/'.$row->id_bank).'" class="text-danger mr-2"><span class="mdi mdi-pen" data-toggle="tooltip" data-placement="Top" title="Edit Data"></span></a>';                
+                $btn .= '<a href="'.url('bank/delete/'.$row->id_bank).'" class="text-primary delete"><span class="mdi mdi-delete" data-toggle="tooltip" data-placement="Top" title="Hapus Data"></span></a>';
                 return $btn;
             })
             ->rawColumns(['action'])

@@ -106,10 +106,10 @@ class CAds extends Controller
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';                     
-                $btn .= '<a href="javascript:void(0)" data-toggle="modal" data-id="'.$row->id_ads.'" data-original-title="Edit" class="mr-2 text-success editPost"><span class="mdi mdi-settings"></span></a>';
-                $btn .= '<a href="'.url('ads/detail/'.$row->id_ads).'" class="text-warning mr-2"><span class="mdi mdi-information-outline"></span></a>';                
-                $btn .= '<a href="'.url('ads/show/'.$row->id_ads).'" class="text-danger mr-2"><span class="mdi mdi-pen"></span></a>';                
-                $btn .= '<a href="'.url('ads/delete/'.$row->id_ads).'" class="text-primary delete"><span class="mdi mdi-delete"></span></a>';
+                $btn .= '<a href="javascript:void(0)" data-toggle="modal" data-id="'.$row->id_ads.'" data-original-title="Edit" class="mr-2 text-success editPost"><span class="mdi mdi-settings" data-toggle="tooltip" data-placement="Top" title="Ganti Bahasa"></span></a>';
+                $btn .= '<a href="'.url('ads/detail/'.$row->id_ads).'" class="text-warning mr-2"><span class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="Top" title="Detail Data"></span></a>';                
+                $btn .= '<a href="'.url('ads/show/'.$row->id_ads).'" class="text-danger mr-2"><span class="mdi mdi-pen" data-toggle="tooltip" data-placement="Top" title="Edit Data"></span></a>';                
+                $btn .= '<a href="'.url('ads/delete/'.$row->id_ads).'" class="text-primary delete"><span class="mdi mdi-delete" data-toggle="tooltip" data-placement="Top" title="Hapus Data"></span></a>';
                 return $btn;
             })
             ->editColumn('tipe_konten_ads', function ($row) {

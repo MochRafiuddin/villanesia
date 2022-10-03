@@ -80,7 +80,7 @@ class CPromosiKendaraan extends Controller
                         ->withInput($request->all())
                         ->withErrors($validator->errors());
         }
-        if ($request->file('icon')) {
+        if ($request->file('gambar')) {
             $gambar = round(microtime(true) * 1000).'.'.$request->file('gambar')->extension();
             $request->file('gambar')->move(public_path('upload/promosi_kendaraan'), $gambar);           
         }else{

@@ -181,7 +181,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/concierge-service/bahasa', [CConciergeService::class,'bahasa']);
 
     //bank
-    Route::get('/bank', [CBank::class,'index'])->name('bank-index');
+    Route::get('/master-bank', [CBank::class,'index'])->name('master-bank-index');
     Route::get('/bank/data', [CBank::class,'data']);
     Route::get('/bank/create', [CBank::class,'create']);
     Route::post('/bank/create-save', [CBank::class,'create_save']);

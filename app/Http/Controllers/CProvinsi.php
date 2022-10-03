@@ -77,14 +77,7 @@ class CProvinsi extends Controller
     }
     public function delete($id)
     {
-        // MProvinsi::updateDeleted($id);
-        $data = MProvinsi::find($id);
-        $bahasa = MBahasa::where('id_bahasa',$data->id_bahasa)->first();        
-        if ($bahasa->is_default==1) {
-            MProvinsi::where('id_ref_bahasa',$data->id_ref_bahasa)->update(['deleted'=>0]);            
-        }else{
-            MProvinsi::where('id_provinsi',$id)->update(['deleted'=>0]);
-        }
+        MProvinsi::updateDeleted($id);        
         return redirect()->route('provinsi-index')->with('msg','Sukses Menambahkan Data');
 
     }

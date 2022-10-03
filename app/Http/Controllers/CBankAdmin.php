@@ -103,9 +103,9 @@ class CBankAdmin extends Controller
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';                                
-                $btn .= '<a href="'.url('bank-admin/detail/'.$row->id_bank_admin).'" class="text-warning mr-2"><span class="mdi mdi-information-outline"></span></a>';                
-                $btn .= '<a href="'.url('bank-admin/show/'.$row->id_bank_admin).'" class="text-danger mr-2"><span class="mdi mdi-pen"></span></a>';                
-                $btn .= '<a href="'.url('bank-admin/delete/'.$row->id_bank_admin).'" class="text-primary delete"><span class="mdi mdi-delete"></span></a>';
+                $btn .= '<a href="'.url('bank-admin/detail/'.$row->id_bank_admin).'" class="text-warning mr-2" data-toggle="tooltip" data-placement="Top" title="Detail Data"><span class="mdi mdi-information-outline"></span></a>';                
+                $btn .= '<a href="'.url('bank-admin/show/'.$row->id_bank_admin).'" class="text-danger mr-2"><span class="mdi mdi-pen" data-toggle="tooltip" data-placement="Top" title="Edit Data"></span></a>';                
+                $btn .= '<a href="'.url('bank-admin/delete/'.$row->id_bank_admin).'" class="text-primary delete"><span class="mdi mdi-delete" data-toggle="tooltip" data-placement="Top" title="Hapus Data"></span></a>';
                 return $btn;
             })
             ->addColumn('bank', function ($row) {
