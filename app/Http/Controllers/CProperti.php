@@ -129,6 +129,12 @@ class CProperti extends Controller
                 $amenities->nama_file = $request['nama_file'][$i];
                 $amenities->id_tipe = $request['id_tipe'][$i];
                 $amenities->save();
+
+                if ($request['featured_image'][$i] == 1) {
+                    $ti = MProperti::find($tipe->id_properti);
+                    $ti->nama_file = $request['nama_file'][$i];
+                    $ti->update();   
+                }
             }
         }
 
@@ -264,7 +270,7 @@ class CProperti extends Controller
     }
     public function show_save(Request $request)
     {
-        $cek_pro = MProperti::where('id_ref_bahasa',$request->id_ref_bahasa)->where('id_bahasa',$request->id_bahasa)->first();
+        $cek_pro = MProperti::where('id_ref_bahasa',$request->id_ref_bahasa)->where('id_bahasa',$request->id_bahasa)->where('deleted','!=',0)->first();
         // dd($cek_pro);
         if ($request->id_bahasa == 2) {
             if ($cek_pro == null) {
@@ -336,7 +342,7 @@ class CProperti extends Controller
             'anak' => $request->anak,
             'deleted' => 1,
         ];
-        MProperti::where('id_ref_bahasa',$request->id_ref_bahasa)->update($data);
+        MProperti::where('id_ref_bahasa',$request->id_ref_bahasa)->where('deleted','!=',0)->update($data);
 
         MPropertiExtra::where('id_properti',$request->id_ref_bahasa)->delete();
         if ($request->nama_service) {
@@ -359,6 +365,10 @@ class CProperti extends Controller
                 $amenities->nama_file = $request['nama_file'][$i];
                 $amenities->id_tipe = $request['id_tipe'][$i];
                 $amenities->save();
+
+                if ($request['featured_image'][$i] == 1) {
+                    MProperti::where('id_ref_bahasa',$request->id_ref_bahasa)->update(['nama_file'=>$request['nama_file'][$i]]);                    
+                }
             }
         }
 
@@ -486,7 +496,7 @@ class CProperti extends Controller
     public function bahasa(Request $request)
     {   
         $bahasa = MBahasa::where('id_bahasa',$request->kode)->first();
-        $model = MProperti::where('id_ref_bahasa',$request->id_ref)->where('id_bahasa',$bahasa->id_bahasa)->first();
+        $model = MProperti::where('id_ref_bahasa',$request->id_ref)->where('id_bahasa',$bahasa->id_bahasa)->where('deleted','!=',0)->first();
         // dd($model);
         if ($model) {
             $data = $model->id_properti;            

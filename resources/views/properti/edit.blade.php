@@ -65,7 +65,7 @@ use App\Traits\Helper;
                                     <input type="hidden" name="id_tipe_booking" id="id_tipe_booking" value="{{$data->id_tipe_booking}}">
                                     <input type="hidden" name="id_bahasa" id="id_bahasa" value="{{$bahasa->id_bahasa}}">
                                     <input type="hidden" name="id_ref_bahasa" id="id_ref_bahasa" value="{{$data->id_ref_bahasa}}">
-                                    <input type="hidden" name="delete" id="delete" value="{{$data->delete}}">
+                                    <input type="hidden" name="deleted" id="deleted" value="{{$data->deleted}}">
                                     <select class="form-control js-example-basic-single" name="id_jenis_tempat" id="id_jenis_tempat" style="width:100%">                           
                                         <option value="" selected disabled>Pilih</option>
                                         @foreach($jenis as $d)
