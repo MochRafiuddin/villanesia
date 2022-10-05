@@ -18,10 +18,10 @@ use App\Traits\Helper;
                             </div>
                         </div>
                         @endif
-                        <div class="col-6">
+                        <!-- <div class="col-6">
                             <input type="botton" class="btn btn-inverse-dark col-12 btn-sm" value="View" />
-                        </div>
-                        <div class="col-6">                            
+                        </div> -->
+                        <div class="col-12">                            
                             <input type="submit" class="btn btn-inverse-dark col-12 btn-sm" value="Simpan" />
                         </div>
                     </div><br>
@@ -65,6 +65,7 @@ use App\Traits\Helper;
                                     <input type="hidden" name="id_tipe_booking" id="id_tipe_booking" value="{{$data->id_tipe_booking}}">
                                     <input type="hidden" name="id_bahasa" id="id_bahasa" value="{{$bahasa->id_bahasa}}">
                                     <input type="hidden" name="id_ref_bahasa" id="id_ref_bahasa" value="{{$data->id_ref_bahasa}}">
+                                    <input type="hidden" name="delete" id="delete" value="{{$data->delete}}">
                                     <select class="form-control js-example-basic-single" name="id_jenis_tempat" id="id_jenis_tempat" style="width:100%">                           
                                         <option value="" selected disabled>Pilih</option>
                                         @foreach($jenis as $d)
@@ -166,9 +167,9 @@ use App\Traits\Helper;
                                     <label for="">Penerapan Harga Weekend</label>
                                     <select class="form-control js-example-basic-single" name="penerapan_harga_weekend" style="width:100%">                           
                                         <option value="" selected disabled>Pilih</option>                                        
-                                        <option value="1" {{($data->penerapan_harga_weekend == 1) ? 'selected' : ''}}>Sabtu-Minggu</option>
-                                        <option value="2" {{($data->penerapan_harga_weekend == 2) ? 'selected' : ''}}>Jumat-Sabtu</option>
-                                        <option value="3" {{($data->penerapan_harga_weekend == 3) ? 'selected' : ''}}>Jumat-Minggu</option>
+                                        @foreach($pekan as $d)
+                                            <option value="{{$d->id_ref_bahasa}}" {{($data->penerapan_harga_weekend == $d->id_ref_bahasa) ? 'selected' : ''}}>{{$d->detail_akhir_pekan}}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 @endif
@@ -215,9 +216,9 @@ use App\Traits\Helper;
                                                 <select class="form-control js-example-basic-single" name="tipe_layanan[]" style="width:100%">                           
                                                     <option value="" selected disabled>Pilih</option>                                        
                                                     <option value="1" {{($ex->tipe == 1) ? 'selected' : ''}}>Single Fee</option>
-                                                    <option value="2" {{($ex->tipe == 2) ? 'selected' : ''}}>Per Day</option>
+                                                    <option value="2" {{($ex->tipe == 2) ? 'selected' : ''}}>{{$tipeId->nama_tipe_booking}}</option>
                                                     <option value="3" {{($ex->tipe == 3) ? 'selected' : ''}}>Per Guest</option>
-                                                    <option value="4" {{($ex->tipe == 4) ? 'selected' : ''}}>Per Day Per Guest</option>
+                                                    <option value="4" {{($ex->tipe == 4) ? 'selected' : ''}}>{{$tipeId->nama_tipe_booking}} Per Guest</option>
                                                 </select>
                                             </div>
                                             <div class="form-group col-2">
@@ -262,8 +263,16 @@ use App\Traits\Helper;
                                 <div class="form-group col-6">
                                     <label for="">Tipe</label>
                                     <select class="form-control js-example-basic-single" name="jumlah_tamu_tambahan" style="width:100%">
-                                        <option value="1" {{($data->jumlah_tamu_tambahan == 0) ? 'selected' : ''}}>Daily</option>
-                                        <option value="2" {{($data->jumlah_tamu_tambahan == 1) ? 'selected' : ''}}>Per Stay</option>
+                                    @if($data->id_tipe_booking == 3)
+                                        <option value="1" {{($data->jumlah_tamu_tambahan == 1) ? 'selected' : ''}}>Weekly</option>
+                                    @elseif($data->id_tipe_booking == 4)
+                                        <option value="1" {{($data->jumlah_tamu_tambahan == 1) ? 'selected' : ''}}>Monthly</option>
+                                    @elseif($data->id_tipe_booking == 5)
+                                        <option value="1" {{($data->jumlah_tamu_tambahan == 1) ? 'selected' : ''}}>Hourly</option>
+                                    @else                                            
+                                        <option value="1" {{($data->jumlah_tamu_tambahan == 1) ? 'selected' : ''}}>Daily</option>
+                                    @endif
+                                        <option value="2" {{($data->jumlah_tamu_tambahan == 2) ? 'selected' : ''}}>Per Stay</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-6">
@@ -416,16 +425,16 @@ use App\Traits\Helper;
                             <div class="form-group col-4">
                                 <label for="">Apt, Suite</label>
                                 <input type="text" class="form-control" name="apt_suite" value="{{$data->apt_suite}}"/>
-                            </div>
+                            </div>                            
                             <div class="form-group col-4">
-                                <label for="">Kota</label>
+                                <label for="">Negara</label>
                                 <!-- <input type="text" class="form-control" name="" value=""/> -->
-                                <select class="form-control js-example-basic-single" name="id_kota" id="id_kota" style="width:100%">                           
-                                    <option value="" selected disabled>Pilih</option>
-                                        @foreach($kota as $ko)
-                                            <option value="{{$ko->id_kota}}" {{($data->id_kota == $ko->id_kota) ? 'selected' : ''}}>{{$ko->nama_kota}}</option>
+                                <select class="form-control js-example-basic-single" name="id_negara" id="id_negara" style="width:100%">                           
+                                        <option value="" selected disabled>Pilih</option>
+                                        @foreach($negara as $ne)
+                                            <option value="{{$ne->id_negara}}" {{($data->id_negara == $ne->id_negara) ? 'selected' : ''}}>{{$ne->nama_negara}}</option>
                                         @endforeach
-                                </select>
+                                    </select>
                             </div>
                             <div class="form-group col-4">
                                 <label for="">Provinsi</label>
@@ -438,6 +447,16 @@ use App\Traits\Helper;
                                     </select>
                             </div>
                             <div class="form-group col-4">
+                                <label for="">Kota</label>
+                                <!-- <input type="text" class="form-control" name="" value=""/> -->
+                                <select class="form-control js-example-basic-single" name="id_kota" id="id_kota" style="width:100%">                           
+                                    <option value="" selected disabled>Pilih</option>
+                                        @foreach($kota as $ko)
+                                            <option value="{{$ko->id_kota}}" {{($data->id_kota == $ko->id_kota) ? 'selected' : ''}}>{{$ko->nama_kota}}</option>
+                                        @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-6">
                                 <label for="">Kode Pos</label>
                                 <input type="text" class="form-control" name="kode_pos" value="{{$data->kode_pos}}"/>
                             </div>
@@ -445,16 +464,7 @@ use App\Traits\Helper;
                                 <label for="">Area</label>
                                 <input type="text" class="form-control" name="area" value="{{$data->area}}"/>
                             </div>
-                            <div class="form-group col-6">
-                                <label for="">Negara</label>
-                                <!-- <input type="text" class="form-control" name="" value=""/> -->
-                                <select class="form-control js-example-basic-single" name="id_negara" id="id_negara" style="width:100%">                           
-                                        <option value="" selected disabled>Pilih</option>
-                                        @foreach($negara as $ne)
-                                            <option value="{{$ne->id_negara}}" {{($data->id_negara == $ne->id_negara) ? 'selected' : ''}}>{{$ne->nama_negara}}</option>
-                                        @endforeach
-                                    </select>
-                            </div><br>
+                            <br>
                             <div class="col">                                                                
                                 <label for="">Cari lokasi</label>
                                 <div id="map" style="width:100%;height:400px;"></div>
@@ -517,21 +527,31 @@ use App\Traits\Helper;
                                     <textarea class="form-control" name="kebijakan_pembatalan" id="" style="height:130px;">{{$data->kebijakan_pembatalan}}</textarea>
                                 </div>
                                 <div class="form-group col-6">
-                                    <label for="">Minimum Hari Pemesanan</label>
+                                    @if($data->id_tipe_booking == 3)
+                                        <label for="">Minimum Jumlah Minggu</label>
+                                    @elseif($data->id_tipe_booking == 4)
+                                        <label for="">Minimum Jumlah Bulan</label>
+                                    @elseif($data->id_tipe_booking == 5)
+                                        <label for="">Minimum Jam Pemesanan</label>
+                                    @else                                            
+                                        <label for="">Minimum Hari Pemesanan</label>
+                                    @endif                                    
                                     <input type="text" class="form-control" name="min_durasi_inap" value="{{$data->min_durasi_inap}}"/>
-                                </div>
+                                </div>                                
+                                @if($data->id_tipe_booking != 5)
                                 <div class="form-group col-6">
                                     <label for="">Maximum Hari Pemesanan</label>
                                     <input type="text" class="form-control" name="max_durasi_inap" value="{{$data->max_durasi_inap}}"/>
                                 </div>
-                                @if($data->id_tipe_booking != 3 && $data->id_tipe_booking != 4)
+                                @endif
+                                @if($data->id_tipe_booking != 3 && $data->id_tipe_booking != 4 && $data->id_tipe_booking != 5)
                                 <div class="form-group col-6">
                                     <label for="">Check-in Setelah</label>
-                                    <input type="text" class="form-control timepicker" name="jam_checkin" value="{{$data->jam_checkin}}"/>
+                                    <input type="text" class="form-control timepicker" name="jam_checkin" value="{{date('H:i', strtotime($data->jam_checkin))}}"/>
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Check-out Sebelum</label>
-                                    <input type="text" class="form-control timepicker" name="jam_checkout" value="{{$data->jam_checkout}}"/>
+                                    <input type="text" class="form-control timepicker" name="jam_checkout" value="{{date('H:i', strtotime($data->jam_checkout))}}"/>
                                 </div>
                                 @endif
                                 @if($data->id_tipe_booking != 1 && $data->id_tipe_booking != 2 && $data->id_tipe_booking != 3 && $data->id_tipe_booking != 4)
@@ -540,11 +560,11 @@ use App\Traits\Helper;
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Jam Mulai</label>
-                                    <input type="text" class="form-control timepicker" name="jam_operasional_mulai" value="{{$data->jam_operasional_mulai}}"/>
+                                    <input type="text" class="form-control timepicker" name="jam_operasional_mulai" value="{{date('H:i', strtotime($data->jam_operasional_mulai))}}"/>
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Jam Selesai</label>
-                                    <input type="text" class="form-control timepicker" name="jam_operasional_selesai" value="{{$data->jam_operasional_selesai}}"/>
+                                    <input type="text" class="form-control timepicker" name="jam_operasional_selesai" value="{{date('H:i', strtotime($data->jam_operasional_selesai))}}"/>
                                 </div>
                                 @endif
                                 <div class="form-group col-6">
@@ -562,7 +582,7 @@ use App\Traits\Helper;
                                     </select>
                                 </div>
                                 <div class="form-group col-6">
-                                    <label for="">aturan_tambahan Diperbolehkan</label>
+                                    <label for="">Acara Diperbolehkan</label>
                                     <select class="form-control js-example-basic-single" name="acara" style="width:100%">
                                         <option value="0" {{($data->acara == 0) ? 'selected' : ''}}>Tidak</option>
                                         <option value="1" {{($data->acara == 1) ? 'selected' : ''}}>Ya</option>
@@ -571,8 +591,8 @@ use App\Traits\Helper;
                                 <div class="form-group col-6">
                                     <label for="">Anak Diperbolehkan</label>
                                     <select class="form-control js-example-basic-single" name="anak" style="width:100%">
-                                        <option value="0" {{($data->acara == 0) ? 'selected' : ''}}>Tidak</option>
-                                        <option value="1" {{($data->acara == 1) ? 'selected' : ''}}>Ya</option>
+                                        <option value="0" {{($data->anak == 0) ? 'selected' : ''}}>Tidak</option>
+                                        <option value="1" {{($data->anak == 1) ? 'selected' : ''}}>Ya</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-12">
@@ -600,10 +620,9 @@ use App\Traits\Helper;
     });
     $('.timepicker').timepicker({
         timeFormat: 'H:mm',
-        interval: 60,
+        interval: 30,
         minTime: '00:00',
         maxTime: '23:00',
-        defaultTime: '01:00',
         startTime: '01:00',
         dynamic: false,
         dropdown: true,
@@ -629,9 +648,9 @@ use App\Traits\Helper;
                         <select class="form-control js-example-basic-single" name="tipe_layanan[]" style="width:100%">\
                             <option value="" selected disabled>Pilih</option>\
                             <option value="1">Single Fee</option>\
-                            <option value="2">Per Day</option>\
+                            <option value="2">{{$tipeId->nama_tipe_booking}}</option>\
                             <option value="3">Per Guest</option>\
-                            <option value="4">Per Day Per Guest</option>\
+                            <option value="4">{{$tipeId->nama_tipe_booking}} Per Guest</option>\
                         </select>\
                     </div>\
                     <div class="form-group col-2">\
@@ -746,7 +765,7 @@ use App\Traits\Helper;
         $('.simpan-periode').click(function (e) {
             e.preventDefault();
             $(this).html('Sending..');
-            var id = $('#id_properti').val();
+            var id = $('#id_ref_bahasa').val();
             var tanggal_mulai_periode = $('#tanggal_mulai_periode').val();
             var tanggal_selesai_periode = $('#tanggal_selesai_periode').val();
             var harga_periode = $('#harga_periode').val();
@@ -795,6 +814,18 @@ use App\Traits\Helper;
         });                
 
     }
+    $('#id_provinsi').on('change',function(){
+            let provinsi = $(this).val();
+
+            $.ajax({
+                url: '{{ url("/properti/kota-provinsi/") }}',
+                type: "GET",
+                data: { provinsi:provinsi } ,                
+                success: function(res){
+                    $('#id_kota').html(res.data);
+                }
+            });
+        }); 
 </script>
 <script>
         function initAutocomplete() {

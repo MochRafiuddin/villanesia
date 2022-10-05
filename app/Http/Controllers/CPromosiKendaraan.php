@@ -72,8 +72,8 @@ class CPromosiKendaraan extends Controller
             'gambar'             => 'mimes:jpeg,jpg,png,gif|max:10000',
             'detail_harga'       => 'required',
             'show'               => 'required',
-            'text_to_wa'         => 'required',
         ]);
+        // 'text_to_wa'         => 'required',
         
         if ($validator->fails()) {
             return redirect()->back()
@@ -118,8 +118,8 @@ class CPromosiKendaraan extends Controller
             'gambar'             => 'mimes:jpeg,jpg,png,gif|max:10000',
             'detail_harga'       => 'required',
             'show'               => 'required',
-            'text_to_wa'         => 'required',
         ]);
+        // 'text_to_wa'         => 'required',
         
         if ($validator->fails()) {
             return redirect()->back()

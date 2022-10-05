@@ -47,7 +47,7 @@
             <div class="collapse" id="Properti">
                 <ul class="nav flex-column sub-menu">                    
                     <li class="nav-item"> <a class="nav-link" href="{{url('/properti-add')}}">Tambah Properti</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="{{url('/properti')}}">List Properti</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="{{url('/list-properti')}}">List Properti</a></li>
                 </ul>
             </div>
         </li>

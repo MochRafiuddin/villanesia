@@ -72,8 +72,8 @@ class CPromosiWisata extends Controller
             'gambar'          => 'mimes:jpeg,jpg,png,gif|max:10000',
             'detail'          => 'required',
             'show'            => 'required',
-            'text_to_wa'      => 'required',
         ]);
+        // 'text_to_wa'      => 'required',
         
         if ($validator->fails()) {
             return redirect()->back()
@@ -120,8 +120,8 @@ class CPromosiWisata extends Controller
             'gambar'          => 'mimes:jpeg,jpg,png,gif|max:10000',
             'detail'          => 'required',
             'show'            => 'required',
-            'text_to_wa'      => 'required',
         ]);
+        // 'text_to_wa'      => 'required',
         
         if ($validator->fails()) {
             return redirect()->back()

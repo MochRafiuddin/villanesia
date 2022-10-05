@@ -11,6 +11,7 @@ use App\Models\MBahasa;
 use App\Models\MTipeBooking;
 use App\Models\MTipeProperti;
 use App\Models\MJenisTempat;
+use App\Models\MAkhirPekan;
 use App\Models\MAmenities;
 use App\Models\MapAmenities;
 use App\Models\MFasilitas;
@@ -47,6 +48,7 @@ class CProperti extends Controller
     {   
         $bahasa = MBahasa::where('is_default',1)->first();        
         $tipe = MTipeProperti::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
+        $pekan = MAkhirPekan::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
         $jenis = MJenisTempat::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
         $tipeId = MTipeBooking::where('id_tipe_booking',$id_tipe_booking)->first();
         $amenities = MAmenities::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
@@ -58,6 +60,7 @@ class CProperti extends Controller
         return view('properti.add_pro')
             ->with('title','Properti')            
             ->with('tipe', $tipe)
+            ->with('pekan', $pekan)
             ->with('jenis', $jenis)
             ->with('id',$id_tipe_booking)
             ->with('bahasa',$bahasa)
@@ -72,64 +75,23 @@ class CProperti extends Controller
     }
 
     public function create_save(Request $request)
-    {            
-        
-        $tipe = new MProperti();        
-        $tipe->id_tipe_booking = $request->id_tipe_booking;
-        $tipe->id_bahasa = $request->id_bahasa;
-        $tipe->id_jenis_tempat = $request->id_jenis_tempat;
-        $tipe->judul = $request->judul;
-        $tipe->deskripsi = $request->deskripsi;
-        $tipe->perlu_diketahui = $request->perlu_diketahui;
-        $tipe->id_tipe_properti = $request->id_tipe_properti;
-        $tipe->jumlah_kamar_tidur = $request->jumlah_kamar_tidur;
-        $tipe->jumlah_tamu = $request->jumlah_tamu;
-        $tipe->jumlah_tempat_tidur = $request->jumlah_tempat_tidur;
-        $tipe->jumlah_kamar_mandi = $request->jumlah_kamar_mandi;
-        $tipe->ukuran = $request->ukuran;
-        $tipe->satuan_ukuran = $request->satuan_ukuran;
-        $tipe->nama_properti = $request->nama_properti;
-        $tipe->sarapan = $request->sarapan;
-        $tipe->harga_tampil = $request->harga_tampil;
-        $tipe->setelah_label_harga = $request->setelah_label_harga;
-        $tipe->harga_weekend = $request->harga_weekend;
-        $tipe->penerapan_harga_weekend = $request->penerapan_harga_weekend;
-        $tipe->harga_weekly = $request->harga_weekly;
-        $tipe->harga_monthly = $request->harga_monthly;
-        $tipe->tamu_tambahan = $request->tamu_tambahan;
-        $tipe->harga_tamu_tambahan = $request->harga_tamu_tambahan;
-        $tipe->jumlah_tamu_tambahan = $request->jumlah_tamu_tambahan;
-        $tipe->biaya_kebersihan = $request->biaya_kebersihan;
-        $tipe->biaya_kebersihan_tipe = $request->biaya_kebersihan_tipe;
-        $tipe->uang_jaminan = $request->uang_jaminan;
-        $tipe->pajak = $request->pajak;
-        $tipe->alamat = $request->alamat;
-        $tipe->apt_suite = $request->apt_suite;
-        $tipe->id_kota = $request->id_kota;
-        $tipe->id_provinsi = $request->id_provinsi;
-        $tipe->kode_pos = $request->kode_pos;
-        $tipe->area = $request->area;
-        $tipe->id_negara = $request->negara;
-        $tipe->latitude = $request->latitude;
-        $tipe->longitude = $request->longitude;
-        $tipe->kebijakan_pembatalan = $request->kebijakan_pembatalan;
-        $tipe->min_durasi_inap = $request->min_durasi_inap;
-        $tipe->max_durasi_inap = $request->max_durasi_inap;
-        $tipe->jam_checkin = $request->jam_checkin;
-        $tipe->jam_checkout = $request->jam_checkout;
-        $tipe->jam_operasional_mulai = $request->jam_oprasional_mulai;
-        $tipe->jam_operasional_selesai = $request->jam_oprasional_selesai;
-        $tipe->merokok = $request->merokok;
-        $tipe->binatang = $request->binatang;
-        $tipe->acara = $request->acara;
-        $tipe->anak = $request->anak;
-        $tipe->aturan_tambahan = $request->aturan_tambahan;
-        $tipe->deleted = $request->deleted;
-        $tipe->save();        
-
-        MProperti::where('id_properti',$tipe->id_properti)->update(['id_ref_bahasa' => $tipe->id_properti]);
+    {   
+        // dd($request);
+        if ($request->id_properti) {
+            $tipe = MProperti::find($request->id_properti);
+            $this->insert_bahasa($tipe,$request);
+            $tipe->update();        
+        }else {
+            $tipe = new MProperti();        
+            $this->insert_bahasa($tipe,$request);
+            $tipe->save();        
+            MProperti::where('id_properti',$tipe->id_properti)->update(['id_ref_bahasa' => $tipe->id_properti]);
+        }
 
         if ($request->nama_service) {
+            if ($request->id_properti != null) {
+                MPropertiExtra::where('id_properti',$request->id_properti)->delete();                
+            }
             for ($i=0; $i < count($request->nama_service); $i++) { 
                 $extra = new MPropertiExtra;            
                 $extra->id_properti = $tipe->id_properti;
@@ -141,6 +103,9 @@ class CProperti extends Controller
         }
 
         if ($request->tanggal_mulai_periode) {
+            if ($request->id_properti != null) {
+                MPropertiHargaPeriode::where('id_properti',$request->id_properti)->delete();                
+            }
             for ($i=0; $i < count($request->tanggal_mulai_periode); $i++) {                                 
                 $periode = new MPropertiHargaPeriode();
                 $periode->id_properti = $tipe->id_properti;
@@ -154,6 +119,9 @@ class CProperti extends Controller
         }
 
         if ($request->featured_image) {
+            if ($request->id_properti != null) {
+                MPropertiGalery::where('id_properti',$request->id_properti)->delete();                
+            }
             for ($i=0; $i < count($request->featured_image); $i++) {                                 
                 $amenities = new MPropertiGalery();
                 $amenities->id_properti = $tipe->id_properti;                
@@ -165,6 +133,9 @@ class CProperti extends Controller
         }
 
         if ($request->amenities) {
+            if ($request->id_properti != null) {
+                MapAmenities::where('id_properti',$request->id_properti)->delete();                
+            }
             for ($i=0; $i < count($request->amenities); $i++) {                                 
                 $amenities = new MapAmenities();
                 $amenities->id_properti = $tipe->id_properti;                
@@ -174,6 +145,9 @@ class CProperti extends Controller
         }
 
         if ($request->fasilitas) {
+            if ($request->id_properti != null) {
+                MapFasilitas::where('id_properti',$request->id_properti)->delete();                
+            }
             for ($i=0; $i < count($request->fasilitas); $i++) {                                 
                 $fasilitas = new MapFasilitas();
                 $fasilitas->id_properti = $tipe->id_properti;                
@@ -183,6 +157,9 @@ class CProperti extends Controller
         }
 
         if ($request->nama_kamar_tidurs) {
+            if ($request->id_properti != null) {
+                MPropertiKamarTidur::where('id_properti',$request->id_properti)->delete();                
+            }
             for ($i=0; $i < count($request->nama_kamar_tidurs); $i++) {                                 
                 $kamar_tidurs = new MPropertiKamarTidur();
                 $kamar_tidurs->id_properti = $tipe->id_properti;                
@@ -194,7 +171,7 @@ class CProperti extends Controller
             }
         }
 
-        return response()->json(['status'=>true,'error'=>'berhasil','msg'=>'Sukses Mengubah Data']);
+        return response()->json(['status'=>true,'error'=>'berhasil','msg'=>'Sukses Mengubah Data','id'=>$tipe->id_properti]);
         
         // return redirect()->route('properti-index')->with('msg','Sukses Menambahkan Data');
     }
@@ -203,18 +180,19 @@ class CProperti extends Controller
     {
         $data = MProperti::find($id);        
         $bahasa = MBahasa::where('id_bahasa',$data->id_bahasa)->first();        
-        $harga_periode = MPropertiHargaPeriode::where('id_properti',$id)->get();        
-        $extra = MPropertiExtra::where('id_properti',$id)->get();
-        $tidur = MPropertiKamarTidur::where('id_properti',$id)->get();
-        $galery = MPropertiGalery::where('id_properti',$id)->get();
+        $harga_periode = MPropertiHargaPeriode::where('id_properti',$data->id_ref_bahasa)->get();        
+        $extra = MPropertiExtra::where('id_properti',$data->id_ref_bahasa)->get();
+        $tidur = MPropertiKamarTidur::where('id_properti',$data->id_ref_bahasa)->get();
+        $galery = MPropertiGalery::where('id_properti',$data->id_ref_bahasa)->get();
         $tipe = MTipeProperti::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
+        $pekan = MAkhirPekan::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
         $jenis = MJenisTempat::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
         $amenities = MAmenities::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
-        $map_a = MapAmenities::where('id_properti',$id)->get();
+        $map_a = MapAmenities::where('id_properti',$data->id_ref_bahasa)->get();
         $fasilitas = MFasilitas::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
-        $map_f = MapFasilitas::where('id_properti',$id)->get();
-        $tipeId = MTipeBooking::where('id_tipe_booking',$data->id_tipe_booking)->first();
-        $kota = MKota::withDeleted()->get();
+        $map_f = MapFasilitas::where('id_properti',$data->id_ref_bahasa)->get();
+        $tipeId = MTipeBooking::where('id_ref_bahasa',$data->id_tipe_booking)->where('id_bahasa',$data->id_bahasa)->first();
+        $kota = MKota::withDeleted()->where('id_provinsi',$data->id_provinsi)->get();
         $provinsi = MProvinsi::withDeleted()->get();
         $negara = MNegara::withDeleted()->get();
         $url = url('properti/show-save/'.$id);
@@ -224,6 +202,7 @@ class CProperti extends Controller
             ->with('title','Properti')
             ->with('titlePage','Edit')
             ->with('tipe', $tipe)
+            ->with('pekan', $pekan)
             ->with('jenis', $jenis)            
             ->with('bahasa',$bahasa)
             ->with('tipeId',$tipeId)
@@ -248,13 +227,14 @@ class CProperti extends Controller
         $tidur = MPropertiKamarTidur::where('id_properti',$id)->get();
         $galery = MPropertiGalery::where('id_properti',$id)->get();
         $tipe = MTipeProperti::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
+        $pekan = MAkhirPekan::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
         $jenis = MJenisTempat::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
         $amenities = MAmenities::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
         $map_a = MapAmenities::where('id_properti',$id)->get();
         $fasilitas = MFasilitas::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
         $map_f = MapFasilitas::where('id_properti',$id)->get();
         $data = MProperti::find($id);        
-        $tipeId = MTipeBooking::where('id_tipe_booking',$data->id_tipe_booking)->first();
+        $tipeId = MTipeBooking::where('id_ref_bahasa',$data->id_tipe_booking)->where('id_bahasa',$data->id_bahasa)->first();
         $kota = MKota::withDeleted()->get();
         $provinsi = MProvinsi::withDeleted()->get();
         $negara = MNegara::withDeleted()->get();
@@ -265,6 +245,7 @@ class CProperti extends Controller
             ->with('title','Properti')
             ->with('titlePage','Edit')
             ->with('tipe', $tipe)
+            ->with('pekan', $pekan)
             ->with('jenis', $jenis)            
             ->with('bahasa',$bahasa)
             ->with('tipeId',$tipeId)
@@ -291,9 +272,14 @@ class CProperti extends Controller
                 $this->insert_bahasa($tipe,$request);
                 $tipe->save();
                 
-                Session::flash('msg','Data Berhasil Diperbarui'); 
-                return redirect()->to('/properti/show/'.$tipe->id_properti); 
+                // Session::flash('msg','Data Berhasil Diperbarui'); 
+                // return redirect()->to('/properti/show/'.$tipe->id_properti); 
             }
+        }
+        if ($request->id_properti !=null) {
+            $id_pro = $request->id_properti;
+        }else{
+            $id_pro = $tipe->id_properti;
         }
         $data_s = [
             'deskripsi' => $request->deskripsi,
@@ -302,7 +288,7 @@ class CProperti extends Controller
             'aturan_tambahan' => $request->aturan_tambahan,
             'kebijakan_pembatalan' => $request->kebijakan_pembatalan,
         ];
-        MProperti::where('id_properti',$request->id_properti)->update($data_s);
+        MProperti::where('id_properti',$id_pro)->update($data_s);
 
         $data = [            
             'id_tipe_booking' => $request->id_tipe_booking,            
@@ -335,15 +321,15 @@ class CProperti extends Controller
             'id_provinsi' => $request->id_provinsi,
             'kode_pos' => $request->kode_pos,
             'area' => $request->area,
-            'id_negara' => $request->negara,
+            'id_negara' => $request->id_negara,
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
             'min_durasi_inap' => $request->min_durasi_inap,
             'max_durasi_inap' => $request->max_durasi_inap,
             'jam_checkin' => $request->jam_checkin,
             'jam_checkout' => $request->jam_checkout,
-            'jam_operasional_mulai' => $request->jam_oprasional_mulai,
-            'jam_operasional_selesai' => $request->jam_oprasional_selesai,
+            'jam_operasional_mulai' => $request->jam_operasional_mulai,
+            'jam_operasional_selesai' => $request->jam_operasional_selesai,
             'merokok' => $request->merokok,
             'binatang' => $request->binatang,
             'acara' => $request->acara,
@@ -352,7 +338,7 @@ class CProperti extends Controller
         ];
         MProperti::where('id_ref_bahasa',$request->id_ref_bahasa)->update($data);
 
-        MPropertiExtra::where('id_properti',$request->id)->delete();
+        MPropertiExtra::where('id_properti',$request->id_ref_bahasa)->delete();
         if ($request->nama_service) {
             for ($i=0; $i < count($request->nama_service); $i++) { 
                 $extra = new MPropertiExtra;            
@@ -364,7 +350,7 @@ class CProperti extends Controller
             }
         }
 
-        MPropertiGalery::where('id_properti',$request->id)->delete();
+        MPropertiGalery::where('id_properti',$request->id_ref_bahasa)->delete();
         if ($request->featured_image) {
             for ($i=0; $i < count($request->featured_image); $i++) {                                 
                 $amenities = new MPropertiGalery();
@@ -376,7 +362,7 @@ class CProperti extends Controller
             }
         }
 
-        MapAmenities::where('id_properti',$request->id)->delete();
+        MapAmenities::where('id_properti',$request->id_ref_bahasa)->delete();
         if ($request->amenities) {
             for ($i=0; $i < count($request->amenities); $i++) {                                 
                 $amenities = new MapAmenities();
@@ -386,7 +372,7 @@ class CProperti extends Controller
             }
         }        
         
-        MapFasilitas::where('id_properti',$request->id)->delete();
+        MapFasilitas::where('id_properti',$request->id_ref_bahasa)->delete();
         if ($request->fasilitas) {
             for ($i=0; $i < count($request->fasilitas); $i++) {                                 
                 $fasilitas = new MapFasilitas();
@@ -396,7 +382,7 @@ class CProperti extends Controller
             }
         }
         
-        MPropertiKamarTidur::where('id_properti',$request->id)->delete();
+        MPropertiKamarTidur::where('id_properti',$request->id_ref_bahasa)->delete();
         if ($request->nama_kamar_tidurs) {
             for ($i=0; $i < count($request->nama_kamar_tidurs); $i++) {                                 
                 $kamar_tidurs = new MPropertiKamarTidur();
@@ -411,7 +397,7 @@ class CProperti extends Controller
         
         Session::flash('msg','Data Berhasil Diperbarui'); 
 
-        return redirect()->to('/properti/show/'.$request->id_properti);
+        return redirect()->to('/properti/show/'.$id_pro);
     }
 
     public function delete($id)
@@ -435,17 +421,18 @@ class CProperti extends Controller
     {   
         $data = MProperti::find($id);        
         $bahasa = MBahasa::where('id_bahasa',$data->id_bahasa)->first();        
-        $harga_periode = MPropertiHargaPeriode::where('id_properti',$id)->get();        
-        $extra = MPropertiExtra::where('id_properti',$id)->get();
-        $tidur = MPropertiKamarTidur::where('id_properti',$id)->get();
-        $galery = MPropertiGalery::where('id_properti',$id)->get();
+        $harga_periode = MPropertiHargaPeriode::where('id_properti',$data->id_ref_bahasa)->get();        
+        $extra = MPropertiExtra::where('id_properti',$data->id_ref_bahasa)->get();
+        $tidur = MPropertiKamarTidur::where('id_properti',$data->id_ref_bahasa)->get();
+        $galery = MPropertiGalery::where('id_properti',$data->id_ref_bahasa)->get();
         $tipe = MTipeProperti::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
+        $pekan = MAkhirPekan::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
         $jenis = MJenisTempat::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
         $amenities = MAmenities::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
-        $map_a = MapAmenities::where('id_properti',$id)->get();
+        $map_a = MapAmenities::where('id_properti',$data->id_ref_bahasa)->get();
         $fasilitas = MFasilitas::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
-        $map_f = MapFasilitas::where('id_properti',$id)->get();
-        $tipeId = MTipeBooking::where('id_tipe_booking',$data->id_tipe_booking)->first();
+        $map_f = MapFasilitas::where('id_properti',$data->id_ref_bahasa)->get();
+        $tipeId = MTipeBooking::where('id_ref_bahasa',$data->id_tipe_booking)->where('id_bahasa',$data->id_bahasa)->first();
         $kota = MKota::withDeleted()->get();
         $provinsi = MProvinsi::withDeleted()->get();
         $negara = MNegara::withDeleted()->get();
@@ -456,6 +443,7 @@ class CProperti extends Controller
             ->with('title','Properti')
             ->with('titlePage','Detail')
             ->with('tipe', $tipe)
+            ->with('pekan', $pekan)
             ->with('jenis', $jenis)            
             ->with('bahasa',$bahasa)
             ->with('tipeId',$tipeId)
@@ -570,7 +558,7 @@ class CProperti extends Controller
         $tipe->id_provinsi = $request->id_provinsi;
         $tipe->kode_pos = $request->kode_pos;
         $tipe->area = $request->area;
-        $tipe->id_negara = $request->negara;
+        $tipe->id_negara = $request->id_negara;
         $tipe->latitude = $request->latitude;
         $tipe->longitude = $request->longitude;
         $tipe->kebijakan_pembatalan = $request->kebijakan_pembatalan;
@@ -578,14 +566,14 @@ class CProperti extends Controller
         $tipe->max_durasi_inap = $request->max_durasi_inap;
         $tipe->jam_checkin = $request->jam_checkin;
         $tipe->jam_checkout = $request->jam_checkout;
-        $tipe->jam_operasional_mulai = $request->jam_oprasional_mulai;
+        $tipe->jam_operasional_mulai = $request->jam_operasional_mulai;
         $tipe->jam_operasional_selesai = $request->jam_oprasional_selesai;
         $tipe->merokok = $request->merokok;
         $tipe->binatang = $request->binatang;
         $tipe->acara = $request->acara;
         $tipe->anak = $request->anak;
         $tipe->aturan_tambahan = $request->aturan_tambahan;
-        $tipe->deleted = 1;        
+        $tipe->deleted = $request->deleted;        
     }
     public function upload(Request $request)
     {   
@@ -619,4 +607,16 @@ class CProperti extends Controller
         // unlink($destinationPath.'/'.$img);
         return response()->json(['success'=>'success']);        
     }
+    public function kotaByProvinsi()
+    {
+        $provinsi = (!empty($_GET["provinsi"])) ? ($_GET["provinsi"]) : ('');
+        // dd($departement);
+        $kota = MKota::withDeleted()->where('id_provinsi',$provinsi)->get();        
+        $data ="<option value='' selected disabled>Pilih</option>";
+        foreach ($kota as $key) {
+            $data .="<option value='".$key->id_kota."' >".$key->nama_kota."</option>";
+        }
+        return response()->json(['status'=>true,'data'=>$data]);
+    }
+    
 }

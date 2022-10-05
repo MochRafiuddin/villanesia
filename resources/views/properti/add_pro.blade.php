@@ -1,5 +1,6 @@
 @extends('template')
 @section('content')
+
 <div class="main-panel">
     <div class="content-wrapper">
         <div class="card">
@@ -13,6 +14,8 @@
                                 <div class="form-group col-12">
                                     <label for="id_jenis_tempat">Jenis Tempat</label>
                                     <input type="hidden" name="id_bahasa" value="{{$bahasa->id_bahasa}}">
+                                    <input type="hidden" name="id_properti" id="id_properti" value="">
+                                    <input type="hidden" name="id_ref_bahasa" id="id_ref_bahasa" value="">
                                     <input type="hidden" name="deleted" id="deleted" value="">
                                     <input type="hidden" name="id_tipe_booking" value="{{$tipeId->id_tipe_booking}}">
                                     <select class="form-control js-example-basic-single" name="id_jenis_tempat" id="id_jenis_tempat">
@@ -30,12 +33,12 @@
                             
                                 <div class="form-group col-12">
                                     <label for="deskripsi">Deskripsi</label>
-                                    <textarea class="" name="deskripsi" id="tinyMceExample deskripsi"></textarea>
+                                    <textarea class="form-control" name="deskripsi" id="deskripsi" style="height:130px;"></textarea>
                                 </div>
                             
                                 <div class="form-group col-12">
                                     <label for="perlu_diketahui">Perlu Tahu</label>
-                                    <textarea class="" name="perlu_diketahui" id="tinyMceExample perlu_diketahui" ></textarea>
+                                    <textarea class="form-control" name="perlu_diketahui" id="perlu_diketahui" style="height:130px;"></textarea>
                                 </div>
                             
                                 <div class="form-group col-6">
@@ -104,9 +107,9 @@
                                     <label for="">Penerapan Harga Weekend</label>
                                     <select class="form-control js-example-basic-single" name="penerapan_harga_weekend" id="penerapan_harga_weekend" style="width:100%">                           
                                         <option value="" selected disabled>Pilih</option>                                        
-                                        <option value="1" >Sabtu-Minggu</option>
-                                        <option value="2" >Jumat-Sabtu</option>
-                                        <option value="3" >Jumat-Minggu</option>
+                                        @foreach($pekan as $data)
+                                            <option value="{{$data->id_akhir_pekan}}">{{$data->detail_akhir_pekan}}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 @endif
@@ -138,30 +141,7 @@
                                     <div class="card">
                                         <div class="card-body card-header">
                                           <div class="layanan-conten">
-                                          <!-- <div class="row" id="layanan">
-                                            <div class="form-group col-4">
-                                                <label for="">Nama</label>
-                                                <input type="text" class="form-control" name="nama_service[]" value=""/>
-                                            </div>
-                                            <div class="form-group col-3">
-                                                <label for="">harga</label>
-                                                <input type="text" class="form-control" name="harga_layanan[]" value=""/>
-                                            </div>
-                                            <div class="form-group col-3">
-                                                <label for="">Tipe</label>
-                                                <select class="form-control js-example-basic-single" name="tipe_layanan[]">
-                                                    <option value="" selected disabled>Pilih</option>                                        
-                                                    <option value="1">Single Fee</option>
-                                                    <option value="2">Per Day</option>
-                                                    <option value="3">Per Guest</option>
-                                                    <option value="4">Per Day Per Guest</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group col-2">
-                                                <label for=""> </label>
-                                                <input type="button" class="btn btn-danger form-control hapus_layanan" value="Delete">
-                                            </div>
-                                          </div> -->
+                                          
                                           </div>
                                         </div>
                                         <div class="card-footer text-right">
@@ -198,8 +178,16 @@
                                 <div class="form-group col-6">
                                     <label for="">Tipe</label>
                                     <select class="form-control js-example-basic-single" name="biaya_kebersihan_tipe">
-                                        <option value="1" >Daily</option>
                                         <option value="2" >Per Stay</option>
+                                        @if($tipeId->id_tipe_booking == 3)
+                                            <option value="1" >Weekly</option>
+                                        @elseif($tipeId->id_tipe_booking == 4)
+                                            <option value="1" >Monthly</option>
+                                        @elseif($tipeId->id_tipe_booking == 5)
+                                            <option value="1" >Hours</option>
+                                        @else
+                                            <option value="1" >Daily</option>
+                                        @endif
                                     </select>
                                 </div>
                                 <div class="form-group col-6">
@@ -327,12 +315,12 @@
                                     <input type="text" class="form-control" name="apt_suite" value=""/>
                                 </div>
                                 <div class="form-group col-4">
-                                    <label for="">Kota</label>
-                                    <!-- <input type="text" class="form-control" name="id_kota" value=""/> -->
-                                    <select class="form-control js-example-basic-single" name="id_kota" id="id_kota" style="width:100%">                           
+                                    <label for="">Negara</label>
+                                    <!-- <input type="text" class="form-control" name="negara" value=""/> -->
+                                    <select class="form-control js-example-basic-single" name="id_negara" id="id_negara" style="width:100%">                           
                                         <option value="" selected disabled>Pilih</option>
-                                        @foreach($kota as $data)
-                                            <option value="{{$data->id_kota}}">{{$data->nama_kota}}</option>
+                                        @foreach($negara as $data)
+                                            <option value="{{$data->id_negara}}">{{$data->nama_negara}}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -347,23 +335,21 @@
                                     </select>
                                 </div>
                                 <div class="form-group col-4">
-                                    <label for="">Kode Pos</label>
-                                    <input type="text" class="form-control" name="kode_pos" value=""/>
+                                    <label for="">Kota</label>
+                                    <!-- <input type="text" class="form-control" name="id_kota" value=""/> -->
+                                    <select class="form-control js-example-basic-single" name="id_kota" id="id_kota" style="width:100%">                           
+                                        <option value="" selected disabled>Pilih</option>                                        
+                                    </select>
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Area</label>
                                     <input type="text" class="form-control" name="area" value=""/>
-                                </div>
+                                </div>                                
                                 <div class="form-group col-6">
-                                    <label for="">Negara</label>
-                                    <!-- <input type="text" class="form-control" name="negara" value=""/> -->
-                                    <select class="form-control js-example-basic-single" name="id_negara" id="id_negara" style="width:100%">                           
-                                        <option value="" selected disabled>Pilih</option>
-                                        @foreach($negara as $data)
-                                            <option value="{{$data->id_negara}}">{{$data->nama_negara}}</option>
-                                        @endforeach
-                                    </select>
-                                </div><br>
+                                    <label for="">Kode Pos</label>
+                                    <input type="text" class="form-control" name="kode_pos" value=""/>
+                                </div>                                
+                                <br>
                                 <div class="col">                                                                
                                     <label for="">Cari lokasi</label>
                                     <div id="map" style="width:100%;height:400px;"></div>
@@ -425,17 +411,27 @@
                             <div class="row">
                                 <div class="form-group col-12">
                                     <label for="">Kebijakan Pembatalan</label>
-                                    <textarea class="form-control" name="kebijakan_pembatalan" id="" style="height:130px;"></textarea>
+                                    <textarea class="form-control" name="kebijakan_pembatalan" id="kebijakan_pembatalan" style="height:130px;"></textarea>
                                 </div>
                                 <div class="form-group col-6">
-                                    <label for="">Minimum Hari Pemesanan</label>
+                                        @if($tipeId->id_tipe_booking == 3)
+                                            <label for="">Minimum Jumlah Minggu</label>
+                                        @elseif($tipeId->id_tipe_booking == 4)
+                                            <label for="">Minimum Jumlah Bulan</label>
+                                        @elseif($tipeId->id_tipe_booking == 5)
+                                            <label for="">Minimum Jam Pemesanan</label>
+                                        @else                                            
+                                            <label for="">Minimum Hari Pemesanan</label>
+                                        @endif
                                     <input type="text" class="form-control" name="min_durasi_inap" value=""/>
                                 </div>
+                                @if($id != 5)
                                 <div class="form-group col-6">
                                     <label for="">Maximum Hari Pemesanan</label>
                                     <input type="text" class="form-control" name="max_durasi_inap" value=""/>
                                 </div>
-                                @if($id != 3 && $id != 4)
+                                @endif
+                                @if($id != 3 && $id != 4 && $id != 5)
                                 <div class="form-group col-6">
                                     <label for="">Check-in Setelah</label>
                                     <input type="text" class="form-control timepicker" name="jam_checkin" value=""/>
@@ -488,7 +484,7 @@
                                 </div>
                                 <div class="form-group col-12">
                                     <label for="">Aturan Tambahan</label>
-                                    <textarea class="form-control" name="aturan_tambahan" id="" style="height:130px;"></textarea>
+                                    <textarea class="form-control" name="aturan_tambahan" id="aturan_tambahan" style="height:130px;"></textarea>
                                 </div>
                             </div>
                         </section> <!-- SECTION 7 -->
@@ -525,7 +521,7 @@ $( document ).ready(function() {
             var harga_tampil = document.getElementById("harga_tampil");
             var alamat = document.getElementById("pac-input");
 
-            if(currentIndex == 5){
+            if(newIndex == 5){
                 $('ul[aria-label=Pagination] li[class="li-draf"]').remove();
             }
             
@@ -602,6 +598,15 @@ $( document ).ready(function() {
         },        
         onFinished: function(event, currentIndex) {
             $('#deleted').val(1);
+            $('.simpan_draf').text('Simpan ....');
+            var des = tinyMCE.get('deskripsi').getContent();
+            var tahu = tinyMCE.get('perlu_diketahui').getContent();
+            var batal = tinyMCE.get('kebijakan_pembatalan').getContent();
+            var tambah = tinyMCE.get('aturan_tambahan').getContent();
+            $('#deskripsi').val(des);
+            $('#perlu_diketahui').val(tahu);
+            $('#kebijakan_pembatalan').val(batal);
+            $('#aturan_tambahan').val(tambah);
             $.ajax({
                 url: "{{url('properti/create-save')}}",
                 type: "POST",
@@ -635,6 +640,16 @@ $( document ).ready(function() {
     // })
     function simpan_draf() {
         $('#deleted').val(2);
+        $('.simpan_draf').text('Simpan ....');
+        var des = tinyMCE.get('deskripsi').getContent();
+        var tahu = tinyMCE.get('perlu_diketahui').getContent();
+        var batal = tinyMCE.get('kebijakan_pembatalan').getContent();
+        var tambah = tinyMCE.get('aturan_tambahan').getContent();
+        $('#deskripsi').val(des);
+        $('#perlu_diketahui').val(tahu);
+        $('#kebijakan_pembatalan').val(batal);
+        $('#aturan_tambahan').val(tambah);
+        // var formData = new FormData(this);
         $.ajax({
             url: "{{url('properti/create-save')}}",
             type: "POST",
@@ -643,7 +658,10 @@ $( document ).ready(function() {
             cache: false,
             processData:false,
             success: function(res){
-                window.location = "{{route('properti-index')}}";
+                // window.location = "{{route('properti-index')}}";
+                $('.simpan_draf').text('Simpan Draf');
+                $('#id_properti').val(res.id);
+                $('#id_ref_bahasa').val(res.id);
             }
         });
     }
@@ -727,10 +745,9 @@ $( document ).ready(function() {
     
     $('.timepicker').timepicker({
         timeFormat: 'H:mm',
-        interval: 60,
+        interval: 30,
         minTime: '00:00',
         maxTime: '23:00',
-        defaultTime: '01:00',
         startTime: '01:00',
         dynamic: false,
         dropdown: true,
@@ -757,9 +774,9 @@ $( document ).ready(function() {
                         <select class="form-control js-example-basic-single" name="tipe_layanan[]" style="width:100%">\
                             <option value="" selected disabled>Pilih</option>\
                             <option value="1">Single Fee</option>\
-                            <option value="2">Per Day</option>\
+                            <option value="2">{{$tipeId->nama_tipe_booking}}</option>\
                             <option value="3">Per Guest</option>\
-                            <option value="4">Per Day Per Guest</option>\
+                            <option value="4">{{$tipeId->nama_tipe_booking}} Per Guest</option>\
                         </select>\
                     </div>\
                     <div class="form-group col-2">\
@@ -827,6 +844,18 @@ $( document ).ready(function() {
     function myFunction(selectObject) {                
         $(selectObject).parent().parent().remove();            
     }
+    $('#id_provinsi').on('change',function(){
+            let provinsi = $(this).val();
+
+            $.ajax({
+                url: '{{ url("/properti/kota-provinsi/") }}',
+                type: "GET",
+                data: { provinsi:provinsi } ,                
+                success: function(res){
+                    $('#id_kota').html(res.data);
+                }
+            });
+        }); 
 </script>
 <script>
         function initAutocomplete() {

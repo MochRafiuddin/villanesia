@@ -22,7 +22,8 @@ class CLogin extends Controller
  
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'deleted' => 1])) {                        
             $request->session()->regenerate();            
-            return redirect(url('dashboard'));            
+            // return redirect(url('dashboard'));   
+            redirect()->route('dashboard');         
         }
          
         return back()->withSuccess('Username / Password Salah');

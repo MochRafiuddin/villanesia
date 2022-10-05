@@ -41,7 +41,7 @@ Route::get('/logout', [CLogin::class,'logout']);
 
 Route::group(['middleware' => 'auth'], function () {
 
-    Route::get('/dashboard', [CDashboard::class,'index']);
+    Route::get('/dashboard', [CDashboard::class,'index'])->name('dashboard');
     //iipe properti
     Route::get('/tipe-properti', [CTipeProperti::class,'index'])->name('tipe-properti-index');
     Route::get('/tipe-properti/data', [CTipeProperti::class,'data']);
@@ -271,7 +271,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/privacy-policy/bahasa', [CPrivacyPolicyDetail::class,'bahasa']);
 
     //properti
-    Route::get('/properti', [CProperti::class,'index'])->name('properti-index');
+    Route::get('/list-properti', [CProperti::class,'index'])->name('properti-index');
     Route::get('/properti/data', [CProperti::class,'data']);
     Route::get('/properti-add', [CProperti::class,'add']);
     Route::get('/properti-add/{id}', [CProperti::class,'addByTipe']);
@@ -286,4 +286,5 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/properti/delete/{id}', [CProperti::class,'delete']);
     Route::post('/properti/upload', [CProperti::class,'upload']);
     Route::get('/properti/delete-img/{id}', [CProperti::class,'delete_img']);
+    Route::get('/properti/kota-provinsi/', [CProperti::class,'kotaByProvinsi']);
 });

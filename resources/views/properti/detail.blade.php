@@ -50,7 +50,7 @@ use App\Traits\Helper;
                                     <input type="hidden" name="id_tipe_booking" id="id_tipe_booking" value="{{$data->id_tipe_booking}}">
                                     <input type="hidden" name="id_bahasa" id="id_bahasa" value="{{$bahasa->id_bahasa}}">
                                     <input type="hidden" name="id_ref_bahasa" id="id_ref_bahasa" value="{{$data->id_ref_bahasa}}">
-                                    <select class="form-control js-example-basic-single" name="id_jenis_tempat" id="id_jenis_tempat" style="width:100%" readonly>
+                                    <select class="form-control js-example-basic-single" name="id_jenis_tempat" id="id_jenis_tempat" style="width:100%" disabled>
                                         <option value="" selected disabled>Pilih</option>
                                         @foreach($jenis as $d)
                                         <option value="{{$d->id_ref_bahasa}}" {{($data->id_jenis_tempat == $d->id_ref_bahasa) ? 'selected' : ''}}>{{$d->nama_jenis_tempat}}</option>
@@ -149,11 +149,11 @@ use App\Traits\Helper;
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Penerapan Harga Weekend</label>
-                                    <select class="form-control js-example-basic-single" name="penerapan_harga_weekend" style="width:100%" readonly>
+                                    <select class="form-control js-example-basic-single" name="penerapan_harga_weekend" style="width:100%" disabled>
                                         <option value="" selected disabled>Pilih</option>                                        
-                                        <option value="1" {{($data->penerapan_harga_weekend == 1) ? 'selected' : ''}}>Sabtu-Minggu</option>
-                                        <option value="2" {{($data->penerapan_harga_weekend == 2) ? 'selected' : ''}}>Jumat-Sabtu</option>
-                                        <option value="3" {{($data->penerapan_harga_weekend == 3) ? 'selected' : ''}}>Jumat-Minggu</option>
+                                        @foreach($pekan as $d)
+                                            <option value="{{$d->id_ref_bahasa}}" {{($data->penerapan_harga_weekend == $d->id_ref_bahasa) ? 'selected' : ''}}>{{$d->detail_akhir_pekan}}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 @endif
@@ -197,12 +197,12 @@ use App\Traits\Helper;
                                             </div>
                                             <div class="form-group col-3">
                                                 <label for="">Tipe</label>
-                                                <select class="form-control js-example-basic-single" name="tipe_layanan[]" style="width:100%" readonly>
+                                                <select class="form-control js-example-basic-single" name="tipe_layanan[]" style="width:100%" disabled>
                                                     <option value="" selected disabled>Pilih</option>                                        
                                                     <option value="1" {{($ex->tipe == 1) ? 'selected' : ''}}>Single Fee</option>
-                                                    <option value="2" {{($ex->tipe == 2) ? 'selected' : ''}}>Per Day</option>
+                                                    <option value="2" {{($ex->tipe == 2) ? 'selected' : ''}}>{{$tipeId->nama_tipe_booking}}</option>
                                                     <option value="3" {{($ex->tipe == 3) ? 'selected' : ''}}>Per Guest</option>
-                                                    <option value="4" {{($ex->tipe == 4) ? 'selected' : ''}}>Per Day Per Guest</option>
+                                                    <option value="4" {{($ex->tipe == 4) ? 'selected' : ''}}>{{$tipeId->nama_tipe_booking}} Per Guest</option>
                                                 </select>
                                             </div>
                                             <div class="form-group col-2">
@@ -224,7 +224,7 @@ use App\Traits\Helper;
                             <div class="row">
                                 <div class="form-group col-4">
                                     <label for="">Tamu Tambahan</label>
-                                    <select class="form-control js-example-basic-single" name="tamu_tambahan" style="width:100%" readonly>
+                                    <select class="form-control js-example-basic-single" name="tamu_tambahan" style="width:100%" disabled>
                                         <option value="0" {{($data->tamu_tambahan == 0) ? 'selected' : ''}}>Tidak</option>
                                         <option value="1" {{($data->tamu_tambahan == 1) ? 'selected' : ''}}>Ya</option>
                                     </select>
@@ -243,8 +243,16 @@ use App\Traits\Helper;
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Tipe</label>
-                                    <select class="form-control js-example-basic-single" name="jumlah_tamu_tambahan" style="width:100%" readonly>
-                                        <option value="1" {{($data->jumlah_tamu_tambahan == 0) ? 'selected' : ''}}>Daily</option>
+                                    <select class="form-control js-example-basic-single" name="jumlah_tamu_tambahan" style="width:100%" disabled>
+                                    @if($data->id_tipe_booking == 3)
+                                        <option value="1" {{($data->jumlah_tamu_tambahan == 1) ? 'selected' : ''}}>Weekly</option>
+                                    @elseif($data->id_tipe_booking == 4)
+                                        <option value="1" {{($data->jumlah_tamu_tambahan == 1) ? 'selected' : ''}}>Monthly</option>
+                                    @elseif($data->id_tipe_booking == 5)
+                                        <option value="1" {{($data->jumlah_tamu_tambahan == 1) ? 'selected' : ''}}>Hourly</option>
+                                    @else                                            
+                                        <option value="1" {{($data->jumlah_tamu_tambahan == 1) ? 'selected' : ''}}>Daily</option>
+                                    @endif
                                         <option value="2" {{($data->jumlah_tamu_tambahan == 1) ? 'selected' : ''}}>Per Stay</option>
                                     </select>
                                 </div>
@@ -314,7 +322,7 @@ use App\Traits\Helper;
                                             <td>{{$per->harga}}</td>
                                             <td>{{$per->harga_tamu_tambahan}}</td>
                                             <td>{{$per->harga_weekend}}</td>                                            
-                                            <td><input type="button" class="btn btn-danger btn-sm" value="Hapus" onclick="myFunction(this,{{$per->id_properti_periode_cus}})"></td>
+                                            <td><input type="button" class="btn btn-danger btn-sm" value="Hapus" onclick="myFunction(this,{{$per->id_properti_periode_cus}})" disabled></td>
                                         </tr>
                                     @endforeach    
                                     <tbody>
@@ -339,9 +347,9 @@ use App\Traits\Helper;
                                     <div class="form-check">
                                         <input type="hidden" name="featured_image[]" id="bintang" value="{{$as->featured_image}}">
                                         @if($as->featured_image == 1)
-                                        <!-- <a class="text-primary feature" ><span class="mdi mdi-star mdi-24px"></span></a> -->
+                                        <a class="text-primary feature" ><span class="mdi mdi-star mdi-24px"></span></a>
                                         @else
-                                        <!-- <a class="text-primary feature" ><span class="mdi mdi-star-outline mdi-24px"></span></a> -->
+                                        <a class="text-primary feature" ><span class="mdi mdi-star-outline mdi-24px"></span></a>
                                         @endif
                                     </div>
                                     <div class="form-check">
@@ -400,19 +408,19 @@ use App\Traits\Helper;
                                 <input type="text" class="form-control" name="apt_suite" value="{{$data->apt_suite}}" readonly/>
                             </div>
                             <div class="form-group col-4">
-                                <label for="">Kota</label>
+                                <label for="">Negara</label>
                                 <!-- <input type="text" class="form-control" name="" value=""/> -->
-                                <select class="form-control js-example-basic-single" name="id_kota" id="id_kota" style="width:100%" readonly>
-                                    <option value="" selected disabled>Pilih</option>
-                                        @foreach($kota as $ko)
-                                            <option value="{{$ko->id_kota}}" {{($data->id_kota == $ko->id_kota) ? 'selected' : ''}}>{{$ko->nama_kota}}</option>
+                                <select class="form-control js-example-basic-single" name="id_negara" id="id_negara" style="width:100%" disabled>
+                                        <option value="" selected disabled>Pilih</option>
+                                        @foreach($negara as $ne)
+                                            <option value="{{$ne->id_negara}}" {{($data->id_negara == $ne->id_negara) ? 'selected' : ''}}>{{$ne->nama_negara}}</option>
                                         @endforeach
-                                </select>
+                                    </select>
                             </div>
                             <div class="form-group col-4">
                                 <label for="">Provinsi</label>
                                 <!-- <input type="text" class="form-control" name="" value=""/> -->
-                                <select class="form-control js-example-basic-single" name="id_provinsi" id="id_provinsi" style="width:100%" readonly>
+                                <select class="form-control js-example-basic-single" name="id_provinsi" id="id_provinsi" style="width:100%" disabled>
                                         <option value="" selected disabled>Pilih</option>
                                         @foreach($provinsi as $pro)
                                             <option value="{{$pro->id_provinsi}}" {{($data->id_provinsi == $pro->id_provinsi) ? 'selected' : ''}}>{{$pro->nama_provinsi}}</option>
@@ -420,6 +428,16 @@ use App\Traits\Helper;
                                     </select>
                             </div>
                             <div class="form-group col-4">
+                                <label for="">Kota</label>
+                                <!-- <input type="text" class="form-control" name="" value=""/> -->
+                                <select class="form-control js-example-basic-single" name="id_kota" id="id_kota" style="width:100%" disabled>
+                                    <option value="" selected disabled>Pilih</option>
+                                        @foreach($kota as $ko)
+                                            <option value="{{$ko->id_kota}}" {{($data->id_kota == $ko->id_kota) ? 'selected' : ''}}>{{$ko->nama_kota}}</option>
+                                        @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-6">
                                 <label for="">Kode Pos</label>
                                 <input type="text" class="form-control" name="kode_pos" value="{{$data->kode_pos}}" readonly/>
                             </div>
@@ -427,16 +445,7 @@ use App\Traits\Helper;
                                 <label for="">Area</label>
                                 <input type="text" class="form-control" name="area" value="{{$data->area}}" readonly/>
                             </div>
-                            <div class="form-group col-6">
-                                <label for="">Negara</label>
-                                <!-- <input type="text" class="form-control" name="" value=""/> -->
-                                <select class="form-control js-example-basic-single" name="id_negara" id="id_negara" style="width:100%" readonly>
-                                        <option value="" selected disabled>Pilih</option>
-                                        @foreach($negara as $ne)
-                                            <option value="{{$ne->id_negara}}" {{($data->id_negara == $ne->id_negara) ? 'selected' : ''}}>{{$ne->nama_negara}}</option>
-                                        @endforeach
-                                    </select>
-                            </div><br>
+                            <br>
                             <div class="col">                                                                
                                 <label for="">Cari lokasi</label>
                                 <div id="map" style="width:100%;height:400px;"></div>
@@ -494,21 +503,31 @@ use App\Traits\Helper;
                                     <textarea class="form-control" name="kebijakan_pembatalan" id="" style="height:130px;" readonly>{{$data->kebijakan_pembatalan}}</textarea>
                                 </div>
                                 <div class="form-group col-6">
-                                    <label for="">Minimum Hari Pemesanan</label>
+                                    @if($data->id_tipe_booking == 3)
+                                        <label for="">Minimum Jumlah Minggu</label>
+                                    @elseif($data->id_tipe_booking == 4)
+                                        <label for="">Minimum Jumlah Bulan</label>
+                                    @elseif($data->id_tipe_booking == 5)
+                                        <label for="">Minimum Jam Pemesanan</label>
+                                    @else                                            
+                                        <label for="">Minimum Hari Pemesanan</label>
+                                    @endif                                    
                                     <input type="text" class="form-control" name="min_durasi_inap" value="{{$data->min_durasi_inap}}" readonly/>
-                                </div>
+                                </div>                                
+                                @if($data->id_tipe_booking != 5)
                                 <div class="form-group col-6">
                                     <label for="">Maximum Hari Pemesanan</label>
                                     <input type="text" class="form-control" name="max_durasi_inap" value="{{$data->max_durasi_inap}}" readonly/>
                                 </div>
-                                @if($data->id_tipe_booking != 3 && $data->id_tipe_booking != 4)
+                                @endif
+                                @if($data->id_tipe_booking != 3 && $data->id_tipe_booking != 4 && $data->id_tipe_booking != 5)
                                 <div class="form-group col-6">
                                     <label for="">Check-in Setelah</label>
-                                    <input type="text" class="form-control timepicker" name="jam_checkin" value="{{$data->jam_checkin}}" readonly/>
+                                    <input type="text" class="form-control timepicker" name="jam_checkin" value="{{date('H:i', strtotime($data->jam_checkin))}}" readonly/>
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Check-out Sebelum</label>
-                                    <input type="text" class="form-control timepicker" name="jam_checkout" value="{{$data->jam_checkout}}" readonly/>
+                                    <input type="text" class="form-control timepicker" name="jam_checkout" value="{{date('H:i', strtotime($data->jam_checkout))}}" readonly/>
                                 </div>
                                 @endif
                                 @if($data->id_tipe_booking != 1 && $data->id_tipe_booking != 2 && $data->id_tipe_booking != 3 && $data->id_tipe_booking != 4)
@@ -517,37 +536,37 @@ use App\Traits\Helper;
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Jam Mulai</label>
-                                    <input type="text" class="form-control timepicker" name="jam_operasional_mulai" value="{{$data->jam_operasional_mulai}}" readonly/>
+                                    <input type="text" class="form-control timepicker" name="jam_operasional_mulai" value="{{date('H:i', strtotime($data->jam_operasional_mulai))}}" readonly/>
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Jam Selesai</label>
-                                    <input type="text" class="form-control timepicker" name="jam_operasional_selesai" value="{{$data->jam_operasional_selesai}}" readonly/>
+                                    <input type="text" class="form-control timepicker" name="jam_operasional_selesai" value="{{date('H:i', strtotime($data->jam_operasional_selesai))}}" readonly/>
                                 </div>
                                 @endif
                                 <div class="form-group col-6">
                                     <label for="">Merokok Diperbolehkan</label>
-                                    <select class="form-control js-example-basic-single" name="merokok" style="width:100%" readonly>
+                                    <select class="form-control js-example-basic-single" name="merokok" style="width:100%" disabled>
                                         <option value="0" {{($data->merokok == 0) ? 'selected' : ''}}>Tidak</option>
                                         <option value="1" {{($data->merokok == 1) ? 'selected' : ''}}>Ya</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Hewan Peliharaan Diperbolehkan</label>
-                                    <select class="form-control js-example-basic-single" name="binatang" style="width:100%" readonly>
+                                    <select class="form-control js-example-basic-single" name="binatang" style="width:100%" disabled>
                                         <option value="0" {{($data->binatang == 0) ? 'selected' : ''}}>Tidak</option>
                                         <option value="1" {{($data->binatang == 1) ? 'selected' : ''}}>Ya</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-6">
-                                    <label for="">aturan_tambahan Diperbolehkan</label>
-                                    <select class="form-control js-example-basic-single" name="acara" style="width:100%" readonly>
+                                    <label for="">Acara diperbolekan</label>
+                                    <select class="form-control js-example-basic-single" name="acara" style="width:100%" disabled>
                                         <option value="0" {{($data->acara == 0) ? 'selected' : ''}}>Tidak</option>
                                         <option value="1" {{($data->acara == 1) ? 'selected' : ''}}>Ya</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Anak Diperbolehkan</label>
-                                    <select class="form-control js-example-basic-single" name="anak" style="width:100%" readonly>
+                                    <select class="form-control js-example-basic-single" name="anak" style="width:100%" disabled>
                                         <option value="0" {{($data->acara == 0) ? 'selected' : ''}}>Tidak</option>
                                         <option value="1" {{($data->acara == 1) ? 'selected' : ''}}>Ya</option>
                                     </select>
@@ -573,204 +592,7 @@ use App\Traits\Helper;
     $(".pickerdate").datepicker( {
             format: "dd-mm-yyyy",
             orientation: "bottom"
-    });
-    $('.timepicker').timepicker({
-        timeFormat: 'H:mm',
-        interval: 60,
-        minTime: '00:00',
-        maxTime: '23:00',
-        defaultTime: '01:00',
-        startTime: '01:00',
-        dynamic: false,
-        dropdown: true,
-        scrollbar: true
-    });
-    $('.layanan-conten').on('click', 'input.hapus_layanan', function(events){
-          events.preventDefault();
-          let idx = $(this).closest('#layanan').index();
-          $(this).parent().parent().remove();
-      });
-    $("#tambah_layanan").click(function(e){
-          let html ='<div class="row" id="layanan">\
-                    <div class="form-group col-4">\
-                        <label for="">Nama</label>\
-                        <input type="text" class="form-control" name="nama_service[]" value=""/>\
-                    </div>\
-                    <div class="form-group col-3">\
-                        <label for="">harga</label>\
-                        <input type="text" class="form-control" name="harga_layanan[]" value=""/>\
-                    </div>\
-                    <div class="form-group col-3">\
-                        <label for="">Tipe</label>\
-                        <select class="form-control js-example-basic-single" name="tipe_layanan[]" style="width:100%">\
-                            <option value="" selected disabled>Pilih</option>\
-                            <option value="1">Single Fee</option>\
-                            <option value="2">Per Day</option>\
-                            <option value="3">Per Guest</option>\
-                            <option value="4">Per Day Per Guest</option>\
-                        </select>\
-                    </div>\
-                    <div class="form-group col-2">\
-                        <label for=""> </label>\
-                        <input type="button" class="btn btn-danger form-control hapus_layanan" value="Delete">\
-                    </div>\
-                    </div>';
-        $('.layanan-conten').append(html);          
-    });
-
-    $("#multiupload").on('change', function(){    
-      var formData = new FormData();
-      let TotalFiles = $('#multiupload')[0].files.length; //Total files
-      let files = $('#multiupload')[0];
-      for (let i = 0; i < TotalFiles; i++) {
-          formData.append('files' + i, files.files[i]);
-      }
-      formData.append('TotalFiles', TotalFiles);      
-
-        $.ajax({
-            url: "{{url('properti/upload')}}",
-            type: "POST",
-            data:  formData,
-            contentType: false,
-            cache: false,
-            processData:false,
-            success: function(res){
-                for (let index = 0; index < res.gambar.length; index++) {
-                    const element = res.gambar[index];
-                    var img = "{{asset('upload/properti')}}/"+element;
-                    let html ='<div class="col-3">\
-                                    <img class="rounded" width="100%" src="'+img+'" alt="">\
-                                        <div class="d-flex justify-content-between">\
-                                            <div class="form-check">\
-                                                <input type="hidden" name="featured_image[]" id="bintang" value="0">\
-                                                <a class="text-primary feature" ><span class="mdi mdi-star-outline mdi-24px"></span></a>\
-                                            </div>\
-                                            <div class="form-check">\
-                                                <input type="hidden" name="nama_file[]" value="'+element+'">\
-                                                <input type="hidden" name="id_tipe[]" value="1">\
-                                                <a class="text-primary delete" ><span class="mdi mdi-delete mdi-24px"></span></a>\
-                                            </div>\
-                                        </div>\
-                                </div>';
-                    $('.pre-gambar').append(html);          
-                }
-            }
-        });
     });    
-
-    $('.pre-gambar').on('click', 'a.feature', function(events){
-          events.preventDefault();
-        let idx = $(this).closest('#layanan').index();                
-        $('.feature span').removeClass('mdi-star').addClass('mdi-star-outline');
-        $("input[name='featured_image[]']").val(0);        
-        $(this).prev().val(1)
-        $(this).children().removeClass('mdi-star-outline').addClass('mdi-star');        
-        // console.log(img);        
-    });
-
-    $('.pre-gambar').on('click', 'a.delete', function(events){
-          events.preventDefault();
-        let idx = $(this).closest('#layanan').index();
-        var img = $(this).prev().prev().val();
-        $(this).parent().parent().parent().remove();
-        // console.log(img);
-        $.ajax({
-            url: "{{url('properti/delete-img')}}/"+img,
-            type: "GET",            
-            contentType: false,
-            cache: false,
-            processData:false,
-            success: function(res){
-
-            }
-        });
-    });
-
-    $('#tidur-awal').on('click', 'input.hapus-tidur', function(events){
-          events.preventDefault();
-          let idx = $(this).closest('#tidur-awal').index();
-          $(this).parent().parent().remove();
-    });
-    $(".tambah-tidur").click(function(e){
-          let html ='<div class="row tidur-conten">\
-                                <div class="form-group col-6">\
-                                    <label for="">Nama Kamar tidur</label>\
-                                    <input type="text" class="form-control" name="nama_kamar_tidurs[]" value=""/>\
-                                </div>\
-                                <div class="form-group col-6">\
-                                    <label for="">Jumlah Tamu</label>\
-                                    <input type="text" class="form-control" name="jumlah_tamu_tidurs[]" value=""/>\
-                                </div>\
-                                <div class="form-group col-6">\
-                                    <label for="">Jumlah Tempat Tidur</label>\
-                                    <input type="text" class="form-control" name="jumlah_tempat_tidurs[]" value=""/>\
-                                </div>\
-                                <div class="form-group col-6">\
-                                    <label for="">Jenis Tempat Tidur</label>\
-                                    <input type="text" class="form-control" name="jenis_tempat_tidurs[]" value=""/>\
-                                </div>\
-                                <div class="col-2">\
-                                    <input type="button" class="btn btn-danger btn-sm hapus-tidur" value="Hapus"/>\
-                                </div>\
-                                <div class="col-12">\
-                                    <label for=""></label>\
-                                </div>\
-                            </div>';
-        $('#tidur-awal').append(html);          
-    });
-
-        $('.simpan-periode').click(function (e) {
-            e.preventDefault();
-            $(this).html('Sending..');
-            var id = $('#id_properti').val();
-            var tanggal_mulai_periode = $('#tanggal_mulai_periode').val();
-            var tanggal_selesai_periode = $('#tanggal_selesai_periode').val();
-            var harga_periode = $('#harga_periode').val();
-            var harga_tamu_periode = $('#harga_tamu_periode').val();
-            var akhir_pekan_periode = $('#akhir_pekan_periode').val();
-            // console.log(id+','+tanggal_mulai_periode);
-            $.ajax({
-                data: { id:id, 
-                        tanggal_mulai_periode:tanggal_mulai_periode,
-                        tanggal_selesai_periode:tanggal_selesai_periode,
-                        harga_periode:harga_periode,
-                        harga_tamu_periode:harga_tamu_periode,
-                        akhir_pekan_periode:akhir_pekan_periode,
-                      },
-                url: '{{ url("properti/periode-save") }}',
-                type: "POST",
-                dataType: 'json',
-                success: function (data) {
-                    $('.simpan-periode').html('Simpan');
-                    let html ='<tr>\
-                                <td>'+data['start_date']+'</td>\
-                                <td>'+data['end_date']+'</td>\
-                                <td>'+data['harga']+'</td>\
-                                <td>'+data['harga_tamu_tambahan']+'</td>\
-                                <td>'+data['harga_weekend']+'</td>\
-                                <td><input type="button" class="btn btn-danger btn-sm" value="Hapus" onclick="myFunction(this,'+data['id_periode']+')"></td>\
-                            </tr>';
-                    $('.t-properti').append(html);
-                },
-                error: function (data) {
-                    console.log('Error:', data);
-                    $('.simpan-periode').html('Simpan');
-                }
-            });
-        });
-
-    function myFunction(selectObject,id) {        
-        $.ajax({
-            data: { id:id},
-            url: '{{ url("properti/periode-delete") }}',
-            type: "GET",
-            dataType: 'json',
-            success: function (data) {    
-                $(selectObject).parent().parent().remove();
-            }
-        });                
-
-    }
 </script>
 <script>
         function initAutocomplete() {
