@@ -14,7 +14,7 @@
                                         <th>No</th>
                                         <th>Bahasa</th>
                                         <th>Judul</th>
-                                        <th>isi</th>
+                                        <!-- <th>isi</th> -->
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -84,10 +84,6 @@
                     {
                         data: 'judul',
                         name: 'judul',                        
-                    },
-                    {
-                        data: 'isi',
-                        name: 'isi',                        
                     },
                     {
                         data: 'action',

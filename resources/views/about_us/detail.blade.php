@@ -31,8 +31,9 @@ $name[] = 'gambar';
                     <div class="row">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">Isi</label>
-                            <input type="text" class="form-control @error($name[1]) is-invalid @enderror"
-                                value="{{Helper::showData($data,$name[1])}}" name="{{$name[1]}}" readonly/>
+                            <!-- <input type="text" class="form-control @error($name[1]) is-invalid @enderror"
+                                value="{{Helper::showData($data,$name[1])}}" name="{{$name[1]}}" readonly/> -->
+                            <textarea class="" name="{{$name[1]}}" id="tinyMceExample" readonly>{{Helper::showData($data,$name[1])}}</textarea>
                         </div>
                     </div>
                     <div class="row">
@@ -51,4 +52,8 @@ $name[] = 'gambar';
 @endsection
 @push('js')
 <script src="{{asset('/')}}assets/js/dropify.js"></script>
+<script src="{{asset('/')}}assets/vendors/tinymce/tinymce.min.js"></script>
+<script type='text/javascript'>
+    tinymce.init({ selector:'textarea', menubar:'', theme: 'modern', readonly : 1});
+</script>
 @endpush
