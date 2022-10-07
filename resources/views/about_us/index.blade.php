@@ -6,6 +6,16 @@
             <div class="card-body">
                 <h4>Data Tipe About Us</h4><br>                
                 <div class="row">
+                    <div class="form-group col-md-3">
+                        <label for="">Bahasa</label>
+                        <select class="form-control js-example-basic-single" name="id_bahasa" id="id_bahasa" style="width:100%">                            
+                            @foreach($bahasa as $data)
+                                <option value="{{$data->id_bahasa}}" {{(1 == $data->is_default) ? 'selected' : ''}}>{{$data->nama_bahasa}}</option>
+                            @endforeach
+                        </select>                  
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-12">
                         <div class="table-responsive">
                             <table class="table w-100">
@@ -57,6 +67,7 @@
         read_data();
 
         function read_data() {
+            let bahasa = $('#id_bahasa').val();
             $('table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -64,6 +75,10 @@
                 "scrollX": true,
                 ajax: {
                     url: '{{ url("about-us/data") }}',
+                    type: 'GET',
+                    data: {
+                        bahasa : bahasa,
+                    }
                 },
                 rowReorder: {
                     selector: 'td:nth-child(1)'
@@ -118,6 +133,11 @@
             $('#ajaxModelexa').modal('show');
             $('#id').val(id);
             $('#id_ref').val(id_ref);
+        });
+
+        $('#id_bahasa').on('change',function(){            
+            $('table').DataTable().destroy();            
+            read_data();            
         });
     });
 

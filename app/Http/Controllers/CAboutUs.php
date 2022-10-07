@@ -134,7 +134,8 @@ class CAboutUs extends Controller
     }
     public function data()
     {
-        $model = MAboutUs::select('*');
+        $bahasa = (!empty($_GET["bahasa"])) ? ($_GET["bahasa"]) : (0);
+        $model = MAboutUs::where('id_bahasa',$bahasa);
         // dd($model);
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {

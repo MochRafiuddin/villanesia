@@ -138,7 +138,8 @@ class CPrivacyPolicyDetail extends Controller
     }
     public function data()
     {
-        $model = MPrivacyPolicyDetail::withDeleted()->orderBy('id_ref_bahasa');
+        $bahasa = (!empty($_GET["bahasa"])) ? ($_GET["bahasa"]) : (0);
+        $model = MPrivacyPolicyDetail::withDeleted()->where('id_bahasa',$bahasa)->orderBy('id_ref_bahasa');
         // dd($model);
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {

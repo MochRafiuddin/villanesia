@@ -153,7 +153,8 @@ class CPromosiWisata extends Controller
     }
     public function data()
     {
-        $model = MPromosiWisata::withDeleted()->orderBy('id_ref_bahasa');
+        $bahasa = (!empty($_GET["bahasa"])) ? ($_GET["bahasa"]) : (0);
+        $model = MPromosiWisata::withDeleted()->where('id_bahasa',$bahasa)->orderBy('id_ref_bahasa');
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';                

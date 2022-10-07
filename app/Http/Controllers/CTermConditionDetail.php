@@ -137,7 +137,8 @@ class CTermConditionDetail extends Controller
     }
     public function data()
     {
-        $model = MTermConditionDetail::withDeleted()->orderBy('id_ref_bahasa');
+        $bahasa = (!empty($_GET["bahasa"])) ? ($_GET["bahasa"]) : (0);
+        $model = MTermConditionDetail::withDeleted()->where('id_bahasa',$bahasa)->orderBy('id_ref_bahasa');
         // dd($model);
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {

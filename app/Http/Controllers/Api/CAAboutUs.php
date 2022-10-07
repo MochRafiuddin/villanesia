@@ -19,12 +19,14 @@ class CAAboutUs extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Success',
+                'code' => 1,
                 'data' => $tipe,
             ], 200);
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'Tidak Ada data',
+                'code' => 0,
             ], 400);
         }
     }

@@ -141,7 +141,8 @@ class CFasilitas extends Controller
     }
     public function data()
     {
-        $model = MFasilitas::withDeleted()->orderBy('id_ref_bahasa');
+        $bahasa = (!empty($_GET["bahasa"])) ? ($_GET["bahasa"]) : (0);
+        $model = MFasilitas::withDeleted()->where('id_bahasa',$bahasa)->orderBy('id_ref_bahasa');
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';                

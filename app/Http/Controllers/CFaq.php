@@ -133,7 +133,8 @@ class CFaq extends Controller
     }
     public function data()
     {
-        $model = MFaq::withDeleted();
+        $bahasa = (!empty($_GET["bahasa"])) ? ($_GET["bahasa"]) : (0);
+        $model = MFaq::withDeleted()->where('id_bahasa',$bahasa);
         // dd($model);
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {

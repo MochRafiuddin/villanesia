@@ -141,7 +141,8 @@ class CAmenities extends Controller
     }
     public function data()
     {
-        $model = MAmenities::withDeleted()->orderBy('id_ref_bahasa');
+        $bahasa = (!empty($_GET["bahasa"])) ? ($_GET["bahasa"]) : (0);
+        $model = MAmenities::withDeleted()->where('id_bahasa',$bahasa)->orderBy('id_ref_bahasa');
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';                
