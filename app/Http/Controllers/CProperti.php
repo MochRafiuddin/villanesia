@@ -270,6 +270,7 @@ class CProperti extends Controller
     }
     public function show_save(Request $request)
     {
+        // dd($request->jumlah_tamu_tambahan);
         $cek_pro = MProperti::where('id_ref_bahasa',$request->id_ref_bahasa)->where('id_bahasa',$request->id_bahasa)->where('deleted','!=',0)->first();
         // dd($cek_pro);
         if ($request->id_bahasa == 2) {
@@ -578,7 +579,7 @@ class CProperti extends Controller
         $tipe->jam_checkin = $request->jam_checkin;
         $tipe->jam_checkout = $request->jam_checkout;
         $tipe->jam_operasional_mulai = $request->jam_operasional_mulai;
-        $tipe->jam_operasional_selesai = $request->jam_oprasional_selesai;
+        $tipe->jam_operasional_selesai = $request->jam_operasional_selesai;
         $tipe->merokok = $request->merokok;
         $tipe->binatang = $request->binatang;
         $tipe->acara = $request->acara;

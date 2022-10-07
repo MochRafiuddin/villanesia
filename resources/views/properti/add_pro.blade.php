@@ -184,7 +184,7 @@
                                         @elseif($tipeId->id_tipe_booking == 4)
                                             <option value="1" >Monthly</option>
                                         @elseif($tipeId->id_tipe_booking == 5)
-                                            <option value="1" >Hours</option>
+                                            <option value="1" >Hourly</option>
                                         @else
                                             <option value="1" >Daily</option>
                                         @endif
@@ -427,7 +427,15 @@
                                 </div>
                                 @if($id != 5)
                                 <div class="form-group col-6">
-                                    <label for="">Maximum Hari Pemesanan</label>
+                                    @if($tipeId->id_tipe_booking == 3)
+                                            <label for="">Maximum Jumlah Minggu</label>
+                                        @elseif($tipeId->id_tipe_booking == 4)
+                                            <label for="">Maximum Jumlah Bulan</label>
+                                        @elseif($tipeId->id_tipe_booking == 5)
+                                            <label for="">Maximum Jam Pemesanan</label>
+                                        @else                                            
+                                            <label for="">Maximum Hari Pemesanan</label>
+                                        @endif                                    
                                     <input type="text" class="form-control" name="max_durasi_inap" value=""/>
                                 </div>
                                 @endif
@@ -447,11 +455,11 @@
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Jam Mulai</label>
-                                    <input type="text" class="form-control timepicker" name="jam_oprasional_mulai" value=""/>
+                                    <input type="text" class="form-control timepicker" name="jam_operasional_mulai" value=""/>
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Jam Selesai</label>
-                                    <input type="text" class="form-control timepicker" name="jam_oprasional_selesai" value=""/>
+                                    <input type="text" class="form-control timepicker" name="jam_operasional_selesai" value=""/>
                                 </div>
                                 @endif
                                 <div class="form-group col-6">
@@ -856,6 +864,9 @@ $( document ).ready(function() {
                 }
             });
         }); 
+    $("#pac-input").keyup(function(){        
+        $("#alamat").val($("#pac-input").val());
+    });
 </script>
 <script>
         function initAutocomplete() {
@@ -869,7 +880,20 @@ $( document ).ready(function() {
               position: google.maps.ControlPosition.BOTTOM_LEFT,
             },
             }
-          );
+          );          
+            function placeMarker(location, map) {
+                if ( marker ) {
+                    marker.setPosition(location);
+                } else {
+                    marker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    draggable: true,
+                    });
+                }                
+                document.getElementById('latitude').value = location.lat();
+                document.getElementById('longitude').value = location.lng();
+            }
           var input = document.getElementById('pac-input');
         //   map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
 
@@ -882,7 +906,7 @@ $( document ).ready(function() {
               anchorPoint: new google.maps.Point(0, -29)
           });
           google.maps.event.addListener(map, "click", (event) => {
-            addMarker(event.latLng, map);
+            placeMarker(event.latLng, map);
           });
           autocomplete.addListener('place_changed', function() {
             marker.setVisible(false);

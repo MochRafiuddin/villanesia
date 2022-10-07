@@ -258,21 +258,21 @@ use App\Traits\Helper;
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Biaya Kebersihan</label>
-                                    <input type="text" class="form-control" name="harga_tamu_tambahan" value="{{$data->harga_tamu_tambahan}}"/>
+                                    <input type="text" class="form-control" name="biaya_kebersihan" value="{{$data->biaya_kebersihan}}"/>
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Tipe</label>
-                                    <select class="form-control js-example-basic-single" name="jumlah_tamu_tambahan" style="width:100%">
+                                    <select class="form-control js-example-basic-single" name="biaya_kebersihan_tipe" style="width:100%">
                                     @if($data->id_tipe_booking == 3)
-                                        <option value="1" {{($data->jumlah_tamu_tambahan == 1) ? 'selected' : ''}}>Weekly</option>
+                                        <option value="1" {{($data->biaya_kebersihan_tipe == 1) ? 'selected' : ''}}>Weekly</option>
                                     @elseif($data->id_tipe_booking == 4)
-                                        <option value="1" {{($data->jumlah_tamu_tambahan == 1) ? 'selected' : ''}}>Monthly</option>
+                                        <option value="1" {{($data->biaya_kebersihan_tipe == 1) ? 'selected' : ''}}>Monthly</option>
                                     @elseif($data->id_tipe_booking == 5)
-                                        <option value="1" {{($data->jumlah_tamu_tambahan == 1) ? 'selected' : ''}}>Hourly</option>
+                                        <option value="1" {{($data->biaya_kebersihan_tipe == 1) ? 'selected' : ''}}>Hourly</option>
                                     @else                                            
-                                        <option value="1" {{($data->jumlah_tamu_tambahan == 1) ? 'selected' : ''}}>Daily</option>
+                                        <option value="1" {{($data->biaya_kebersihan_tipe == 1) ? 'selected' : ''}}>Daily</option>
                                     @endif
-                                        <option value="2" {{($data->jumlah_tamu_tambahan == 2) ? 'selected' : ''}}>Per Stay</option>
+                                        <option value="2" {{($data->biaya_kebersihan_tipe == 2) ? 'selected' : ''}}>Per Stay</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-6">
@@ -540,7 +540,15 @@ use App\Traits\Helper;
                                 </div>                                
                                 @if($data->id_tipe_booking != 5)
                                 <div class="form-group col-6">
-                                    <label for="">Maximum Hari Pemesanan</label>
+                                    @if($tipeId->id_tipe_booking == 3)
+                                            <label for="">Maximum Jumlah Minggu</label>
+                                        @elseif($tipeId->id_tipe_booking == 4)
+                                            <label for="">Maximum Jumlah Bulan</label>
+                                        @elseif($tipeId->id_tipe_booking == 5)
+                                            <label for="">Maximum Jam Pemesanan</label>
+                                        @else                                            
+                                            <label for="">Maximum Hari Pemesanan</label>
+                                        @endif                                    
                                     <input type="text" class="form-control" name="max_durasi_inap" value="{{$data->max_durasi_inap}}"/>
                                 </div>
                                 @endif
@@ -826,6 +834,9 @@ use App\Traits\Helper;
                 }
             });
         }); 
+    $("#pac-input").keyup(function(){        
+        $("#alamat").val($("#pac-input").val());
+    });
 </script>
 <script>
         function initAutocomplete() {
@@ -848,6 +859,19 @@ use App\Traits\Helper;
                 document.getElementById('latitude').value = latLng.lat();
                 document.getElementById('longitude').value = latLng.lng();
             });
+            function placeMarker(location, map) {
+                if ( marker ) {
+                    marker.setPosition(location);
+                } else {
+                    marker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    draggable: true,
+                    });
+                }                
+                document.getElementById('latitude').value = location.lat();
+                document.getElementById('longitude').value = location.lng();
+            }
           var input = document.getElementById('pac-input');
         //   map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
 
@@ -860,7 +884,7 @@ use App\Traits\Helper;
               anchorPoint: new google.maps.Point(0, -29)
           });
           google.maps.event.addListener(map, "click", (event) => {  
-            addMarker(event.latLng, map);
+            placeMarker(event.latLng, map);
           });
           autocomplete.addListener('place_changed', function() {            
             marker.setVisible(false);

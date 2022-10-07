@@ -516,7 +516,15 @@ use App\Traits\Helper;
                                 </div>                                
                                 @if($data->id_tipe_booking != 5)
                                 <div class="form-group col-6">
-                                    <label for="">Maximum Hari Pemesanan</label>
+                                    @if($tipeId->id_tipe_booking == 3)
+                                        <label for="">Maximum Jumlah Minggu</label>
+                                    @elseif($tipeId->id_tipe_booking == 4)
+                                        <label for="">Maximum Jumlah Bulan</label>
+                                    @elseif($tipeId->id_tipe_booking == 5)
+                                        <label for="">Maximum Jam Pemesanan</label>
+                                    @else                                            
+                                        <label for="">Maximum Hari Pemesanan</label>
+                                    @endif                                    
                                     <input type="text" class="form-control" name="max_durasi_inap" value="{{$data->max_durasi_inap}}" readonly/>
                                 </div>
                                 @endif
@@ -567,8 +575,8 @@ use App\Traits\Helper;
                                 <div class="form-group col-6">
                                     <label for="">Anak Diperbolehkan</label>
                                     <select class="form-control js-example-basic-single" name="anak" style="width:100%" disabled>
-                                        <option value="0" {{($data->acara == 0) ? 'selected' : ''}}>Tidak</option>
-                                        <option value="1" {{($data->acara == 1) ? 'selected' : ''}}>Ya</option>
+                                        <option value="0" {{($data->anak == 0) ? 'selected' : ''}}>Tidak</option>
+                                        <option value="1" {{($data->anak == 1) ? 'selected' : ''}}>Ya</option>
                                     </select>
                                 </div>
                                 <div class="form-group col-12">
@@ -623,12 +631,9 @@ use App\Traits\Helper;
           var marker = new google.maps.Marker({
               //draggable :true,
               map: map,
-              draggable: true,
+              draggable: false,
               anchorPoint: new google.maps.Point(0, -29)
-          });
-          google.maps.event.addListener(map, "click", (event) => {  
-            addMarker(event.latLng, map);
-          });
+          });          
           autocomplete.addListener('place_changed', function() {            
             marker.setVisible(false);
             var place = autocomplete.getPlace();
