@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Auth;
+use DateInterval;
+use DatePeriod;
+use DateTime;
 
 trait Helper
 {
@@ -239,6 +242,117 @@ trait Helper
         
         $minutes = $this->getMinutes($time);
         return $minutes;
+    }
+    
+    public function get_harga_by_input($period,$pro)
+    {
+        $final= 0;
+        for ($i=0; $i < count($period) ; $i++) {
+            if ($pro->penerapan_harga_weekend==1) {
+                if (date('D', strtotime($period[$i]))=='Sat') {
+                    $final = $final + $pro->harga_weekend;
+                }elseif (date('D', strtotime($period[$i]))=='San') {
+                    $final = $final + $pro->harga_weekend;
+                }else {
+                    $final = $final + $pro->harga_tampil;
+                }
+            }
+            if ($pro->penerapan_harga_weekend==2) {
+                if (date('D', strtotime($period[$i]))=='Fri') {
+                    $final = $final + $pro->harga_weekend;
+                }elseif (date('D', strtotime($period[$i]))=='Sat') {
+                    $final = $final + $pro->harga_weekend;
+                }else {
+                    $final = $final + $pro->harga_tampil;
+                }
+            }
+            if ($pro->penerapan_harga_weekend==3) {
+                if (date('D', strtotime($period[$i]))=='Fri') {
+                    $final = $final + $pro->harga_weekend;
+                }elseif (date('D', strtotime($period[$i]))=='Sat') {
+                    $final = $final + $pro->harga_weekend;
+                }elseif (date('D', strtotime($period[$i]))=='Sun') {
+                    $final = $final + $pro->harga_weekend;
+                }else {
+                    $final = $final + $pro->harga_tampil;
+                }
+            }
+        }
+        return $final;
+    }
+
+    public function get_harga_cus_by_input($period,$cus)
+    {
+        $final=0;
+        $day = [];
+        foreach ($cus as $c) {
+            $period1 = new DatePeriod(
+                new DateTime($c->start_date),
+                new DateInterval('P1D'),
+                new DateTime(date('Y-m-d', strtotime($c->end_date)).' +1 days')
+            );
+            for ($i=0; $i < count($period) ; $i++) {             
+                foreach ($period1 as $key1) {
+                    if ($period[$i] == $key1->format('Y-m-d')) {
+                        if (date('D', strtotime($period[$i]))=='Sat') {
+                            $final = $final + $c->harga_weekend;
+                        }elseif (date('D', strtotime($period[$i]))=='Sun') {
+                            $final = $final + $c->harga_weekend;
+                        }else {
+                            $final = $final + $c->harga;
+                        }
+                    }
+                }
+                // $day[] = $period[$i];
+            }
+        }   
+        return $final;
+        // return $day;
+    }
+
+    public function get_date_by_input($tanggal_mulai,$tanggal_selesai)
+    {
+        $period = new DatePeriod(
+            new DateTime(date('Y-m-d', strtotime($tanggal_mulai))),
+            new DateInterval('P1D'),
+            new DateTime(date('Y-m-d', strtotime($tanggal_selesai.' -1 day')).' +1 days')
+        );
+        $day = [];
+        foreach ($period as $key) {
+            $day[] = $key->format('Y-m-d');
+        }
+        return $day;
+    }
+
+    public function get_date_custom_harga($cus,$tanggal_mulai,$tanggal_selesai)
+    {        
+        // $day['date1'] = [];
+        // $day['date2'] = [];
+        $day = [];
+        $period = new DatePeriod(
+            new DateTime($tanggal_mulai),
+            new DateInterval('P1D'),
+            new DateTime(date('Y-m-d', strtotime($tanggal_selesai.' -1 day')).' +1 days')
+        );
+        // foreach ($period as $key) {
+        //     $day['date1'][] = $key->format('Y-m-d');
+        // }
+        foreach ($cus as $c) {
+            $period1 = new DatePeriod(
+                new DateTime($c->start_date),
+                new DateInterval('P1D'),
+                new DateTime(date('Y-m-d', strtotime($c->end_date)).' +1 days')
+            );
+            foreach ($period as $key) {
+                foreach ($period1 as $key1) {                                
+                    if ($key->format('Y-m-d') == $key1->format('Y-m-d')) {
+                        // $day['date2'][] = $key1->format('Y-m-d');
+                        $day[] = $key1->format('Y-m-d');
+                    }
+                }
+            }
+        }
+        return $day;
     }
 
    public function can_akses($kode = null) {

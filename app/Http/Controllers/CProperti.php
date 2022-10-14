@@ -148,6 +148,7 @@ class CProperti extends Controller
                 $amenities->id_amenities = $request['amenities'][$i];
                 $amenities->save();
             }
+            MProperti::where('id_properti',$tipe->id_properti)->update(['total_amenities' => count($request->amenities)]);
         }
 
         if ($request->fasilitas) {
@@ -160,6 +161,7 @@ class CProperti extends Controller
                 $fasilitas->id_fasilitas = $request['fasilitas'][$i];
                 $fasilitas->save();
             }
+            MProperti::where('id_properti',$tipe->id_properti)->update(['total_fasilitas' => count($request->fasilitas)]);
         }
 
         if ($request->nama_kamar_tidurs) {
@@ -366,11 +368,14 @@ class CProperti extends Controller
                 $amenities->nama_file = $request['nama_file'][$i];
                 $amenities->id_tipe = $request['id_tipe'][$i];
                 $amenities->save();
-
-                if ($request['featured_image'][$i] == 1) {
-                    MProperti::where('id_ref_bahasa',$request->id_ref_bahasa)->update(['nama_file'=>$request['nama_file'][$i]]);                    
-                }
             }
+        }
+
+        $featured = MPropertiGalery::where('id_properti',$request->id_ref_bahasa)->where('featured_image',1)->first();
+        if ($featured) {
+            MProperti::where('id_ref_bahasa',$request->id_ref_bahasa)->update(['nama_file'=>$featured->nama_file]);
+        }else{
+            MProperti::where('id_ref_bahasa',$request->id_ref_bahasa)->update(['nama_file'=>'']);
         }
 
         MapAmenities::where('id_properti',$request->id_ref_bahasa)->delete();
@@ -381,16 +386,18 @@ class CProperti extends Controller
                 $amenities->id_amenities = $request['amenities'][$i];
                 $amenities->save();
             }
+            MProperti::where('id_properti',$tipe->id_properti)->update(['total_amenities' => count($request->amenities)]);
         }        
         
         MapFasilitas::where('id_properti',$request->id_ref_bahasa)->delete();
         if ($request->fasilitas) {
             for ($i=0; $i < count($request->fasilitas); $i++) {                                 
                 $fasilitas = new MapFasilitas();
-                $fasilitas->id_properti = $request->id_ref_bahasa;                
+                $fasilitas->id_properti = $request->id_ref_bahasa;
                 $fasilitas->id_fasilitas = $request['fasilitas'][$i];
                 $fasilitas->save();
             }
+            MProperti::where('id_properti',$request->id_ref_bahasa)->update(['total_fasilitas' => count($request->fasilitas)]);
         }
         
         MPropertiKamarTidur::where('id_properti',$request->id_ref_bahasa)->delete();

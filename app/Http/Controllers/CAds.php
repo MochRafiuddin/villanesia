@@ -56,7 +56,14 @@ class CAds extends Controller
             return redirect()->back()
                         ->withInput($request->all())
                         ->withErrors($validator->errors());
-        }                
+        }
+
+        if ($request->file('konten_ads')) {
+            $gambar = round(microtime(true) * 1000).'.'.$request->file('konten_ads')->extension();
+            $request->file('konten_ads')->move(public_path('upload/ads'), $gambar);           
+        }else{
+            $gambar ="";
+        }
         
         $tipe = new MAds();
         $tipe->nama_ads = $request->nama_ads;
@@ -64,6 +71,7 @@ class CAds extends Controller
         $tipe->tipe_konten_ads = $request->tipe_konten_ads;
         $tipe->redirect_url_ads = $request->redirect_url_ads;
         $tipe->status = $request->status;
+        $tipe->posisi = $request->posisi;
         $tipe->save();        
 
         return redirect()->route('ads-index')->with('msg','Sukses Menambahkan Data');

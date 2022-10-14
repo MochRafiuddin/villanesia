@@ -22,7 +22,7 @@ class User extends Authenticatable
     protected $table = "m_users";
     protected $primaryKey = 'id_user';
     protected $fillable = [
-        'username', 'password',
+        'username', 'password','email','id_ref','tipe_user','token'
     ];
 
     /**

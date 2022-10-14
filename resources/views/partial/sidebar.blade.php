@@ -16,9 +16,9 @@
             <div class="collapse" id="master">
                 <ul class="nav flex-column sub-menu">                    
                     <li class="nav-item"> <a class="nav-link" href="{{url('/tipe-properti')}}">Tipe Properti</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="{{url('/tipe-booking')}}">Tipe Booking</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="{{url('/jenis-tempat')}}">Jenis Tempat</a></li>
-                    <li class="nav-item"> <a class="nav-link" href="{{url('/akhir-pekan')}}">Akhir Pekan</a></li>
+                    <!-- <li class="nav-item"> <a class="nav-link" href="{{url('/tipe-booking')}}">Tipe Booking</a></li> -->
+                    <!-- <li class="nav-item"> <a class="nav-link" href="{{url('/jenis-tempat')}}">Jenis Tempat</a></li> -->
+                    <!-- <li class="nav-item"> <a class="nav-link" href="{{url('/akhir-pekan')}}">Akhir Pekan</a></li> -->
                     <li class="nav-item"> <a class="nav-link" href="{{url('/negara')}}">Negara</a></li>
                     <li class="nav-item"> <a class="nav-link" href="{{url('/provinsi')}}">Provinsi</a></li>
                     <li class="nav-item"> <a class="nav-link" href="{{url('/kota')}}">Kota</a></li>
