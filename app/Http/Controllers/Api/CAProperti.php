@@ -28,19 +28,35 @@ class CAProperti extends Controller
     {
         $id_tipe = $request->id_tipe;
         $id_bahasa = $request->id_bahasa;
+        $page = ($request->page-1)*6;
+        $order_by = $request->order_by;
 
         $tipe = MProperti::selectRaw('id_properti, id_bahasa, id_ref_bahasa, judul, alamat, harga_tampil, jumlah_kamar_tidur, jumlah_kamar_mandi, (jumlah_tamu+COALESCE(jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, sarapan')
                 ->where('deleted',1)
                 ->where('id_bahasa',$id_bahasa)
                 ->where('id_tipe_properti',$id_tipe)
-                ->get();
-
-        if (count($tipe)>0) {
+                ->limit(6)
+                ->offset($page);
+        if ($order_by == 1) {
+            $tipe = $tipe->orderBy('harga_tampil','asc');
+        }elseif ($order_by == 2) {
+            $tipe = $tipe->orderBy('harga_tampil','desc');
+        }elseif ($order_by == 3) {
+            $tipe = $tipe->orderBy('nilai_rating','desc');
+        }elseif ($order_by == 4) {
+            $tipe = $tipe->orderByRaw('(total_amenities+total_fasilitas) desc');
+        }elseif ($order_by == 5) {
+            $tipe = $tipe->orderBy('created_date','desc');
+        }else {
+            $tipe = $tipe->orderBy('created_date','asc');
+        }
+        $data = $tipe->get();
+        if (count($data)>0) {
             return response()->json([
                 'success' => true,
                 'message' => 'Success',
                 'code' => 1,
-                'data' => $tipe,
+                'data' => $data,
             ], 200);
         } else {
             return response()->json([

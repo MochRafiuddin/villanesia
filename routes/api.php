@@ -39,7 +39,7 @@ Route::group(['middleware' => 'logapi'], function () {
     Route::get('/get-promotion-transportation', [CAPromosiKendaraan::class, 'get_promotion_transportation']);
     Route::get('/get-concierge-service', [CAConciergeService::class, 'get_concierge_service']);
     Route::get('/get-city', [CAKota::class, 'get_city']);
-    Route::get('/get-amenities', [CAAmenities::class, 'get_amenities']);
+    // Route::get('/get-amenities', [CAAmenities::class, 'get_amenities']);
     Route::get('/get-facilities', [CAFasilitas::class, 'get_facilities']);
     Route::get('/get-about-us', [CAAboutUs::class, 'get_about_us']);
     Route::get('/get-faq', [CAFaq::class, 'get_faq']);
@@ -51,6 +51,7 @@ Route::group(['middleware' => 'logapi'], function () {
     Route::get('/auth-signin', [CAAuth::class, 'login']);
 });
 
+Route::get('/get-amenities', [CAAmenities::class, 'get_amenities']);
 Route::get('/get-property-detail-harga', [CAProperti::class, 'get_property_detail_harga']);
 
 Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {

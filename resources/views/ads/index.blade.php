@@ -18,7 +18,7 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Nama</th>
-                                        <th>Konten</th>
+                                        <!-- <th>Konten</th> -->
                                         <th>Tipe Konten</th>
                                         <th>Redirect Url</th>
                                         <th>Status</th>
@@ -114,11 +114,7 @@
                     {
                         data: 'nama_ads',
                         name: 'nama_ads',                        
-                    },
-                    {
-                        data: 'konten_ads',
-                        name: 'konten_ads',                        
-                    },
+                    },                    
                     {
                         data: 'tipe_konten_ads',
                         name: 'tipe_konten_ads',                        

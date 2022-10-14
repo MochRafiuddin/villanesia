@@ -11,17 +11,21 @@ class CAAmenities extends Controller
     public function get_amenities(Request $request)
     {        
         $id_bahasa = $request->id_bahasa;
+        $all = $request->all;
 
         $tipe = MAmenities::where('deleted',1)
-                ->where('id_bahasa',$id_bahasa)
-                ->get();
+                ->where('id_bahasa',$id_bahasa);
+        if ($all == 0) {
+            $tipe = $tipe->limit(6)->offset(0);
+        }
+        $data = $tipe->get();
 
-        if (count($tipe)>0) {
+        if (count($data)>0) {
             return response()->json([
                 'success' => true,
                 'message' => 'Success',
                 'code' => 1,
-                'data' => $tipe,
+                'data' => $data,
             ], 200);
         } else {
             return response()->json([

@@ -6,6 +6,7 @@ $name[] = 'nama_ads';
 $name[] = 'tipe_konten_ads';
 $name[] = 'redirect_url_ads';
 $name[] = 'status';
+$name[] = 'posisi';
 $name[] = 'konten_ads';
 ?>
 <div class="main-panel">
@@ -67,11 +68,25 @@ $name[] = 'konten_ads';
                     </div>                    
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Konten</label>
-                            <input type="text" class="form-control @error($name[4]) is-invalid @enderror"
-                                value="{{Helper::showData($data,$name[4])}}" name="{{$name[4]}}" readonly/>
+                            <label for="exampleInputEmail1">Posisi</label>
+                            <select class="form-control @error($name[4]) is-invalid @enderror" name="{{$name[4]}}" id="{{$name[4]}}"style="width:100%" disabled>
+                                <option value="1" {{(old($name[4]) == 1) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[4],1)}}>
+                                        Property
+                                </option>                                
+                                <option value="2" {{(old($name[4]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[4],2)}}>
+                                        Promotion Transportation
+                                </option>
+                             </select>
                         </div>
                     </div>                    
+                    <div class="row">
+                        <div class="form-group col">
+                            <label for="exampleInputEmail1">Konten</label><br>
+                            <!-- <input type="file" class="dropify form-control @error($name[5]) is-invalid @enderror" name="{{$name[5]}}"  @if($data) data-default-file="{{asset('upload/ads/'.$data->konten_ads)}}" @endif/> -->
+                            <!-- {{asset('upload/promosi_kendaraan/1663228135032.jpg')}} -->
+                            <img class="rounded" src="{{asset('upload/ads/'.$data->konten_ads)}}" alt="{{$data->nama_ads}}">
+                        </div>
+                    </div>
                     <a class="btn btn-success" href="{{url('ads')}}">Kembali</a>
                 </form>
             </div>

@@ -7,6 +7,7 @@ use App\Models\MAdsDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use DataTables;
+use Image;
 
 class CAds extends Controller
 {
@@ -45,8 +46,7 @@ class CAds extends Controller
     public function create_save(Request $request)
     {
         $validator = Validator::make($request->all(),[
-            'nama_ads' => 'required',
-            'konten_ads' => 'required',
+            'nama_ads' => 'required',            
             'tipe_konten_ads' => 'required',
             'redirect_url_ads' => 'required',
             'status' => 'required'
@@ -59,15 +59,26 @@ class CAds extends Controller
         }
 
         if ($request->file('konten_ads')) {
-            $gambar = round(microtime(true) * 1000).'.'.$request->file('konten_ads')->extension();
-            $request->file('konten_ads')->move(public_path('upload/ads'), $gambar);           
+            // $gambar = round(microtime(true) * 1000).'.'.$request->file('konten_ads')->extension();
+            // $request->file('konten_ads')->move(public_path('upload/ads'), $gambar);
+
+            $image     = $request->file('konten_ads');
+            $gambar    = round(microtime(true) * 1000).'.'.$request->file('konten_ads')->extension();            
+
+            $image_resize = Image::make($image->getRealPath());
+            if ($request->posisi==1) {                
+                $image_resize->resize(200, 400);
+            }else {
+                $image_resize->resize(300, 600);
+            }
+            $image_resize->save(public_path('upload/ads/' .$gambar));
         }else{
             $gambar ="";
         }
         
         $tipe = new MAds();
         $tipe->nama_ads = $request->nama_ads;
-        $tipe->konten_ads = $request->konten_ads;
+        $tipe->konten_ads = $gambar;
         $tipe->tipe_konten_ads = $request->tipe_konten_ads;
         $tipe->redirect_url_ads = $request->redirect_url_ads;
         $tipe->status = $request->status;
@@ -91,12 +102,30 @@ class CAds extends Controller
                         ->withInput($request->all())
                         ->withErrors($validator->errors());
         }
+        if ($request->file('konten_ads')) {
+            // $gambar = round(microtime(true) * 1000).'.'.$request->file('konten_ads')->extension();
+            // $request->file('konten_ads')->move(public_path('upload/ads'), $gambar);
+
+            $image     = $request->file('konten_ads');
+            $gambar    = round(microtime(true) * 1000).'.'.$request->file('konten_ads')->extension();            
+
+            $image_resize = Image::make($image->getRealPath());
+            if ($request->posisi==1) {                
+                $image_resize->resize(200, 400);
+            }else {
+                $image_resize->resize(300, 600);
+            }
+            $image_resize->save(public_path('upload/ads/' .$gambar));
+        }else{
+            $gambar ="";
+        }
         $data = [
             'nama_ads' => $request->nama_ads,
-            'konten_ads' => $request->konten_ads,
+            'konten_ads' => $gambar,
             'tipe_konten_ads' => $request->tipe_konten_ads,
             'redirect_url_ads' => $request->redirect_url_ads,
             'status' => $request->status,
+            'posisi' => $request->posisi,
         ];
         MAds::where('id_ads',$request->id)->update($data);
 

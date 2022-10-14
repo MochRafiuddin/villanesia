@@ -68,7 +68,7 @@ $name[] = 'konten_ads';
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Status</label>
+                            <label for="exampleInputEmail1">Posisi</label>
                             <select class="form-control @error($name[4]) is-invalid @enderror" name="{{$name[4]}}" id="{{$name[4]}}"
                                      style="width:100%">                                
                                 <option value="1" {{(old($name[4]) == 1) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[4],1)}}>
@@ -83,10 +83,11 @@ $name[] = 'konten_ads';
                     <div class="row">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">Konten</label>
-                            <input type="text" class="form-control @error($name[5]) is-invalid @enderror"
-                                value="{{Helper::showData($data,$name[5])}}" name="{{$name[5]}}"/>
+                            <!-- <input type="text" class="form-control @error($name[5]) is-invalid @enderror"
+                                value="{{Helper::showData($data,$name[5])}}" name="{{$name[5]}}"/> -->
+                            <input type="file" class="dropify form-control @error($name[5]) is-invalid @enderror" name="{{$name[5]}}"  @if($data) data-default-file="{{asset('upload/ads/'.$data->konten_ads)}}" @endif/>
                         </div>
-                    </div>                    
+                    </div>
                     <input type="submit" class="btn btn-success" value="Simpan" />
                 </form>
             </div>
@@ -94,4 +95,6 @@ $name[] = 'konten_ads';
     </div>
 </div>
 @endsection
-
+@push('js')
+<script src="{{asset('/')}}assets/js/dropify.js"></script>
+@endpush
