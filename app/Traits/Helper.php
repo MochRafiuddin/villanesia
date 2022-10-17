@@ -246,45 +246,48 @@ trait Helper
     
     public function get_harga_by_input($period,$pro)
     {
-        $final= 0;
+        $day['harga'] = 0;
+        $day['tamu'] = 0;
         for ($i=0; $i < count($period) ; $i++) {
             if ($pro->penerapan_harga_weekend==1) {
                 if (date('D', strtotime($period[$i]))=='Sat') {
-                    $final = $final + $pro->harga_weekend;
+                    $day['harga'] = $day['harga'] + $pro->harga_weekend;
                 }elseif (date('D', strtotime($period[$i]))=='San') {
-                    $final = $final + $pro->harga_weekend;
+                    $day['harga'] = $day['harga'] + $pro->harga_weekend;
                 }else {
-                    $final = $final + $pro->harga_tampil;
+                    $day['harga'] = $day['harga'] + $pro->harga_tampil;
                 }
             }
             if ($pro->penerapan_harga_weekend==2) {
                 if (date('D', strtotime($period[$i]))=='Fri') {
-                    $final = $final + $pro->harga_weekend;
+                    $day['harga'] = $day['harga'] + $pro->harga_weekend;
                 }elseif (date('D', strtotime($period[$i]))=='Sat') {
-                    $final = $final + $pro->harga_weekend;
+                    $day['harga'] = $day['harga'] + $pro->harga_weekend;
                 }else {
-                    $final = $final + $pro->harga_tampil;
+                    $day['harga'] = $day['harga'] + $pro->harga_tampil;
                 }
             }
             if ($pro->penerapan_harga_weekend==3) {
                 if (date('D', strtotime($period[$i]))=='Fri') {
-                    $final = $final + $pro->harga_weekend;
+                    $day['harga'] = $day['harga'] + $pro->harga_weekend;
                 }elseif (date('D', strtotime($period[$i]))=='Sat') {
-                    $final = $final + $pro->harga_weekend;
+                    $day['harga'] = $day['harga'] + $pro->harga_weekend;
                 }elseif (date('D', strtotime($period[$i]))=='Sun') {
-                    $final = $final + $pro->harga_weekend;
+                    $day['harga'] = $day['harga'] + $pro->harga_weekend;
                 }else {
-                    $final = $final + $pro->harga_tampil;
+                    $day['harga'] = $day['harga'] + $pro->harga_tampil;
                 }
             }
+            $day['tamu'] = $day['tamu'] + $pro->harga_tamu_tambahan;
         }
-        return $final;
+        return $day;
     }
 
     public function get_harga_cus_by_input($period,$cus)
     {
         $final=0;
-        $day = [];
+        $day['harga'] = 0;
+        $day['tamu'] = 0;
         foreach ($cus as $c) {
             $period1 = new DatePeriod(
                 new DateTime($c->start_date),
@@ -295,18 +298,19 @@ trait Helper
                 foreach ($period1 as $key1) {
                     if ($period[$i] == $key1->format('Y-m-d')) {
                         if (date('D', strtotime($period[$i]))=='Sat') {
-                            $final = $final + $c->harga_weekend;
+                            $day['harga'] = $day['harga'] + $c->harga_weekend;
                         }elseif (date('D', strtotime($period[$i]))=='Sun') {
-                            $final = $final + $c->harga_weekend;
+                            $day['harga'] = $day['harga'] + $c->harga_weekend;
                         }else {
-                            $final = $final + $c->harga;
+                            $day['harga'] = $day['harga'] + $c->harga;
                         }
+                        $day['tamu'] = $day['tamu'] + $c->harga_tamu_tambahan;
                     }
                 }
                 // $day[] = $period[$i];
             }
         }   
-        return $final;
+        return $day;
         // return $day;
     }
 

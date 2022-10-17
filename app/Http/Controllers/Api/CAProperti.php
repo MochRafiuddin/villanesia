@@ -169,6 +169,7 @@ class CAProperti extends Controller
         $amenities = $request->amenities;
         $fasilitas = $request->fasilitas;
         $id_bahasa = $request->id_bahasa;
+        // dd($amenities);
 
         $tipe = MProperti::selectRaw('id_properti, id_bahasa, id_ref_bahasa, judul, alamat, harga_tampil, jumlah_kamar_tidur, jumlah_kamar_mandi, (jumlah_tamu+COALESCE(jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, sarapan, latitude, longitude')
                 ->where('deleted',1)
@@ -206,10 +207,10 @@ class CAProperti extends Controller
         }
         if ($fasilitas != null && $amenities != null) {
             $list_id_properti_fas = MapFasilitas::selectRaw('id_properti')
-                ->whereIn('id_fasilitas',$amenities)
+                ->whereIn('id_fasilitas',$fasilitas)
                 ->get();
             $list_id_properti_ame = MapAmenities::selectRaw('id_properti')
-                ->whereIn('id_amenities',$fasilitas)
+                ->whereIn('id_amenities',$amenities)
                 ->get();
             $a = [];
             $b = [];
@@ -417,7 +418,7 @@ class CAProperti extends Controller
                         new DateTime(date('Y-m-d', strtotime($tanggal_selesai.' -1 day')).' +1 days')
                     );
                     $final = $this->get_harga_by_input($period,$pro);
-                    $result['harga_final_properti'] = $final;
+                    $result['harga_final_properti'] = $final['harga'];
                 }elseif ($pro->harga_weekend == null && count($cus) > 0) {
                     $period = new DatePeriod(
                         new DateTime($tanggal_mulai),
@@ -454,8 +455,8 @@ class CAProperti extends Controller
                     $date_cus = array_intersect($date1,$date2);
                     $har_week = $this->get_harga_by_input(array_values($date_week),$pro);
                     $har_cus = $this->get_harga_cus_by_input(array_values($date_cus),$cus);
-                    // dd($har_week);
-                    $result['harga_final_properti'] = $har_week + $har_cus;
+                    // dd($har_cus['harga']);
+                    $result['harga_final_properti'] = $har_week['harga'] + $har_cus['harga'];
                 }
                 if ($result['tamu_tambahan'] > 0) {
                     if ($pro->harga_weekend != null && count($cus) != 0) {
@@ -463,11 +464,32 @@ class CAProperti extends Controller
                         $date2 = $this->get_date_custom_harga($cus,$tanggal_mulai,$tanggal_selesai);
                         $date_week = array_diff($date1,$date2);
                         $date_cus = array_intersect($date1,$date2);
+                        $har_week = $this->get_harga_by_input(array_values($date_week),$pro);
+                        $har_cus = $this->get_harga_cus_by_input(array_values($date_cus),$cus);
+                        // dd($har_week);
                         if (count($date_week) == 0) {
-                            
+                            $tamu_add = $tamu_tambahan * $diff_in_hours * $har_cus['tamu'];
+                            $result['harga_tamu_tamabahan'] = '$tamu_add';
                         }else {
-                            
+                            $tamu_add = ($tamu_tambahan * count($date_week) * $har_week['tamu']) + ($tamu_tambahan * count($date_cus) * $har_cus['tamu']);
+                            $result['harga_tamu_tamabahan'] = $tamu_add;
                         }
+                    }elseif ($pro->harga_weekend == null && count($cus) > 0) {
+                        $date1 = $this->get_date_by_input($tanggal_mulai,$tanggal_selesai);
+                        $date2 = $this->get_date_custom_harga($cus,$tanggal_mulai,$tanggal_selesai);                    
+                        $date_cus = array_intersect($date1,$date2);                    
+                        $har_cus = $this->get_harga_cus_by_input(array_values($date_cus),$cus);
+                        
+                        $tamu_add = $tamu_tambahan * $diff_in_hours * $har_cus['tamu'];
+                        $result['harga_tamu_tamabahan'] = $tamu_add;
+                    }else {
+                        $date1 = $this->get_date_by_input($tanggal_mulai,$tanggal_selesai);
+                        $date2 = $this->get_date_custom_harga($cus,$tanggal_mulai,$tanggal_selesai);                    
+                        $date_week = array_diff($date1,$date2);
+                        $har_week = $this->get_harga_by_input(array_values($date_week),$pro);
+                        
+                        $tamu_add = $tamu_tambahan * $diff_in_hours * $har_cus['tamu'];
+                        $result['harga_tamu_tamabahan'] = $tamu_add;
                     }
                 }
                 if ($pro->biaya_kebersihan==2) {                    
@@ -476,10 +498,36 @@ class CAProperti extends Controller
                     $result['cleaning_fee'] = $pro->biaya_kebersihan * $diff_in_hours;
                 }
                 $result['security_deposit'] = $pro->uang_jaminan;
-                $result['total_extra_service'] = 0;
-                $result['detail_extra_service'] = 0;
+                $extra = explode(",",$extra_service[0]);
+                // dd($extra);
+                if (count($extra) > 0) {
+                    $sevice = 0;
+                    for ($i=0; $i < count($extra); $i++) {
+                        $ser = MPropertiExtra::find($extra[$i]);
+                        if ($ser->tipe == 1) {
+                            $result['total_extra_service'] = $ser->harga;
+                        }elseif ($ser->tipe == 2) {
+                            $result['total_extra_service'] = $ser->harga * $diff_in_hours;
+                        }elseif ($ser->tipe == 3) {
+                            $result['total_extra_service'] = $ser->harga * ($tamu_dewasa + $tamu_anak + $tamu_bayi);
+                        }else {
+                            $result['total_extra_service'] = $ser->harga * ($tamu_dewasa + $tamu_anak + $tamu_bayi) * $diff_in_hours;
+                        }
+                    }
+                }else {
+                    $result['total_extra_service'] = 0;
+                }
+                if (count($extra) > 0) {
+                    $res = [];
+                    for ($i=0; $i < count($extra); $i++) {
+                        $ser = MPropertiExtra::find($extra[$i]);
+                        $res[] = $ser->nama_service;
+                    }                    
+                    $result['detail_extra_service'] = $res;
+                }
                 $result['persen_pajak'] = $pro->pajak;
-                
+                $result['nominal_pajak'] = ($result['harga_final_properti'] + $result['harga_tamu_tamabahan'] + $result['cleaning_fee'] + $result['total_extra_service']) * $result['persen_pajak'] /100;
+                $result['harga_total'] = $result['harga_final_properti'] + $result['harga_tamu_tamabahan'] + $result['cleaning_fee'] + $result['total_extra_service'] + $result['security_deposit'] + $result['nominal_pajak'];
                 if ($data->total > 0) {
                     return response()->json([
                         'success' => false,

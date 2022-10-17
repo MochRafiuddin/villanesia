@@ -386,7 +386,7 @@ class CProperti extends Controller
                 $amenities->id_amenities = $request['amenities'][$i];
                 $amenities->save();
             }
-            MProperti::where('id_properti',$tipe->id_properti)->update(['total_amenities' => count($request->amenities)]);
+            MProperti::where('id_properti',$request->id_ref_bahasa)->update(['total_amenities' => count($request->amenities)]);
         }        
         
         MapFasilitas::where('id_properti',$request->id_ref_bahasa)->delete();
