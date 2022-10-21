@@ -252,7 +252,7 @@ trait Helper
             if ($pro->penerapan_harga_weekend==1) {
                 if (date('D', strtotime($period[$i]))=='Sat') {
                     $day['harga'] = $day['harga'] + $pro->harga_weekend;
-                }elseif (date('D', strtotime($period[$i]))=='San') {
+                }elseif (date('D', strtotime($period[$i]))=='Sun') {
                     $day['harga'] = $day['harga'] + $pro->harga_weekend;
                 }else {
                     $day['harga'] = $day['harga'] + $pro->harga_tampil;
@@ -278,7 +278,7 @@ trait Helper
                     $day['harga'] = $day['harga'] + $pro->harga_tampil;
                 }
             }
-            $day['tamu'] = $day['tamu'] + $pro->harga_tamu_tambahan;
+            $day['tamu'] = $pro->harga_tamu_tambahan;
         }
         return $day;
     }
@@ -288,6 +288,7 @@ trait Helper
         $final=0;
         $day['harga'] = 0;
         $day['tamu'] = 0;
+        $day['harga_tampil'] = 0;
         foreach ($cus as $c) {
             $period1 = new DatePeriod(
                 new DateTime($c->start_date),
@@ -304,7 +305,8 @@ trait Helper
                         }else {
                             $day['harga'] = $day['harga'] + $c->harga;
                         }
-                        $day['tamu'] = $day['tamu'] + $c->harga_tamu_tambahan;
+                        $day['tamu'] = $c->harga_tamu_tambahan;
+                        $day['harga_tampil'] = $c->harga;
                     }
                 }
                 // $day[] = $period[$i];

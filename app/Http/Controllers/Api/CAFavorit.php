@@ -12,7 +12,9 @@ class CAFavorit extends Controller
 {
     public function get_favorite(Request $request)
     {        
-        $id_bahasa = $request->id_bahasa;        
+        $id_bahasa = $request->id_bahasa;
+        $page = ($request->page-1)*6;
+        $id_tipe = $request->id_tipe;
         $user = MApiKey::where('token',$request->header('auth-key'))->first();
         
         $tipe = MFavorit::selectRaw('h_favorit.id, h_favorit.id_properti, h_favorit.id_user, h_favorit.created_date, h_favorit.deleted, h_favorit.updated_date, m_properti.id_bahasa, m_properti.id_ref_bahasa, m_properti.judul, m_properti.alamat, m_properti.harga_tampil, m_properti.jumlah_kamar_tidur, m_properti.jumlah_kamar_mandi, (m_properti.jumlah_tamu+COALESCE(m_properti.jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, m_properti.sarapan, m_properti.nilai_rating')
@@ -22,14 +24,19 @@ class CAFavorit extends Controller
                 ->where('m_properti.deleted',1)
                 ->where('m_properti.id_bahasa',$id_bahasa)
                 ->orderBy('h_favorit.updated_date','desc')
-                ->get();
-        
+                ->limit(6)
+                ->offset($page);
+
+        if ($id_tipe != 0) {
+            $tipe = $tipe->where('m_properti.id_tipe_properti',$id_tipe);
+        }
+        $data = $tipe->get();
             return response()->json([
                 'success' => true,
                 'message' => 'Success',
                 'code' => 1,
-                'total_data' => count($tipe),
-                'result' => $tipe,
+                'total_data' => count($data),
+                'result' => $data,
             ], 200);        
         }
     public function post_favorite(Request $request)

@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\CAPrivacyPolicy;
 use App\Http\Controllers\Api\CAAuth;
 use App\Http\Controllers\Api\CAFavorit;
 use App\Http\Controllers\Api\CABooking;
+use App\Http\Controllers\Api\CAProfile;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,7 +40,7 @@ Route::group(['middleware' => 'logapi'], function () {
     Route::get('/get-promotion-transportation', [CAPromosiKendaraan::class, 'get_promotion_transportation']);
     Route::get('/get-concierge-service', [CAConciergeService::class, 'get_concierge_service']);
     Route::get('/get-city', [CAKota::class, 'get_city']);
-    // Route::get('/get-amenities', [CAAmenities::class, 'get_amenities']);
+    Route::get('/get-amenities', [CAAmenities::class, 'get_amenities']);
     Route::get('/get-facilities', [CAFasilitas::class, 'get_facilities']);
     Route::get('/get-about-us', [CAAboutUs::class, 'get_about_us']);
     Route::get('/get-faq', [CAFaq::class, 'get_faq']);
@@ -49,10 +50,10 @@ Route::group(['middleware' => 'logapi'], function () {
     Route::get('/get-property', [CAProperti::class, 'get_property']);
     Route::get('/auth-signup', [CAAuth::class, 'register']);
     Route::get('/auth-signin', [CAAuth::class, 'login']);
+    Route::get('/get-property-booking', [CAProperti::class, 'get_property_detail_harga']);
+    Route::get('/get-property-detail-amenities-fasilitas', [CAProperti::class, 'get_property_detail_amenities_fasilitas']);
+    Route::get('/get-property-detail-review', [CAProperti::class, 'get_property_detail_review']);
 });
-
-Route::get('/get-amenities', [CAAmenities::class, 'get_amenities']);
-Route::get('/get-property-detail-harga', [CAProperti::class, 'get_property_detail_harga']);
 
 Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
     Route::get('/auth-signout', [CAAuth::class, 'logout']);
@@ -60,4 +61,10 @@ Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
     Route::post('/post-favorite', [CAFavorit::class, 'post_favorite']);
     Route::post('/post-unfavorite', [CAFavorit::class, 'post_unfavorite']);
     Route::get('/get-booking', [CABooking::class, 'get_booking']);
+    Route::post('/post-property-booking', [CAProperti::class, 'post_property_booking']);
+    Route::get('/get-booking-detail', [CABooking::class, 'get_booking_detail']);
+    Route::get('/post-review', [CABooking::class, 'post_review']);
+    Route::post('/post-profile-img', [CAProfile::class, 'post_profile_img']);
+    Route::put('/put-profile', [CAProfile::class, 'put_profile']);
+    Route::put('/put-profile-pi', [CAProfile::class, 'put_profile_pi']);
 });

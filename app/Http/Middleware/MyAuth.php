@@ -5,7 +5,7 @@ use Closure;
 use Exception;
 use App\Models\MApiKey;
 use App\Models\ApiLogs;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class MyAuth
 {
@@ -15,8 +15,9 @@ class MyAuth
         $token = $request->header('auth-key');
         $actions = $request->route();
         $cek_token = MApiKey::where("token",$token)->first();
+        $user = Auth::user();
 
-        if(!$cek_token || !$token) {
+        if(!$cek_token || !$token || !$user) {
             // if(isset($actions[1]['authOptional']) && $actions[1]['authOptional']){
             //     return $next($request);
             // }

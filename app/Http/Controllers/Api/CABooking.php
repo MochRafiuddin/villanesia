@@ -5,16 +5,22 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\MBooking;
+use App\Models\MProperti;
+use App\Models\MBookingDiscount;
+use App\Models\MBookingExtra;
+use App\Models\MBookingHargaSatuan;
+use App\Models\MBookingPropertiExtra;
 use App\Models\MApiKey;
+use App\Models\HReviewRating;
 
 class CABooking extends Controller
 {
     public function get_booking(Request $request)
     {        
         $id_bahasa = $request->id_bahasa;
-        $user = MApiKey::where('token',$request->header('auth-key'))->first();        ;
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
 
-        $tipe = MBooking::selectRaw('t_booking.id_booking, t_booking.kode_booking, t_booking.id_ref, t_booking.id_user, t_booking.tanggal_mulai, t_booking.tanggal_selesai, t_booking.created_date, t_booking.id_status_booking, m_properti.id_bahasa, m_properti.id_ref_bahasa, m_properti.judul, m_properti.alamat, m_properti.harga_tampil, m_properti.jumlah_kamar_tidur, m_properti.jumlah_kamar_mandi, (m_properti.jumlah_tamu+COALESCE(m_properti.jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, m_properti.sarapan, m_properti.nilai_rating, m_status_booking.nama_status_booking')
+        $tipe = MBooking::selectRaw('t_booking.id_booking, t_booking.kode_booking, t_booking.id_ref, t_booking.id_user, t_booking.tanggal_mulai, t_booking.tanggal_selesai, t_booking.created_date, t_booking.id_status_booking, m_properti.id_bahasa, m_properti.id_ref_bahasa, m_properti.judul, m_properti.alamat, m_properti.harga_tampil, m_properti.jumlah_kamar_tidur, m_properti.jumlah_kamar_mandi, (m_properti.jumlah_tamu+COALESCE(m_properti.jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, m_properti.sarapan, m_properti.nilai_rating, m_properti.nama_file, m_status_booking.nama_status_booking')
                 ->join('m_properti','m_properti.id_ref_bahasa','t_booking.id_ref')                
                 ->join('m_status_booking','m_status_booking.id_ref_bahasa','t_booking.id_status_booking')                
                 ->where('t_booking.deleted',1)
@@ -30,6 +36,77 @@ class CABooking extends Controller
             'code' => 1,
             'total_data' => count($tipe),
             'result' => $tipe,
+        ], 200);        
+    }
+
+    public function get_booking_detail(Request $request)
+    {        
+        $id_bahasa = $request->id_bahasa;
+        $id_booking = $request->id_booking;
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
+
+        $detail_booking = MBooking::from( 't_booking as a' )
+            ->selectRaw('a.*, b.id_bahasa, b.id_ref_bahasa, b.judul, b.alamat, b.harga_tampil, b.total_rating, b.nilai_rating, b.nama_file, c.nama_status_booking, CONCAT(e.nama_depan," ",e.nama_belakang) as nama_pemilik_properti, CONCAT(g.nama_depan," ",g.nama_belakang) as nama_pemesan, h.nama_tipe_properti')
+            ->join('m_properti as b','a.id_ref','b.id_ref_bahasa','left')
+            ->join('m_status_booking as c','a.id_status_booking','c.id_ref_bahasa','left')
+            ->join('m_users as d','d.id_user','b.created_by','left')
+            ->join('m_customer as e','d.id_ref','e.id','left')
+            ->join('m_users as f','f.id_user','a.id_user','left')
+            ->join('m_customer as g','f.id_ref','g.id','left')
+            ->join('m_tipe_properti as h','h.id_ref_bahasa','b.id_tipe_booking','left')
+            ->where('h.id_bahasa',$id_bahasa)
+            ->where('a.deleted',1)
+            ->where('a.id_user',$user)
+            ->where('b.deleted',1)
+            ->where('b.id_bahasa',$id_bahasa)
+            ->where('a.id_booking',$id_booking)
+            ->where('d.deleted',1)
+            ->where('f.deleted',1)->get();
+        
+        $detail_booking_harga_satuan = MBookingHargaSatuan::where('id_booking',$id_booking)->get();
+        $detail_booking_properti_extra = MBookingPropertiExtra::where('id_booking',$id_booking)->get();
+        $detail_booking_extra = MBookingExtra::where('id_booking',$id_booking)->get();
+        $detail_booking_discount = MBookingDiscount::where('id_booking',$id_booking)->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Success',
+            'code' => 1,            
+            'detail_booking' => $detail_booking,
+            'detail_payment' =>[
+                'detail_booking_harga_satuan' => $detail_booking_harga_satuan,
+                'detail_booking_properti_extra' => $detail_booking_properti_extra,
+                'detail_booking_extra' => $detail_booking_extra,
+                'detail_booking_discount' => $detail_booking_discount,
+            ]
+        ], 200);        
+    }
+    public function post_review(Request $request)
+    {
+        $id_booking = $request->id_booking;
+        $id_properti = $request->id_properti;
+        $rating = $request->rating;
+        $review = $request->review;
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
+
+        $hrating = new HReviewRating();
+        $hrating->id_properti = $id_properti;
+        $hrating->id_booking = $id_booking;
+        $hrating->id_user = $user->id_user;
+        $hrating->review = $review;
+        $hrating->rating = $rating;
+        $hrating->save();
+
+        $jumlah_rating = HReviewRating::where('id_properti',$id_properti)->where('id_booking',$id_booking)->get()->count();
+        $total_rating = HReviewRating::where('id_properti',$id_properti)->where('id_booking',$id_booking)->get()->sum('rating');
+        $rata = $total_rating / $jumlah_rating;
+    
+        $prop = MProperti::where('id_ref_bahasa',$id_properti)->update(['nilai_rating' => $rata, 'total_rating' => $total_rating, 'total_review' => $jumlah_rating]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Success Added Review',
+            'code' => 1,            
         ], 200);        
     }
 }

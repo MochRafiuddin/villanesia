@@ -908,6 +908,11 @@ $( document ).ready(function() {
           google.maps.event.addListener(map, "click", (event) => {
             placeMarker(event.latLng, map);
           });
+          google.maps.event.addListener(marker, 'dragend', function(marker) {
+                var latLng = marker.latLng;
+                document.getElementById('latitude').value = latLng.lat();
+                document.getElementById('longitude').value = latLng.lng();
+          });
           autocomplete.addListener('place_changed', function() {
             marker.setVisible(false);
             var place = autocomplete.getPlace();
@@ -922,11 +927,11 @@ $( document ).ready(function() {
                 map.setZoom(17);
             }
                 
-            google.maps.event.addListener(marker, 'dragend', function(marker) {
-                var latLng = marker.latLng;
-                document.getElementById('latitude').value = latLng.lat();
-                document.getElementById('longitude').value = latLng.lng();
-            });
+            // google.maps.event.addListener(marker, 'dragend', function(marker) {
+            //     var latLng = marker.latLng;
+            //     document.getElementById('latitude').value = latLng.lat();
+            //     document.getElementById('longitude').value = latLng.lng();
+            // });
 
             marker.setPosition(place.geometry.location);
             marker.setVisible(true);

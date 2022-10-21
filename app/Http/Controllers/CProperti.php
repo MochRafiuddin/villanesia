@@ -148,7 +148,7 @@ class CProperti extends Controller
                 $amenities->id_amenities = $request['amenities'][$i];
                 $amenities->save();
             }
-            MProperti::where('id_properti',$tipe->id_properti)->update(['total_amenities' => count($request->amenities)]);
+            MProperti::where('id_ref_bahasa',$tipe->id_properti)->update(['total_amenities' => count($request->amenities)]);
         }
 
         if ($request->fasilitas) {
@@ -161,7 +161,7 @@ class CProperti extends Controller
                 $fasilitas->id_fasilitas = $request['fasilitas'][$i];
                 $fasilitas->save();
             }
-            MProperti::where('id_properti',$tipe->id_properti)->update(['total_fasilitas' => count($request->fasilitas)]);
+            MProperti::where('id_ref_bahasa',$tipe->id_properti)->update(['total_fasilitas' => count($request->fasilitas)]);
         }
 
         if ($request->nama_kamar_tidurs) {
@@ -386,7 +386,7 @@ class CProperti extends Controller
                 $amenities->id_amenities = $request['amenities'][$i];
                 $amenities->save();
             }
-            MProperti::where('id_properti',$request->id_ref_bahasa)->update(['total_amenities' => count($request->amenities)]);
+            MProperti::where('id_ref_bahasa',$request->id_ref_bahasa)->update(['total_amenities' => count($request->amenities)]);
         }        
         
         MapFasilitas::where('id_properti',$request->id_ref_bahasa)->delete();
@@ -397,7 +397,7 @@ class CProperti extends Controller
                 $fasilitas->id_fasilitas = $request['fasilitas'][$i];
                 $fasilitas->save();
             }
-            MProperti::where('id_properti',$request->id_ref_bahasa)->update(['total_fasilitas' => count($request->fasilitas)]);
+            MProperti::where('id_ref_bahasa',$request->id_ref_bahasa)->update(['total_fasilitas' => count($request->fasilitas)]);
         }
         
         MPropertiKamarTidur::where('id_properti',$request->id_ref_bahasa)->delete();
