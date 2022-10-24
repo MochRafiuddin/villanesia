@@ -22,6 +22,7 @@ use App\Http\Controllers\CFaq;
 use App\Http\Controllers\CTermConditionDetail;
 use App\Http\Controllers\CPrivacyPolicyDetail;
 use App\Http\Controllers\CProperti;
+use App\Http\Controllers\GoogleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,6 +39,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [CLogin::class,'index'])->middleware("guest");
 Route::post('/auth', [CLogin::class,'authenticate']);
 Route::get('/logout', [CLogin::class,'logout']);
+Route::get('auth/google', [GoogleController::class, 'redirectToGoogle']);
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
 Route::group(['middleware' => 'auth'], function () {
 

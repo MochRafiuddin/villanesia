@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Auth;
+use Socialite;
 use Validator;
 use App\Models\User;
 use App\Models\MApiKey;
@@ -58,6 +59,77 @@ class CAAuth extends Controller
         ]);
     }
 
+    public function handleProviderCallback(Request $request)
+    {
+        
+        $provider = $request->provider;
+        $validated = $this->validateProvider($provider);
+        
+        $providerUser = Socialite::driver($provider)->userFromToken($request->access_provider_token);
+        // dd($providerUser->getEmail());
+        $cek_email = User::where("email",$providerUser->getEmail())->first();
+        if ($cek_email) {
+            if ($cek_email->g_id == null) {
+                User::where("email",$providerUser->getEmail())->update(['g_id',$providerUser->getId()]);
+                $gid = $providerUser->getId();
+            }else {
+                $gid = $cek_email->g_id;
+            }
+
+            if ($gid !== $providerUser->getId()) {
+                return response()->json([
+                    'message' => 'Email address for this accounts already registered, please use another account',
+                    'code' => 0,
+                ]);
+            }
+            $id_user = $cek_email->id_user;
+        }else {
+            $token = new User();
+            $token->g_id = $providerUser->getId();
+            $token->email = $providerUser->getEmail();
+            $token->username = substr($providerUser->getEmail(),0,6);
+            $token->password = Hash::make("password");
+            $token->id_ref = 0;
+            $token->tipe_user = 2;
+            $token->save();
+
+            $id_user = $token->id_user;
+        }
+
+
+        $cek_token = MApiKey::where('id_user',$id_user)->first();
+        if ($cek_token) {
+            MApiKey::where('id_user',$id_user)->delete();    
+        }
+        $key = Str::random(30);
+        $token = new MApiKey();
+        $token->id_user = $id_user;
+        $token->token = $key;
+        $token->save();
+
+        $get_user = User::selectRaw('m_customer.*, m_users.id_user, m_users.username, m_users.password, m_users.id_ref, m_users.email, m_users.no_telfon, m_users.g_id, m_users.g_photo, m_users.tipe_user')
+                ->join('m_customer','m_customer.id','m_users.id_ref')
+                ->where('m_users.id_user',$id_user)
+                ->where('m_users.deleted',1)
+                ->where('m_customer.deleted',1)
+                ->get();
+                                
+        $request->session()->regenerate();            
+        return response()->json([
+            'message' => 'Login Success',
+            'key' => $key,
+            'code' => 1,
+            'user_data' => $get_user,
+        ]);
+    }
+
+    protected function validateProvider($provider)
+    {
+        if (!in_array($provider, ['google'])) {
+            return response()->json(["message" => 'You can only login via google account'], 400);
+        }
+    }
+
     public function login(Request $request)
     {
         if (!Auth::attempt(['username' => $request->username, 'password' => $request->password, 'deleted' => 1]))
@@ -81,6 +153,7 @@ class CAAuth extends Controller
 
         $get_user = User::selectRaw('m_customer.*, m_users.id_user, m_users.username, m_users.password, m_users.id_ref, m_users.email, m_users.no_telfon, m_users.g_id, m_users.g_photo, m_users.tipe_user')
                 ->join('m_customer','m_customer.id','m_users.id_ref')
+                ->where('m_users.id_user',$id_user)
                 ->where('m_users.deleted',1)
                 ->where('m_customer.deleted',1)
                 ->get();

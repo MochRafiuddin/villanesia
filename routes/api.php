@@ -54,6 +54,7 @@ Route::group(['middleware' => 'logapi'], function () {
     Route::get('/get-property-detail-amenities-fasilitas', [CAProperti::class, 'get_property_detail_amenities_fasilitas']);
     Route::get('/get-property-detail-review', [CAProperti::class, 'get_property_detail_review']);
 });
+Route::get('auth/google/callback', [CAAuth::class, 'handleProviderCallback']);
 
 Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
     Route::get('/auth-signout', [CAAuth::class, 'logout']);
