@@ -18,6 +18,7 @@ class CABooking extends Controller
     public function get_booking(Request $request)
     {        
         $id_bahasa = $request->id_bahasa;
+        $page = ($request->page-1)*6;
         $user = MApiKey::where('token',$request->header('auth-key'))->first();
 
         $tipe = MBooking::selectRaw('t_booking.id_booking, t_booking.kode_booking, t_booking.id_ref, t_booking.id_user, t_booking.tanggal_mulai, t_booking.tanggal_selesai, t_booking.created_date, t_booking.id_status_booking, m_properti.id_bahasa, m_properti.id_ref_bahasa, m_properti.judul, m_properti.alamat, m_properti.harga_tampil, m_properti.jumlah_kamar_tidur, m_properti.jumlah_kamar_mandi, (m_properti.jumlah_tamu+COALESCE(m_properti.jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, m_properti.sarapan, m_properti.nilai_rating, m_properti.nama_file, m_status_booking.nama_status_booking')
@@ -28,6 +29,8 @@ class CABooking extends Controller
                 ->where('m_properti.deleted',1)
                 ->where('m_properti.id_bahasa',$id_bahasa)
                 ->orderBy('t_booking.created_date','desc')
+                ->limit(6)
+                ->offset($page)
                 ->get();
         
         return response()->json([

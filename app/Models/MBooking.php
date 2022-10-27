@@ -15,4 +15,10 @@ class MBooking extends Model
     protected $primaryKey = 'id_booking';
     const CREATED_AT = 'created_date';
     const UPDATED_AT = 'updated_date';
+
+    public static function withDeleted()
+    {
+        return self::where('deleted',1);
+    }
+    
 }

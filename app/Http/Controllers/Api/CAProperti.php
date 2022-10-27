@@ -14,6 +14,7 @@ use App\Models\MAmenities;
 use App\Models\MReviewRating;
 use App\Models\MBooking;
 use App\Models\MBookingHargaSatuan;
+use App\Models\MBookingExtra;
 use App\Models\MBookingPropertiExtra;
 use App\Models\MapAmenities;
 use App\Models\MapFasilitas;
@@ -1067,7 +1068,7 @@ class CAProperti extends Controller
             $from = Carbon::parse($mulai);
             $to = Carbon::parse($selesai);
             $diff_in_hours = $to->diffInDays($from);
-            dd($diff_in_hours);
+            // dd($diff_in_hours);
             $durasi_inap = floor($diff_in_hours / 7);
             $durasi_inap_jam = 0;
             $extra = $diff_in_hours % 7;
@@ -1184,12 +1185,12 @@ class CAProperti extends Controller
                         
         }elseif ($id_tipe_booking == 3) {
             $harga_final_properti = $pro->harga_tampil * $tipe->durasi_inap;
-            $this->booking_harga($tipe->id_booking, 1, 1, null, null, $tanggal_mulai, $tanggal_selesai, $pro->harga_tampil, $harga_final_properti);
+            $this->booking_harga($tipe->id_booking, 1, 1, null, null, $tanggal_mulai, date('Y-m-d', strtotime($tanggal_mulai.' +'.($tipe->durasi_inap * 7).' day')), $pro->harga_tampil, $harga_final_properti);
 
             if($tipe->extra_hari > 0){
                 $harga_final_properti_extra = ($pro->harga_tampil * $tipe->durasi_inap) + floor($pro->harga_tampil / 7 * $tipe->extra_hari);
 
-                $this->booking_harga($tipe->id_booking, 1, $tipe->extra_hari, null, null, $tanggal_mulai, $tanggal_selesai, floor($pro->harga_tampil / 7), $harga_final_properti_extra);
+                $this->booking_harga($tipe->id_booking, 1, $tipe->extra_hari, null, null, date('Y-m-d', strtotime($tanggal_mulai.' +'.($tipe->durasi_inap * 7).' day')), $tanggal_selesai, floor($pro->harga_tampil / 7), $harga_final_properti_extra);
             }
 
             if($tamu_tambahan > 0){
@@ -1199,12 +1200,12 @@ class CAProperti extends Controller
                     $harga_final_properti_tamu = 0;
                 }
 
-                $this->booking_harga($tipe->id_booking, 2, $tamu_tambahan, null, null, $tanggal_mulai, $tanggal_selesai, $pro->harga_tampil, $harga_final_properti_tamu);
+                $this->booking_harga($tipe->id_booking, 2, $tamu_tambahan, null, null, $tanggal_mulai, date('Y-m-d', strtotime($tanggal_mulai.' +'.($tipe->durasi_inap * 7).' day')), $pro->harga_tamu_tambahan, $harga_final_properti_tamu);
                 
                 if($tipe->extra_hari > 0){
                     $harga_final_properti_tamu_extra = ($pro->harga_tamu_tambahan * $tipe->durasi_inap * $tamu_tambahan) + floor($pro->harga_tamu_tambahan / 7 * $tamu_tambahan * $tipe->extra_hari);
 
-                    $this->booking_harga($tipe->id_booking, 2, $tamu_tambahan, null, null, $tanggal_mulai, $tanggal_selesai, floor($pro->harga_tampil / 7), $harga_final_properti_tamu);
+                    $this->booking_harga($tipe->id_booking, 2, ($tamu_tambahan * $tipe->extra_hari), null, null, date('Y-m-d', strtotime($tanggal_mulai.' +'.($tipe->durasi_inap * 7).' day')), $tanggal_selesai, floor($pro->harga_tamu_tambahan / 7), $harga_final_properti_tamu_extra);
                 }
             }
         }elseif ($id_tipe_booking == 4) {            
@@ -1214,7 +1215,7 @@ class CAProperti extends Controller
             if($tipe->extra_hari > 0){
                 $harga_final_properti_extra = ($pro->harga_tampil * $tipe->durasi_inap) + floor($pro->harga_tampil / 30 * $tipe->extra_hari);
                 
-                $this->booking_harga($tipe->id_booking, 1, $tipe->extra_hari, null, null, $tanggal_mulai, $tanggal_selesai, floor($pro->harga_tampil / 30), $harga_final_properti_extra);
+                $this->booking_harga($tipe->id_booking, 1, $tipe->extra_hari, null, null, date('Y-m-d', strtotime($tanggal_mulai.' +'.($tipe->durasi_inap * 30).' day')), $tanggal_selesai, floor($pro->harga_tampil / 30), $harga_final_properti_extra);
             }
 
             if($tamu_tambahan > 0){
@@ -1229,7 +1230,7 @@ class CAProperti extends Controller
                 if($tipe->extra_hari > 0){
                     $harga_final_properti_tamu_extra = ($pro->harga_tamu_tambahan * $tipe->durasi_inap * $tamu_tambahan) + floor($pro->harga_tamu_tambahan / 30 * $tamu_tambahan * $tipe->extra_hari);
                     
-                    $this->booking_harga($tipe->id_booking, 2, $tamu_tambahan, null, null, $tanggal_mulai, $tanggal_selesai, floor($pro->harga_tampil / 30), $harga_final_properti_tamu);
+                    $this->booking_harga($tipe->id_booking, 2, $tamu_tambahan, null, null, date('Y-m-d', strtotime($tanggal_mulai.' +'.($tipe->durasi_inap * 30).' day')), $tanggal_selesai, floor($pro->harga_tampil / 30), $harga_final_properti_tamu);
                 }
             }
         }else{
@@ -1237,35 +1238,35 @@ class CAProperti extends Controller
                 $hari = date('D', strtotime($tanggal_mulai));
                 if ($pro->penerapan_harga_weekend==1) {
                     if ($hari == 'Sat') {
-                        $final = $diff_in_hours * $pro->harga_weekend;
+                        $final = $durasi_inap_jam * $pro->harga_weekend;
                     }elseif ($hari == 'Sun') {
-                        $final = $diff_in_hours * $pro->harga_weekend;
+                        $final = $durasi_inap_jam * $pro->harga_weekend;
                     }else {
-                        $final = $diff_in_hours * $pro->harga_tampil;
+                        $final = $durasi_inap_jam * $pro->harga_tampil;
                     }
                 }
                 if ($pro->penerapan_harga_weekend==2) {
                     if ($hari == 'Fri') {
-                        $final = $diff_in_hours * $pro->harga_weekend;
+                        $final = $durasi_inap_jam * $pro->harga_weekend;
                     }elseif ($hari == 'Sat') {
-                        $final = $diff_in_hours * $pro->harga_weekend;
+                        $final = $durasi_inap_jam * $pro->harga_weekend;
                     }else {
-                        $final = $diff_in_hours * $pro->harga_tampil;
+                        $final = $durasi_inap_jam * $pro->harga_tampil;
                     }
                 }
                 if ($pro->penerapan_harga_weekend==3) {
                     if ($hari == 'Fri') {
-                        $final = $diff_in_hours * $pro->harga_weekend;
+                        $final = $durasi_inap_jam * $pro->harga_weekend;
                     }elseif ($hari == 'Sat') {
-                        $final = $diff_in_hours * $pro->harga_weekend;
+                        $final = $durasi_inap_jam * $pro->harga_weekend;
                     }elseif ($hari == 'Sun') {
-                        $final = $diff_in_hours * $pro->harga_weekend;
+                        $final = $durasi_inap_jam * $pro->harga_weekend;
                     }else {
-                        $final = $diff_in_hours * $pro->harga_tampil;
+                        $final = $durasi_inap_jam * $pro->harga_tampil;
                     }
                 }                
             }else {
-                $final = $pro->harga_tampil * $diff_in_hours;
+                $final = $pro->harga_tampil * $durasi_inap_jam;
             }
             $this->booking_harga($tipe->id_booking, 1, 1, $jam_mulai, $jam_selesai, null, null, $pro->harga_tampil, $final);
 
@@ -1323,7 +1324,7 @@ class CAProperti extends Controller
                 'nominal_pajak' => $nominal_pajak,
                 'total_extra_service' => $total_extra_service,
                 'total_booking_extra' => $total_booking_extra,
-                'harga_total' => $harga_final_properti + $pro->biaya_kebersihan + $total_extra_service + $pro->uang_jaminan + $nominal_pajak,
+                'harga_total' => $harga_final_properti + $biaya_kebersihan + $total_extra_service + $pro->uang_jaminan + $nominal_pajak,
             ];
             MBooking::where('id_booking',$tipe->id_booking)->update($data_update);
 
@@ -1344,7 +1345,7 @@ class CAProperti extends Controller
 
     public function booking_harga($id, $tipe, $jumlah, $jam_mulai, $jam_selesai, $tanggal_mulai, $tanggal_selesai, $satuan, $final)
     {
-        // dd($tanggal_mulai.' = '.$tanggal_selesai);
+        // dd($jumlah);
         $booking = new MBookingHargaSatuan();
         $booking->id_booking = $id;
         $booking->id_tipe = $tipe;

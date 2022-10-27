@@ -153,7 +153,7 @@ class CAAuth extends Controller
 
         $get_user = User::selectRaw('m_customer.*, m_users.id_user, m_users.username, m_users.password, m_users.id_ref, m_users.email, m_users.no_telfon, m_users.g_id, m_users.g_photo, m_users.tipe_user')
                 ->join('m_customer','m_customer.id','m_users.id_ref')
-                ->where('m_users.id_user',$id_user)
+                ->where('m_users.id_user',auth::user()->id_user)
                 ->where('m_users.deleted',1)
                 ->where('m_customer.deleted',1)
                 ->get();

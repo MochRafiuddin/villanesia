@@ -22,6 +22,7 @@ use App\Http\Controllers\CFaq;
 use App\Http\Controllers\CTermConditionDetail;
 use App\Http\Controllers\CPrivacyPolicyDetail;
 use App\Http\Controllers\CProperti;
+use App\Http\Controllers\CBooking;
 use App\Http\Controllers\GoogleController;
 use Illuminate\Support\Facades\Route;
 
@@ -290,4 +291,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/properti/upload', [CProperti::class,'upload']);
     Route::get('/properti/delete-img/{id}', [CProperti::class,'delete_img']);
     Route::get('/properti/kota-provinsi/', [CProperti::class,'kotaByProvinsi']);
+
+    //booking
+    Route::get('/list-booking', [CBooking::class,'index'])->name('booking-index');
+    Route::get('/booking/data', [CBooking::class,'data']);
+    Route::get('/booking/detail/{id}', [CBooking::class,'detail']);
+    Route::post('/booking/confirm/{id}', [CBooking::class,'confirm']);
+    Route::post('/booking/decline/{id}', [CBooking::class,'decline']);
+    Route::post('/booking/extra/{id}', [CBooking::class,'extra']);
+    Route::post('/booking/discount/{id}', [CBooking::class,'discount']);
 });

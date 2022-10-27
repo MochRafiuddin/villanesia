@@ -205,13 +205,6 @@ trait Helper
         }
         return $nama_bulan[$value-1];
     }
-    public function setSessionPeriode($periode) //this model paramaters
-    {
-        Session::put('periode',($periode->bulan ?? null).($periode->tahun ?? null));
-        Session::put('id_periode',$periode->id_periode ?? null);
-        Session::put('periode_bulan',$periode->bulan ?? null);
-        Session::put('periode_tahun',$periode->tahun ?? null);
-    }
     public function getMinutes($value)
     {
         //15 - 23

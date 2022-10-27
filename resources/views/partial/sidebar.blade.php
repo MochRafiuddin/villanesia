@@ -51,5 +51,17 @@
                 </ul>
             </div>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#Booking" aria-expanded="false" aria-controls="Booking">
+                <i class="mdi mdi-puzzle-outline menu-icon"></i>
+                <span class="menu-title">Booking</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="Booking">
+                <ul class="nav flex-column sub-menu">                                        
+                    <li class="nav-item"> <a class="nav-link" href="{{url('/list-booking')}}">List Booking</a></li>
+                </ul>
+            </div>
+        </li>
     </ul>
 </nav>
