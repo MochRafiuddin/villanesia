@@ -18,6 +18,8 @@ use App\Http\Controllers\Api\CAAuth;
 use App\Http\Controllers\Api\CAFavorit;
 use App\Http\Controllers\Api\CABooking;
 use App\Http\Controllers\Api\CAProfile;
+use App\Http\Controllers\Api\CAAds;
+use App\Http\Controllers\Api\CASetting;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,8 +55,12 @@ Route::group(['middleware' => 'logapi'], function () {
     Route::get('/get-property-booking', [CAProperti::class, 'get_property_detail_harga']);
     Route::get('/get-property-detail-amenities-fasilitas', [CAProperti::class, 'get_property_detail_amenities_fasilitas']);
     Route::get('/get-property-detail-review', [CAProperti::class, 'get_property_detail_review']);
+    Route::get('auth/google/callback', [CAAuth::class, 'handleProviderCallback']);
+    Route::get('/get-ads', [CAAds::class, 'get_ads']);
+    Route::get('/get-setting', [CASetting::class, 'get_setting']);
+    Route::get('/get-best-destinations', [CAKota::class, 'get_best_destination']);
+    Route::get('/get-properti-by-city', [CAProperti::class, 'get_properti_by_city']);
 });
-Route::get('auth/google/callback', [CAAuth::class, 'handleProviderCallback']);
 
 Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
     Route::get('/auth-signout', [CAAuth::class, 'logout']);
@@ -68,4 +74,5 @@ Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
     Route::post('/post-profile-img', [CAProfile::class, 'post_profile_img']);
     Route::put('/put-profile', [CAProfile::class, 'put_profile']);
     Route::put('/put-profile-pi', [CAProfile::class, 'put_profile_pi']);
+    Route::post('/post-booking-cancel', [CABooking::class, 'post_booking_cancel']);
 });

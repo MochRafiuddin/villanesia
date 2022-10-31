@@ -17,8 +17,8 @@ class CAFavorit extends Controller
         $id_tipe = $request->id_tipe;
         $user = MApiKey::where('token',$request->header('auth-key'))->first();
         
-        $tipe = MFavorit::selectRaw('h_favorit.id, h_favorit.id_properti, h_favorit.id_user, h_favorit.created_date, h_favorit.deleted, h_favorit.updated_date, m_properti.id_bahasa, m_properti.id_ref_bahasa, m_properti.judul, m_properti.alamat, m_properti.harga_tampil, m_properti.jumlah_kamar_tidur, m_properti.jumlah_kamar_mandi, (m_properti.jumlah_tamu+COALESCE(m_properti.jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, m_properti.sarapan, m_properti.nilai_rating')
-                ->join('m_properti','h_favorit.id_properti','m_properti.id_ref_bahasa')                
+        $tipe = MFavorit::selectRaw('h_favorit.id, h_favorit.id_properti, h_favorit.id_user, h_favorit.created_date, h_favorit.deleted, h_favorit.updated_date, m_properti.id_bahasa, m_properti.id_ref_bahasa, m_properti.judul, m_properti.alamat, m_properti.harga_tampil, m_properti.jumlah_kamar_tidur, m_properti.jumlah_kamar_mandi, (m_properti.jumlah_tamu+COALESCE(m_properti.jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, m_properti.sarapan, m_properti.nilai_rating, m_properti.nama_file')
+                ->leftJoin('m_properti','h_favorit.id_properti','=','m_properti.id_ref_bahasa')                
                 ->where('h_favorit.deleted',1)
                 ->where('h_favorit.id_user',$user->id_user)                
                 ->where('m_properti.deleted',1)
