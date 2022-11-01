@@ -60,6 +60,7 @@ Route::group(['middleware' => 'logapi'], function () {
     Route::get('/get-setting', [CASetting::class, 'get_setting']);
     Route::get('/get-best-destinations', [CAKota::class, 'get_best_destination']);
     Route::get('/get-properti-by-city', [CAProperti::class, 'get_properti_by_city']);
+    Route::get('/get-city-search', [CAKota::class, 'get_city_search']);
 });
 
 Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {

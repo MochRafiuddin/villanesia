@@ -55,7 +55,7 @@ class CProperti extends Controller
         $fasilitas = MFasilitas::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
         $kota = MKota::withDeleted()->get();
         $provinsi = MProvinsi::withDeleted()->get();
-        $negara = MNegara::withDeleted()->get();
+        $negara = MNegara::withDeleted()->where('id_negara',1)->get();
         $url = url('properti/create-save');
         return view('properti.add_pro')
             ->with('title','Properti')            
@@ -202,7 +202,7 @@ class CProperti extends Controller
         $tipeId = MTipeBooking::where('id_ref_bahasa',$data->id_tipe_booking)->where('id_bahasa',$data->id_bahasa)->first();
         $kota = MKota::withDeleted()->where('id_provinsi',$data->id_provinsi)->get();
         $provinsi = MProvinsi::withDeleted()->get();
-        $negara = MNegara::withDeleted()->get();
+        $negara = MNegara::withDeleted()->where('id_negara',1)->get();
         $url = url('properti/show-save/'.$id);
         return view('properti.edit')
             ->with('data',$data)
@@ -245,7 +245,7 @@ class CProperti extends Controller
         $tipeId = MTipeBooking::where('id_ref_bahasa',$data->id_tipe_booking)->where('id_bahasa',$data->id_bahasa)->first();
         $kota = MKota::withDeleted()->get();
         $provinsi = MProvinsi::withDeleted()->get();
-        $negara = MNegara::withDeleted()->get();
+        $negara = MNegara::withDeleted()->where('id_negara',1)->get();
         $url = url('properti/show-save/'.$id);
         return view('properti.edit')
             ->with('data',$data)
@@ -453,7 +453,7 @@ class CProperti extends Controller
         $tipeId = MTipeBooking::where('id_ref_bahasa',$data->id_tipe_booking)->where('id_bahasa',$data->id_bahasa)->first();
         $kota = MKota::withDeleted()->get();
         $provinsi = MProvinsi::withDeleted()->get();
-        $negara = MNegara::withDeleted()->get();
+        $negara = MNegara::withDeleted()->where('id_negara',1)->get();
         $url = url('properti/show-save/'.$id);
         return view('properti.detail')
             ->with('data',$data)

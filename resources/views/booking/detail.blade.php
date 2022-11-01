@@ -16,14 +16,20 @@ use App\Traits\Helper;
                             $status = "<small class='bg-danger text-white'>&nbsp;&nbsp;".$data->nama_status_booking."&nbsp;&nbsp;</small>";
                         }
                     ?>
-                    <h6 class="card-title">Reservation {{$data->kode_booking}} {!!$status!!}</h6>
-                    @if($data->id_status_booking == 3 || $data->id_status_booking == 4)
+                    <h6 class="card-title">Reservation #{{$data->kode_booking}} {!!$status!!}</h6>
+                    <!-- @if($data->id_status_booking == 3 || $data->id_status_booking == 4)
                         <div class="form-group">
-                            <label for="message-text" class="col-form-label">Decline Reason</label>
-                            <textarea class="form-control" name="decline" id="decline" style="height:130px;">{{$data->alasan_reject}}</textarea>
+                            <label for="message-text" class="col-form-label"><b>Decline Reason</b></label>
+                            {{$data->alasan_reject}}
                         </div>
-                    @endif
+                    @endif -->
                     <table width="100%">
+                    @if($data->id_status_booking == 3 || $data->id_status_booking == 4)
+                        <tr>
+                            <td style="padding-bottom: 15px;padding-right: 15px;"><b>Decline Reason</b></td>
+                            <td colspan="2" style="padding-bottom: 15px;">{{$data->alasan_reject}}</td>
+                        </tr>
+                    @endif
                         <tr>
                             <td style="padding-bottom: 15px;padding-right: 15px;"><b>Date: </b><br>{{date('F d, Y', strtotime($data->created_date))}}<br> {{date('H:i', strtotime($data->created_date))}}</td>
                             <td style="padding-bottom: 15px;">
@@ -165,7 +171,7 @@ use App\Traits\Helper;
                         @if($extra_service->count() > 0)
                         <tr>
                             <td style="padding-bottom: 10px;" ><p>Service</p></td>
-                            <td style="padding-bottom: 10px;" class="text-right"><p>Rp.Helper::ribuan(ceil($data->total_extra_service))</p></td>
+                            <td style="padding-bottom: 10px;" class="text-right"><p>Rp.{{Helper::ribuan(ceil($data->total_extra_service))}}</p></td>
                         </tr>
                         @endif
                         @if($data->total_booking_extra != 0)

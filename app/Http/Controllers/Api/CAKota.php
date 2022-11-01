@@ -54,4 +54,24 @@ class CAKota extends Controller
             'data' => $tipe,
         ], 200);        
     }
+
+    public function get_city_search(Request $request)
+    {                
+        $id_bahasa = $request->id_bahasa;
+
+        $tipe = MKota::selectRaw('m_kota.*')
+                ->join('m_properti', 'm_kota.id_kota','=','m_properti.id_kota')
+                ->where('m_kota.deleted',1)
+                ->where('m_properti.deleted',1)
+                ->where('m_properti.id_bahasa',$id_bahasa)
+                ->groupBy('m_kota.id_kota')                
+                ->get();        
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Success',
+            'code' => 1,
+            'data' => $tipe,
+        ], 200);        
+    }
 }

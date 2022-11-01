@@ -54,7 +54,7 @@ class CAFavorit extends Controller
                 'total_data' => count($data),
                 'result' => $data,
             ], 200);        
-        }
+    }
     public function post_favorite(Request $request)
     {        
         $id_properti = $request->id_properti;

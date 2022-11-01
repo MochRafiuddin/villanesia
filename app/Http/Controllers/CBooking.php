@@ -120,14 +120,14 @@ class CBooking extends Controller
                 return $btn;
             })
             ->addColumn('status', function ($row) {
-                // if ($row->id_status_booking == 1) {
-                //     $btn = '<p class="bg-primary text-white" style="white-space: nowrap">'.$row->nama_status_booking.'</p>';
-                // }elseif ($row->id_status_booking == 5 || $row->id_status_booking == 2) {
-                //     $btn = '<p class="bg-success text-white" style="white-space: nowrap">'.$row->nama_status_booking.'</p>';
-                // }else{
-                //     $btn = '<p class="bg-danger text-white" style="white-space: nowrap">'.$row->nama_status_booking.'</p>';
-                // }
-                    $btn = '<p style="white-space: nowrap">'.$row->nama_status_booking.'</p>';
+                if ($row->id_status_booking == 1) {
+                    $btn = '<p class="badge badge-primary text-white">'.$row->nama_status_booking.'</p>';
+                }elseif ($row->id_status_booking == 5 || $row->id_status_booking == 2) {
+                    $btn = '<p class="badge badge-success text-white">'.$row->nama_status_booking.'</p>';
+                }else{
+                    $btn = '<p class="badge badge-danger text-white">'.$row->nama_status_booking.'</p>';
+                }
+                    // $btn = '<p style="white-space: nowrap">'.$row->nama_status_booking.'</p>';
                 return $btn;
             })
             ->addColumn('date', function ($row) {                                
@@ -168,6 +168,10 @@ class CBooking extends Controller
             })
             ->addColumn('harga_total', function ($row) {                
                 $nominal = "<p>Rp.".$this->ribuan(ceil($row->harga_total))."</p>";
+                return $nominal;
+            })
+            ->editColumn('kode_booking', function ($row) {                
+                $nominal = "#".$row->kode_booking;
                 return $nominal;
             })
             ->rawColumns(['action','alamat','in','out','harga_total','status'])
