@@ -15,20 +15,36 @@ class CAFavorit extends Controller
         $id_bahasa = $request->id_bahasa;
         $page = ($request->page-1)*6;
         $id_tipe = $request->id_tipe;
+        $order_by = $request->order_by;
         $user = MApiKey::where('token',$request->header('auth-key'))->first();
         
-        $tipe = MFavorit::selectRaw('h_favorit.id, h_favorit.id_properti, h_favorit.id_user, h_favorit.created_date, h_favorit.deleted, h_favorit.updated_date, m_properti.id_bahasa, m_properti.id_ref_bahasa, m_properti.judul, m_properti.alamat, m_properti.harga_tampil, m_properti.jumlah_kamar_tidur, m_properti.jumlah_kamar_mandi, (m_properti.jumlah_tamu+COALESCE(m_properti.jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, m_properti.sarapan, m_properti.nilai_rating, m_properti.nama_file')
+        $tipe = MFavorit::selectRaw('h_favorit.id, h_favorit.id_properti, h_favorit.id_user, h_favorit.created_date, h_favorit.deleted, h_favorit.updated_date, m_properti.id_bahasa, m_properti.id_ref_bahasa, m_properti.judul, m_properti.alamat, m_properti.harga_tampil, m_properti.jumlah_kamar_tidur, m_properti.jumlah_kamar_mandi, (m_properti.jumlah_tamu+COALESCE(m_properti.jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, m_properti.sarapan, m_properti.nilai_rating, m_properti.nama_file, m_properti.id_tipe_properti')
                 ->leftJoin('m_properti','h_favorit.id_properti','=','m_properti.id_ref_bahasa')                
                 ->where('h_favorit.deleted',1)
                 ->where('h_favorit.id_user',$user->id_user)                
                 ->where('m_properti.deleted',1)
                 ->where('m_properti.id_bahasa',$id_bahasa)
-                ->orderBy('h_favorit.updated_date','desc')
+                ->orderBy('h_favorit.created_date','desc')
                 ->limit(6)
                 ->offset($page);
 
         if ($id_tipe != 0) {
             $tipe = $tipe->where('m_properti.id_tipe_properti',$id_tipe);
+        }
+        if ($order_by == 1) {
+            $tipe = $tipe->orderBy('m_properti.harga_tampil','asc');
+        }elseif ($order_by == 2) {
+            $tipe = $tipe->orderBy('m_properti.harga_tampil','desc');
+        }elseif ($order_by == 3) {
+            $tipe = $tipe->orderBy('m_properti.nilai_rating','desc');
+        }elseif ($order_by == 4) {
+            $tipe = $tipe->orderByRaw('(m_properti.total_amenities + m_properti.total_fasilitas) desc');
+        }elseif ($order_by == 5) {
+            $tipe = $tipe->orderBy('m_properti.created_date','desc');
+        }elseif ($order_by == 6) {
+            $tipe = $tipe->orderBy('m_properti.created_date','asc');
+        }else {
+            $tipe = $tipe->orderBy('h_favorit.created_date','desc');
         }
         $data = $tipe->get();
             return response()->json([
@@ -42,7 +58,7 @@ class CAFavorit extends Controller
     public function post_favorite(Request $request)
     {        
         $id_properti = $request->id_properti;
-        $user = MApiKey::where('token',$request->header('auth-key'))->first();        ;
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
 
         $tipe = MFavorit::where('id_properti',$id_properti)
                 ->where('id_user',$user->id_user)
