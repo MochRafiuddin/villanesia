@@ -64,20 +64,18 @@ class CAProfile extends Controller
 
         $tentang = $request->tentang;
         $id_negara = $request->id_negara;
-        $nama_provinsi = $request->nama_provinsi;
-        $nama_kota = $request->nama_kota;
+        // $nama_provinsi = $request->nama_provinsi;
+        // $nama_kota = $request->nama_kota;
 
         if ($muser->id_ref == 0) {
             $custom = new MCustomer();
             $custom->tentang = $tentang;
             $custom->id_negara = $id_negara;
-            $custom->nama_provinsi = $nama_provinsi;
-            $custom->nama_kota = $nama_kota;
             $custom->save();
 
             $muser = User::where('id_user',$user->id_user)->update(['id_ref' => $custom->id]);
         }else {
-            $muser = MCustomer::where('id',$muser->id_ref)->update(['tentang' => $tentang, 'id_negara' => $id_negara, 'nama_provinsi' => $nama_provinsi, 'nama_kota' => $nama_kota]);
+            $muser = MCustomer::where('id',$muser->id_ref)->update(['tentang' => $tentang, 'id_negara' => $id_negara]);
         }
 
         return response()->json([
@@ -98,6 +96,8 @@ class CAProfile extends Controller
         $email = $request->email;
         $no_telfon = $request->no_telfon;
         $no_telfon_lain = $request->no_telfon_lain;
+        $bahasa_asli = $request->bahasa_asli;
+        $bahasa_lain = $request->bahasa_lain;
 
         if ($no_telfon_lain != null) {
             $tlplain = [];
@@ -113,9 +113,17 @@ class CAProfile extends Controller
             $custom->nama_belakang = $nama_belakang;
             $custom->jenis_kelamin = $jenis_kelamin;            
             $custom->no_telfon_lain = $tlplain;
+            $custom->bahasa_asli = $bahasa_asli;
+            $custom->bahasa_lain = $bahasa_lain;
             $custom->save();
 
-            $muser = User::where('id_user',$user->id_user)->update(['id_ref' => $custom->id, 'email' => $email, 'no_telfon' => $no_telfon]);
+            $muser = User::where('id_user',$user->id_user)->update(['id_ref' => $custom->id]);
+            if ($email != null) {
+                $muser = User::where('id_user',$user->id_user)->update(['email' => $email]);
+            }
+            if ($no_telfon != null) {
+                $muser = User::where('id_user',$user->id_user)->update(['no_telfon' => $no_telfon]);
+            }
         }else {
             $cek_user = User::where('email',$email)->where('no_telfon',$no_telfon)->get()->count();
             if ($cek_user > 0) {
@@ -125,14 +133,170 @@ class CAProfile extends Controller
                     'code' => 0,            
                 ], 400);
             }
-            $muser = MCustomer::where('id',$muser->id_ref)->update(['nama_depan' => $nama_depan, 'nama_belakang' => $nama_belakang, 'jenis_kelamin' => $jenis_kelamin, 'no_telfon_lain' => $tlplain]);
+            $muser = MCustomer::where('id',$muser->id_ref)->update(['nama_depan' => $nama_depan, 'nama_belakang' => $nama_belakang, 'jenis_kelamin' => $jenis_kelamin, 'no_telfon_lain' => $tlplain, 'bahasa_asli' => $bahasa_asli, 'bahasa_lain' => $bahasa_lain]);
 
-            $muser = User::where('id_user',$user->id_user)->update(['email' => $email, 'no_telfon' => $no_telfon]);
+            // $muser = User::where('id_user',$user->id_user)->update(['email' => $email, 'no_telfon' => $no_telfon]);
+            if ($email != null) {
+                $muser = User::where('id_user',$user->id_user)->update(['email' => $email]);
+            }
+            if ($no_telfon != null) {
+                $muser = User::where('id_user',$user->id_user)->update(['no_telfon' => $no_telfon]);
+            }
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Success',
+            'code' => 1,            
+        ], 200);
+    }
+
+    public function get_profile(Request $request)
+    {        
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
+        $data = User::from('m_users as a')
+            ->selectRaw('a.id_user, a.email, a.no_telfon, b.tentang, b.id_negara, c.nama_negara')
+            ->leftJoin('m_customer as b','a.id_ref','=','b.id')
+            ->leftJoin('m_negara as c','b.id_negara','=','c.id_negara')
+            ->where('a.deleted',1)
+            ->where('b.deleted',1)
+            ->where('c.deleted',1)
+            ->where('a.id_user',$user->id_user)
+            ->first();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Success',
+            'code' => 1,
+            'data' => $data,
+        ], 200);
+    }
+
+    public function get_personal_information(Request $request)
+    {        
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
+        $data = User::from('m_users as a')
+            ->selectRaw('a.id_user, a.email, a.no_telfon, b.*')
+            ->leftJoin('m_customer as b','a.id_ref','=','b.id')            
+            ->where('a.deleted',1)
+            ->where('b.deleted',1)
+            ->where('a.id_user',$user->id_user)
+            ->first();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Success',
+            'code' => 1,
+            'data' => $data,
+        ], 200);
+    }
+
+    public function put_email(Request $request)
+    {        
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
+        $email = $request->email;
+        $cek_user = User::where('deleted',1)                
+                ->where('email',$email)
+                ->get();
+        if (count($cek_user)>0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'email is already used, please enter new email',
+                'code' => 0,
+            ], 400);
+        }
+
+        $muser = User::where('id_user',$user->id_user)->update(['email' => $email]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'email update',
+            'code' => 1,            
+        ], 200);
+    }
+
+    public function put_phone(Request $request)
+    {        
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
+        $no_telfon = $request->no_telfon;
+        $cek_user = User::where('deleted',1)                
+                ->where('no_telfon',$no_telfon)
+                ->get();
+        if (count($cek_user)>0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'phone number is already used, please enter new phone number',
+                'code' => 0,
+            ], 400);
+        }
+
+        $muser = User::where('id_user',$user->id_user)->update(['no_telfon' => $no_telfon]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'phone number update',
+            'code' => 1,            
+        ], 200);
+    }
+
+    public function put_another_phone(Request $request)
+    {        
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
+        $data = User::from('m_users as a')
+            ->selectRaw('a.id_user,b.*')
+            ->leftJoin('m_customer as b','a.id_ref','=','b.id')            
+            ->where('a.deleted',1)
+            ->where('b.deleted',1)
+            ->where('a.id_user',$user->id_user)
+            ->first();
+        $var = json_decode($data->no_telfon_lain, TRUE);        
+
+        $no_telfon_lain = $request->no_telfon_lain;        
+
+        if ($no_telfon_lain != null) {
+            $tlplain = [];
+            $notlp = explode(",",$no_telfon_lain);
+            for ($i=0; $i < count($notlp) ; $i++) { 
+                $tlplain[] = $notlp[$i];
+            }
+        }
+        $output = array_merge($var, $tlplain);
+        $muser = MCustomer::where('id',$data->id)->update(['no_telfon_lain' => $output]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'another phone number update',
+            'code' => 1,            
+        ], 200);
+    }
+
+    public function delete_another_phone(Request $request)
+    {        
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
+        $data = User::from('m_users as a')
+            ->selectRaw('a.id_user,b.*')
+            ->leftJoin('m_customer as b','a.id_ref','=','b.id')            
+            ->where('a.deleted',1)
+            ->where('b.deleted',1)
+            ->where('a.id_user',$user->id_user)
+            ->first();
+        $var = json_decode($data->no_telfon_lain, TRUE);        
+
+        $no_telfon_lain = $request->no_telfon_lain;        
+
+        if ($no_telfon_lain != null) {
+            $tlplain = [];
+            $notlp = explode(",",$no_telfon_lain);
+            for ($i=0; $i < count($notlp) ; $i++) { 
+                $tlplain[] = $notlp[$i];
+            }
+        }
+        $output = array_diff($var, $tlplain);
+        $muser = MCustomer::where('id',$data->id)->update(['no_telfon_lain' => $output]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'another phone number delete',
             'code' => 1,            
         ], 200);
     }

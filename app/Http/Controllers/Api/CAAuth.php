@@ -10,6 +10,7 @@ use Auth;
 use Socialite;
 use Validator;
 use App\Models\User;
+use App\Models\MCustomer;
 use App\Models\MApiKey;
 use Illuminate\Support\Str;
 
@@ -29,12 +30,16 @@ class CAAuth extends Controller
             ], 400);
         }
 
+        $cus = new MCustomer();
+        $cus->nama_depan = $request->username;
+        $cus->save();
+
         $data['username'] = $request->username;
         $data['email'] = $request->email;
         // $data['token'] = Str::random(30);
 
         $user = User::create([
-            'id_ref' => 0,
+            'id_ref' => $cus->id,
             'tipe_user' => 2,
             'username' => $request->username,
             'email' => $request->email,
@@ -131,8 +136,16 @@ class CAAuth extends Controller
     }
 
     public function login(Request $request)
-    {
-        if (!Auth::attempt(['username' => $request->username, 'password' => $request->password, 'deleted' => 1]))
+    {        
+        
+        if(is_numeric($request->username)){
+            $arr = ['no_telfon' => $request->username, 'password' => $request->password, 'deleted' => 1];
+        }
+        else {
+            $arr = ['username' => $request->username, 'password' => $request->password, 'deleted' => 1];
+        }
+
+        if(!Auth::attempt($arr))        
         {
             return response()->json([
                 'success' => false,

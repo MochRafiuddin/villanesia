@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\CABooking;
 use App\Http\Controllers\Api\CAProfile;
 use App\Http\Controllers\Api\CAAds;
 use App\Http\Controllers\Api\CASetting;
+use App\Http\Controllers\Api\CANegara;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,6 +63,7 @@ Route::group(['middleware' => 'logapi'], function () {
     Route::get('/get-properti-by-city', [CAProperti::class, 'get_properti_by_city']);
     Route::get('/get-city-search', [CAKota::class, 'get_city_search']);
     Route::get('/get-property-by-facilities', [CAProperti::class, 'get_property_by_facilities']);
+    Route::get('/get-country', [CANegara::class, 'get_country']);
 });
 
 Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
@@ -77,4 +79,10 @@ Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
     Route::put('/put-profile', [CAProfile::class, 'put_profile']);
     Route::put('/put-profile-pi', [CAProfile::class, 'put_profile_pi']);
     Route::post('/post-booking-cancel', [CABooking::class, 'post_booking_cancel']);
+    Route::get('/get-profile', [CAProfile::class, 'get_profile']);
+    Route::get('/get-personal-information', [CAProfile::class, 'get_personal_information']);
+    Route::put('/put-email', [CAProfile::class, 'put_email']);
+    Route::put('/put-phone', [CAProfile::class, 'put_phone']);
+    Route::put('/put-another-phone', [CAProfile::class, 'put_another_phone']);
+    Route::delete('/delete-another-phone', [CAProfile::class, 'delete_another_phone']);
 });
