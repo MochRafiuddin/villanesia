@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\MAds;
+use App\Models\MFasilitas;
+use App\Models\MBahasa;
 use App\Models\MAdsDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -17,23 +19,29 @@ class CAds extends Controller
             ->with('title','Ads');
     }
     public function create()
-    {        
+    {   
+        $bahasa = MBahasa::where('is_default',1)->first();
+        $fasilitas = MFasilitas::where('deleted',1)->where('id_bahasa',$bahasa->id_bahasa)->where('tampil_depan',1)->get();
         $url = url('ads/create-save');
         return view('ads.form')
             ->with('data',null)
             ->with('title','Ads')
             ->with('titlePage','Tambah')
-            ->with('url',$url);
+            ->with('url',$url)
+            ->with('fasilitas',$fasilitas);
     }    
     public function show($id)
     {
-        $data = MAds::find($id);        
+        $data = MAds::find($id);
+        $bahasa = MBahasa::where('is_default',1)->first();
+        $fasilitas = MFasilitas::where('deleted',1)->where('id_bahasa',$bahasa->id_bahasa)->where('tampil_depan',1)->get();
         $url = url('ads/show-save/'.$id);
         return view('ads.form')
             ->with('data',$data)
             ->with('title','Ads')
             ->with('titlePage','Edit')
-            ->with('url',$url);
+            ->with('url',$url)
+            ->with('fasilitas',$fasilitas);
     }
     public function detail($id)
     {   

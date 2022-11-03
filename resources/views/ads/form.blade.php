@@ -37,12 +37,25 @@ $name[] = 'konten_ads';
                                 </option>
                              </select>                
                         </div>
-                    </div>                   
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            <label for="exampleInputEmail1">List Fasilitas</label>
+                            <select class="form-control" name="fas" id="fas" style="width:100%">
+                            <option value="" selected disabled>Pilih Fasiitas</option>
+                            @foreach($fasilitas as $fas)
+                                <option value="{{$fas->id_fasilitas}}">
+                                        {{$fas->nama_fasilitas}}
+                                </option>
+                            @endforeach
+                             </select>                
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">Redirect Url</label>
                             <input type="text" class="form-control @error($name[2]) is-invalid @enderror"
-                            value="{{Helper::showData($data,$name[2])}}" name="{{$name[2]}}"/>
+                            value="{{Helper::showData($data,$name[2])}}" name="{{$name[2]}}" id="{{$name[2]}}" readonly/>
                         </div>
                     </div>
                     <div class="row">
@@ -97,4 +110,9 @@ $name[] = 'konten_ads';
 @endsection
 @push('js')
 <script src="{{asset('/')}}assets/js/dropify.js"></script>
+<script>
+    $('#fas').change(function() {
+        $('#redirect_url_ads').val("aptikmamid.ngrok.io/villanesia/public/api/get-property-by-facilities?id_fasilitas[]="+$(this).val()+"&page=1&order_by=1&id_bahasa=");
+    });
+</script>
 @endpush

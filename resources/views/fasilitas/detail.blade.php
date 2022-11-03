@@ -31,6 +31,20 @@ $name[] = 'gambar';
                     </div>
                     <div class="row">
                         <div class="form-group col">
+                            <label for="exampleInputEmail1">Ads</label>
+                            <?php 
+                                if($data->tampil_depan == 1){
+                                    $ads = "Ya";
+                                }else{
+                                    $ads = "Tidak";
+                                }
+                            ?>
+                            <input type="text" class="form-control @error($name[0]) is-invalid @enderror"
+                                value="{{$ads}}" name="{{$name[0]}}" readonly/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
                             <label for="exampleInputEmail1">Icon</label><br>                            
                             <img class="rounded" width="20%" src="{{asset('upload/fasilitas/'.$data->icon)}}" alt="{{$data->nama_fasilitas}}">
                         </div>                        

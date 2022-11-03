@@ -69,6 +69,7 @@ class CFasilitas extends Controller
     {
         $validator = Validator::make($request->all(),[
             'nama_fasilitas' => 'required', 
+            'tampil_depan' => 'required', 
             'icon'         => 'mimes:jpeg,jpg,png,gif|max:10000',
         ]);
         
@@ -89,12 +90,14 @@ class CFasilitas extends Controller
             $tipe->icon = $gambar;                      
             $tipe->id_bahasa = $request->id_bahasa;
             $tipe->id_ref_bahasa = $request->id;
+            $tipe->tampil_depan = $request->tampil_depan;
             $tipe->save();
         }else{
             $tipe = new MFasilitas();
             $tipe->nama_fasilitas = $request->nama_fasilitas;
             $tipe->icon = $gambar;            
             $tipe->id_bahasa = $request->id_bahasa;
+            $tipe->tampil_depan = $request->tampil_depan;
             $tipe->save();
     
             MFasilitas::where('id_fasilitas',$tipe->id_fasilitas)->update(['id_ref_bahasa' => $tipe->id_fasilitas]);
@@ -106,6 +109,7 @@ class CFasilitas extends Controller
     {
         $validator = Validator::make($request->all(),[
             'nama_fasilitas' => 'required', 
+            'tampil_depan' => 'required', 
             'icon'         => 'mimes:jpeg,jpg,png,gif|max:10000',
 
         ]);
@@ -119,9 +123,9 @@ class CFasilitas extends Controller
         if ($request->icon) {            
             $icon = round(microtime(true) * 1000).'.'.$request->file('icon')->extension();
             $request->file('icon')->move(public_path('upload/fasilitas'), $icon);
-            MFasilitas::where('id_fasilitas',$request->id)->update(['nama_fasilitas'=>$request->nama_fasilitas, 'icon'=>$icon]);            
+            MFasilitas::where('id_fasilitas',$request->id)->update(['nama_fasilitas'=>$request->nama_fasilitas, 'icon'=>$icon,'tampil_depan'=>$request->tampil_depan]);
         }else{
-            MFasilitas::where('id_fasilitas',$request->id)->update(['nama_fasilitas'=>$request->nama_fasilitas]);            
+            MFasilitas::where('id_fasilitas',$request->id)->update(['nama_fasilitas'=>$request->nama_fasilitas, 'tampil_depan'=>$request->tampil_depan]);
         }
 
         return redirect()->route('fasilitas-index')->with('msg','Sukses Menambahkan Data');
