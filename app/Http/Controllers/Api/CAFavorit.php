@@ -29,7 +29,9 @@ class CAFavorit extends Controller
                 ->offset($page);
 
         if ($id_tipe != 0) {
-            $tipe = $tipe->where('m_properti.id_tipe_properti',$id_tipe);
+            if ($id_tipe != null) {
+                $tipe = $tipe->where('m_properti.id_tipe_properti',$id_tipe);
+            }
         }
         if ($order_by == 1) {
             $tipe = $tipe->orderBy('m_properti.harga_tampil','asc');

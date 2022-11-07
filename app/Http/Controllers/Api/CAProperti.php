@@ -1418,8 +1418,10 @@ class CAProperti extends Controller
                 ->where('m_users.deleted',1)
                 ->where('h_review_rating.id_properti',$id_properti)
                 ->orderBy('h_review_rating.created_date','desc');
-        if ($rating != 0 || $rating != null) {
-            $result = $result->where('h_review_rating.rating',$rating);
+        if ($rating != 0) {
+            if ($rating != null) {
+                $result = $result->where('h_review_rating.rating',$rating);
+            }
         }
 
         $data = $result->get();

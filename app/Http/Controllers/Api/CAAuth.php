@@ -119,7 +119,7 @@ class CAAuth extends Controller
                 ->where('m_customer.deleted',1)
                 ->get();
                                 
-        $request->session()->regenerate();            
+        // $request->session()->regenerate();            
         return response()->json([
             'message' => 'Login Success',
             'key' => $key,
@@ -170,7 +170,7 @@ class CAAuth extends Controller
                 ->where('m_users.deleted',1)
                 ->where('m_customer.deleted',1)
                 ->get();
-        $request->session()->regenerate();            
+        // $request->session()->regenerate();            
         return response()->json([
             'message' => 'Login Success',
             'key' => $key,
