@@ -74,7 +74,7 @@ Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
     Route::get('/get-booking', [CABooking::class, 'get_booking']);
     Route::post('/post-property-booking', [CAProperti::class, 'post_property_booking']);
     Route::get('/get-booking-detail', [CABooking::class, 'get_booking_detail']);
-    Route::get('/post-review', [CABooking::class, 'post_review']);
+    Route::post('/post-review', [CABooking::class, 'post_review']);
     Route::post('/post-profile-img', [CAProfile::class, 'post_profile_img']);
     Route::put('/put-profile', [CAProfile::class, 'put_profile']);
     Route::put('/put-profile-pi', [CAProfile::class, 'put_profile_pi']);

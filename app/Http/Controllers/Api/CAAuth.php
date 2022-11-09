@@ -34,8 +34,8 @@ class CAAuth extends Controller
         $cus->nama_depan = $request->username;
         $cus->save();
 
-        $data['username'] = $request->username;
-        $data['email'] = $request->email;
+        // $data['username'] = $request->username;
+        // $data['email'] = $request->email;
         // $data['token'] = Str::random(30);
 
         $user = User::create([
@@ -46,11 +46,25 @@ class CAAuth extends Controller
             'password' => Hash::make($request->password),            
         ]);        
 
+        $key = Str::random(30);
+        $token = new MApiKey();
+        $token->id_user = $user->id_user;
+        $token->token = $key;
+        $token->save();
+
+        $get_user = User::selectRaw('m_customer.*, m_users.id_user, m_users.username, m_users.password, m_users.id_ref, m_users.email, m_users.no_telfon, m_users.g_id, m_users.g_photo, m_users.tipe_user, api_key.token')
+                ->leftJoin('m_customer','m_customer.id','=','m_users.id_ref')
+                ->leftJoin('api_key','api_key.id_user','=','m_users.id_user')
+                ->where('m_users.id_user',$user->id_user)
+                ->where('m_users.deleted',1)
+                ->where('m_customer.deleted',1)
+                ->get();
+
         return response()->json([
             'success' => true,
             'message' => 'Success',
             'code' => 1,
-            'data' => $data,
+            'data' => $get_user,
         ], 200);
     }    
 
