@@ -89,7 +89,7 @@ class CAAuth extends Controller
         $cek_email = User::where("email",$providerUser->getEmail())->first();
         if ($cek_email) {
             if ($cek_email->g_id == null) {
-                User::where("email",$providerUser->getEmail())->update(['g_id',$providerUser->getId()]);
+                User::where("email",$providerUser->getEmail())->update(['g_id'=>$providerUser->getId()]);
                 $gid = $providerUser->getId();
             }else {
                 $gid = $cek_email->g_id;
