@@ -64,6 +64,7 @@ Route::group(['middleware' => 'logapi'], function () {
     Route::get('/get-city-search', [CAKota::class, 'get_city_search']);
     Route::get('/get-property-by-facilities', [CAProperti::class, 'get_property_by_facilities']);
     Route::get('/get-country', [CANegara::class, 'get_country']);
+    Route::post('/post-forget-password', [CAAuth::class, 'post_forget_password']);
 });
 
 Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
@@ -85,4 +86,7 @@ Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
     Route::put('/put-phone', [CAProfile::class, 'put_phone']);
     Route::put('/put-another-phone', [CAProfile::class, 'put_another_phone']);
     Route::delete('/delete-another-phone', [CAProfile::class, 'delete_another_phone']);
+    Route::post('/post-property-coupon', [CAProperti::class, 'post_property_coupon']);
+    Route::post('/post-property-payment', [CAProperti::class, 'post_property_payment']);
+    Route::put('/put-forget-password', [CAAuth::class, 'put_forget_password']);
 });

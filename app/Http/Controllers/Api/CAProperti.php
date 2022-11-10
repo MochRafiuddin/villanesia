@@ -16,11 +16,14 @@ use App\Models\MBooking;
 use App\Models\MBookingHargaSatuan;
 use App\Models\MBookingExtra;
 use App\Models\MBookingPropertiExtra;
+use App\Models\MBookingDiscount;
 use App\Models\MapAmenities;
 use App\Models\MapFasilitas;
 use App\Models\MApiKey;
 use App\Models\MKota;
 use App\Models\HReviewRating;
+use App\Models\TKonfirmasiBayar;
+use App\Models\MKupon;
 use DateInterval;
 use DatePeriod;
 use DateTime;
@@ -1502,6 +1505,169 @@ class CAProperti extends Controller
             'message' => 'Success',
             'code' => 1,
             'data' => $data,
+        ], 200);        
+    }
+
+    public function post_property_payment(Request $request)
+    {                
+        $id_bahasa = $request->id_bahasa;
+        $id_booking = $request->id_booking;
+        $kode_booking = $request->kode_booking;
+        $nama_depan = $request->nama_depan;
+        $nama_belakang = $request->nama_belakang;
+        $nama_perusahaan = $request->nama_perusahaan;
+        $alamat = $request->alamat;
+        $nama_provinsi = $request->nama_provinsi;
+        $nama_kota = $request->nama_kota;
+        $kode_pos = $request->kode_pos;
+        $no_telfon = $request->no_telfon;
+        $email = $request->email;
+        $catatan = $request->catatan;
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
+
+        $bayar = new TKonfirmasiBayar;
+        // $bayar->id_bahasa = $id_bahasa;
+        $bayar->id_booking = $id_booking;
+        $bayar->kode_booking = $kode_booking;
+        $bayar->nama_depan = $nama_depan;
+        $bayar->nama_belakang = $nama_belakang;
+        $bayar->nama_perusahaan = $nama_perusahaan;
+        $bayar->alamat = $alamat;
+        $bayar->nama_provinsi = $nama_provinsi;
+        $bayar->nama_kota = $nama_kota;
+        $bayar->kode_pos = $kode_pos;
+        $bayar->no_telfon = $no_telfon;
+        $bayar->email = $email;
+        $bayar->catatan = $catatan;
+        $bayar->save();
+
+        $detail_booking = MBooking::from( 't_booking as a' )
+            ->selectRaw('a.*, b.id_bahasa, b.id_ref_bahasa, b.judul, b.alamat, b.harga_tampil, b.total_rating, b.nilai_rating, b.nama_file, c.nama_status_booking, CONCAT(e.nama_depan," ",e.nama_belakang) as nama_pemilik_properti, CONCAT(g.nama_depan," ",g.nama_belakang) as nama_pemesan, h.nama_tipe_properti')
+            ->leftJoin('m_properti as b','a.id_ref', '=','b.id_ref_bahasa')
+            ->leftJoin('m_status_booking as c','a.id_status_booking', '=','c.id_ref_bahasa')
+            ->leftJoin('m_users as d','d.id_user', '=','b.created_by')
+            ->leftJoin('m_customer as e','d.id_ref', '=','e.id')
+            ->leftJoin('m_users as f','f.id_user', '=','a.id_user')
+            ->leftJoin('m_customer as g','f.id_ref', '=','g.id')
+            ->leftJoin('m_tipe_properti as h','h.id_ref_bahasa', '=','b.id_tipe_booking')
+            ->where('h.id_bahasa',$id_bahasa)
+            ->where('a.deleted',1)
+            ->where('a.id_user',$user->id_user)
+            ->where('b.deleted',1)
+            ->where('b.id_bahasa',$id_bahasa)
+            ->where('a.id_booking',$id_booking)
+            ->where('d.deleted',1)
+            ->where('f.deleted',1)->get();
+        
+        $detail_booking_harga_satuan = MBookingHargaSatuan::where('id_booking',$id_booking)->get();
+        $detail_booking_properti_extra = MBookingPropertiExtra::where('id_booking',$id_booking)->get();
+        $detail_booking_extra = MBookingExtra::where('id_booking',$id_booking)->get();
+        $detail_booking_discount = MBookingDiscount::where('id_booking',$id_booking)->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Success',
+            'code' => 1,
+            'detail_booking' => $detail_booking,
+            'detail_payment' =>[
+                'detail_booking_harga_satuan' => $detail_booking_harga_satuan,
+                'detail_booking_properti_extra' => $detail_booking_properti_extra,
+                'detail_booking_extra' => $detail_booking_extra,
+                'detail_booking_discount' => $detail_booking_discount,
+            ]
+        ], 200);        
+    }
+
+    public function post_property_coupon(Request $request)
+    {                
+        $id_bahasa = $request->id_bahasa;
+        $id_booking = $request->id_booking;
+        $kode_coupon = $request->kode_coupon;        
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
+
+        $cek_coupon = MKupon::where('kode_kupon',$kode_coupon)->first();
+        if ($cek_coupon == null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, no coupon code found',
+                'code' => 0,            
+            ], 400);
+        }
+        $tgl_coupon = MKupon::where('id_kupon',$cek_coupon->id_kupon)
+            ->whereDate('tanggal_mulai', '<=', date("Y-m-d"))
+            ->whereDate('tanggal_selesai', '>=', date("Y-m-d"))
+            ->first();
+        // dd($tgl_coupon);
+        if ($tgl_coupon == null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, the coupon code cannot be used',
+                'code' => 0,
+            ], 400);
+        }
+
+        if ($cek_coupon->kuota_terpakai <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, the coupon code cannot be used',
+                'code' => 0,
+            ], 400);
+        }
+
+        $booking = MBooking::where('id_booking',$id_booking)->first();
+
+        if ($cek_coupon->satuan == 1) {
+            if ($cek_coupon->maks_diskon == null) {
+                $potongan = floor($cek_coupon->nominal / 100 * $booking->harga_total);
+            }else {
+                $dis = $cek_coupon->nominal / 100 * $booking->harga_total;
+                if (floor($dis) > $cek_coupon->maks_diskon) {
+                    $potongan = $cek_coupon->maks_diskon;
+                }else {
+                    $potongan = floor($dis);
+                }
+            }
+        }else {
+            $potongan = $cek_coupon->nominal;
+        }
+        $harga_potongan = $booking->harga_total - $potongan;
+
+        MBooking::where('id_booking',$id_booking)->update(['id_kupon' => $cek_coupon->id_kupon, 'potongan_kupon' => $potongan, 'harga_total' => $harga_potongan]);
+
+        $detail_booking = MBooking::from( 't_booking as a' )
+            ->selectRaw('a.*, b.id_bahasa, b.id_ref_bahasa, b.judul, b.alamat, b.harga_tampil, b.total_rating, b.nilai_rating, b.nama_file, c.nama_status_booking, CONCAT(e.nama_depan," ",e.nama_belakang) as nama_pemilik_properti, CONCAT(g.nama_depan," ",g.nama_belakang) as nama_pemesan, h.nama_tipe_properti')
+            ->leftJoin('m_properti as b','a.id_ref', '=','b.id_ref_bahasa')
+            ->leftJoin('m_status_booking as c','a.id_status_booking', '=','c.id_ref_bahasa')
+            ->leftJoin('m_users as d','d.id_user', '=','b.created_by')
+            ->leftJoin('m_customer as e','d.id_ref', '=','e.id')
+            ->leftJoin('m_users as f','f.id_user', '=','a.id_user')
+            ->leftJoin('m_customer as g','f.id_ref', '=','g.id')
+            ->leftJoin('m_tipe_properti as h','h.id_ref_bahasa', '=','b.id_tipe_booking')
+            ->where('h.id_bahasa',$id_bahasa)
+            ->where('a.deleted',1)
+            ->where('a.id_user',$user->id_user)
+            ->where('b.deleted',1)
+            ->where('b.id_bahasa',$id_bahasa)
+            ->where('a.id_booking',$id_booking)
+            ->where('d.deleted',1)
+            ->where('f.deleted',1)->get();
+        
+        $detail_booking_harga_satuan = MBookingHargaSatuan::where('id_booking',$id_booking)->get();
+        $detail_booking_properti_extra = MBookingPropertiExtra::where('id_booking',$id_booking)->get();
+        $detail_booking_extra = MBookingExtra::where('id_booking',$id_booking)->get();
+        $detail_booking_discount = MBookingDiscount::where('id_booking',$id_booking)->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Success',
+            'code' => 1,
+            'detail_booking' => $detail_booking,
+            'detail_payment' =>[
+                'detail_booking_harga_satuan' => $detail_booking_harga_satuan,
+                'detail_booking_properti_extra' => $detail_booking_properti_extra,
+                'detail_booking_extra' => $detail_booking_extra,
+                'detail_booking_discount' => $detail_booking_discount,
+            ]
         ], 200);        
     }
 }

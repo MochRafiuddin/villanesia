@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Mail;
+use App\Mail\EmailPassword;
 use Auth;
 use Socialite;
 use Validator;
@@ -152,6 +154,56 @@ class CAAuth extends Controller
         if (!in_array($provider, ['google'])) {
             return response()->json(["message" => 'You can only login via google account'], 400);
         }
+    }
+
+    public function post_forget_password(Request $request)
+    {
+        $id_bahasa = $request->id_bahasa;
+        $email = $request->email;
+
+        $cek_email = User::where('email',$request->email)->first();
+        if ($cek_email == null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, your email was not found',
+                'code' => 0,
+            ], 400);
+        }
+
+        $password = Str::random(6);
+        Mail::to($request->email)->send(new EmailPassword($cek_email->username,$password,"Forgot Password - Villanesia"));
+        User::where('id_user',$cek_email->id_user)->update(['password' => Hash::make($password)]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Account found, please check your email for new password',
+            'code' => 1,
+        ], 200);
+    }
+
+    public function put_forget_password(Request $request)
+    {
+        $id_bahasa = $request->id_bahasa;
+        $password_lama = $request->password_lama;
+        $password_baru = $request->password_baru;
+
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
+        $data = User::where('id_user',$user->id_user)->first();
+        $cek = Hash::check($password_lama, $data->password);
+
+        if ($cek == false) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Your old password is wrong, please enter the correct old password',
+                'code' => 0,
+            ], 400);
+        }
+
+        $cek_email = User::where('id_user',$user->id_user)->update(['password' => Hash::make($password_baru)]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Password changed successfully',
+            'code' => 1,
+        ], 200);
     }
 
     public function login(Request $request)
