@@ -103,12 +103,17 @@ class CAAuth extends Controller
             }
             $id_user = $cek_email->id_user;
         }else {
+            $cus = new MCustomer();
+            $cus->nama_depan = substr($providerUser->getEmail(),0,6);
+            $cus->save();
+
             $token = new User();
             $token->g_id = $providerUser->getId();
+            $token->g_photo = $providerUser->getAvatar();
             $token->email = $providerUser->getEmail();
             $token->username = substr($providerUser->getEmail(),0,6);
             $token->password = Hash::make("password");
-            $token->id_ref = 0;
+            $token->id_ref = $cus->id;
             $token->tipe_user = 2;
             $token->save();
 
