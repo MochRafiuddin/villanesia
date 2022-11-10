@@ -85,11 +85,11 @@ class CAAuth extends Controller
         $validated = $this->validateProvider($provider);
         
         $providerUser = Socialite::driver($provider)->userFromToken($request->access_provider_token);
-        // dd($providerUser->getEmail());
+        // dd($providerUser->getAvatar());
         $cek_email = User::where("email",$providerUser->getEmail())->first();
         if ($cek_email) {
             if ($cek_email->g_id == null) {
-                User::where("email",$providerUser->getEmail())->update(['g_id'=>$providerUser->getId()]);
+                User::where("email",$providerUser->getEmail())->update(['g_id'=>$providerUser->getId(), 'g_photo'=>$providerUser->getAvatar()]);
                 $gid = $providerUser->getId();
             }else {
                 $gid = $cek_email->g_id;

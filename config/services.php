@@ -33,7 +33,7 @@ return [
     'google' => [
         'client_id' => "659829880323-u2gcqbj5s86i62m7f9tvvq3pijcooket.apps.googleusercontent.com",
         'client_secret' => "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",
-        'redirect' => 'http://127.0.0.1:8000/auth/google/callback',
+        'redirect' => 'http://aptikmamid.ngrok.io/villanesia/public/auth/google/callback',
     ],
 
 ];
