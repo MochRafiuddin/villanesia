@@ -44,7 +44,8 @@ class CNegara extends Controller
     public function create_save(Request $request)
     {
         $validator = Validator::make($request->all(),[
-            'nama_negara' => 'required',             
+            'nama_negara' => 'required',
+            'iso_code' => 'required',
         ]);
         
         if ($validator->fails()) {
@@ -59,6 +60,7 @@ class CNegara extends Controller
         
             $tipe = new MNegara();
             $tipe->nama_negara = $request->nama_negara;
+            $tipe->iso_code = $request->iso_code;
             $tipe->save();        
 
         return redirect()->route('negara-index')->with('msg','Sukses Menambahkan Data');
@@ -66,7 +68,8 @@ class CNegara extends Controller
     public function show_save(Request $request)
     {
         $validator = Validator::make($request->all(),[
-            'nama_negara' => 'required',             
+            'nama_negara' => 'required',
+            'iso_code' => 'required',
         ]);
         
         if ($validator->fails()) {
@@ -80,7 +83,7 @@ class CNegara extends Controller
         //     $request->file('gambar')->move(public_path('upload/negara'), $gambar);
         //     MNegara::where('id_negara',$request->id)->update(['nama_negara'=>$request->nama_negara, 'gambar'=>$gambar]);            
         // }
-        MNegara::where('id_negara',$request->id)->update(['nama_negara'=>$request->nama_negara]);            
+        MNegara::where('id_negara',$request->id)->update(['nama_negara'=>$request->nama_negara, 'iso_code'=>$request->iso_code]);
 
         return redirect()->route('negara-index')->with('msg','Sukses Menambahkan Data');
     }

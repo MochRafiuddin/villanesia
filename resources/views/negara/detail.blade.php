@@ -3,6 +3,7 @@
 <?php 
 use App\Traits\Helper;  
 $name[] = 'nama_negara';
+$name[] = 'iso_code';
 $name[] = 'gambar';
 ?>
 <div class="main-panel">
@@ -13,10 +14,15 @@ $name[] = 'gambar';
                 <form action="" method="post" enctype="multipart/form-data">
                     @csrf                    
                     <div class="row">
-                        <div class="form-group col">
+                        <div class="form-group col-12">
                             <label for="exampleInputEmail1">Nama</label>
                             <input type="text" class="form-control @error($name[0]) is-invalid @enderror"
                                 value="{{Helper::showData($data,$name[0])}}" name="{{$name[0]}}" readonly/>
+                        </div>
+                        <div class="form-group col-12">
+                            <label for="exampleInputEmail1">Iso Code</label>
+                            <input type="text" class="form-control @error($name[1]) is-invalid @enderror"
+                                value="{{Helper::showData($data,$name[1])}}" name="{{$name[1]}}" readonly/>
                         </div>
                     </div>
                     <!-- <div class="row">
