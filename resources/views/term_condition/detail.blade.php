@@ -51,7 +51,7 @@ $name[] = 'isi';
                     <div class="row">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">Isi</label>
-                            <textarea class="form-control @error($name[2]) is-invalid @enderror" name="{{$name[2]}}" id="{{$name[2]}}" style="height:130px;" readonly>{{Helper::showData($data,$name[2])}}</textarea>
+                            <textarea class="" name="{{$name[2]}}" id="tinyMceExample" readonly>{{Helper::showData($data,$name[2])}}</textarea>
                         </div>
                     </div>                    
                     <a class="btn btn-success" href="{{url('term-condition')}}">Kembali</a>
@@ -63,4 +63,8 @@ $name[] = 'isi';
 @endsection
 @push('js')
 <script src="{{asset('/')}}assets/js/dropify.js"></script>
+<script src="{{asset('/')}}assets/vendors/tinymce/tinymce.min.js"></script>
+<script type='text/javascript'>
+    tinymce.init({ selector:'textarea', menubar:'', theme: 'modern', readonly : 1});
+</script>
 @endpush

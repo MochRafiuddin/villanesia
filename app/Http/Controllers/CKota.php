@@ -105,7 +105,9 @@ class CKota extends Controller
     }
     public function data()
     {
-        $model = MKota::withDeleted();
+        $model = MKota::select('m_kota.*','m_provinsi.nama_provinsi')
+                ->leftJoin('m_provinsi','m_provinsi.id_provinsi','=','m_kota.id_provinsi')
+                ->where('m_kota.deleted',1);
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';                                

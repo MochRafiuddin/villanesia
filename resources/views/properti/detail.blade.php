@@ -601,6 +601,8 @@ use App\Traits\Helper;
             format: "dd-mm-yyyy",
             orientation: "bottom"
     });    
+
+    tinymce.init({ selector:'textarea', menubar:'', theme: 'modern', readonly : 1});
 </script>
 <script>
         function initAutocomplete() {

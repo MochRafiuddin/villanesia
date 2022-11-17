@@ -17,6 +17,7 @@
                                 <thead>
                                     <tr>
                                         <th>No</th>
+                                        <th>Provinsi</th>
                                         <th>Nama</th>
                                         <th>Action</th>
                                     </tr>
@@ -59,6 +60,10 @@
                         searchable: false,
                         width: '4%',
                         className: 'text-center'
+                    },
+                    {
+                        data: 'nama_provinsi',
+                        name: 'nama_provinsi',
                     },
                     {
                         data: 'nama_kota',

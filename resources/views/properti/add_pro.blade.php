@@ -212,7 +212,7 @@
                                 </div>                                
                                 <div class="form-group col-6">
                                     <label for="">Sampai Tanggal</label>
-                                    <input class="form-control pickerdate" type="text" name="tanggal_selesai_periode" id="tanggal_selesai_periode">
+                                    <input class="form-control pickerdate2" type="text" name="tanggal_selesai_periode" id="tanggal_selesai_periode">
                                 </div>                          
                                 <div class="form-group col-4">
                                     <label for="">Harga</label>
@@ -508,7 +508,7 @@
 <script src="{{asset('/')}}assets/js/dropify.js"></script>
 <script type='text/javascript'> 
 $( document ).ready(function() {
-    var $input = $('<li class="li-draf" aria-disabled="false"><a href="javascript:void(0)" role="menuitem" class="simpan_draf" onclick="simpan_draf()">Simpan Draf</a></li>');
+    var $input = $('<li class="li-draf" aria-disabled="false"><a href="javascript:void(0)" role="menuitem" class="simpan_draf text-center" onclick="simpan_draf()"><span id="spinner" class="circle-loader d-none" style="margin-left:-20px"></span><span id="txt-btn">Simpan Draf</a></li>');
     $input.appendTo($('ul[aria-label=Pagination]'));
 });
     tinymce.init({ selector:'textarea', menubar:'', theme: 'modern'});
@@ -529,7 +529,7 @@ $( document ).ready(function() {
             var harga_tampil = document.getElementById("harga_tampil");
             var alamat = document.getElementById("pac-input");
 
-            if(newIndex == 5){
+            if(newIndex == 6){
                 $('ul[aria-label=Pagination] li[class="li-draf"]').remove();
             }
             
@@ -605,8 +605,10 @@ $( document ).ready(function() {
 
         },        
         onFinished: function(event, currentIndex) {
+            $('a[href$="finish"]').text('');
+            var $input = $('<span id="spinner" class="circle-loader" style="margin-left:-20px">');
+            $input.appendTo('a[href$="finish"]');
             $('#deleted').val(1);
-            $('.simpan_draf').text('Simpan ....');
             var des = tinyMCE.get('deskripsi').getContent();
             var tahu = tinyMCE.get('perlu_diketahui').getContent();
             var batal = tinyMCE.get('kebijakan_pembatalan').getContent();
@@ -648,7 +650,8 @@ $( document ).ready(function() {
     // })
     function simpan_draf() {
         $('#deleted').val(2);
-        $('.simpan_draf').text('Simpan ....');
+        $("#spinner").removeClass('d-none');
+        $('#txt-btn').text('');
         var des = tinyMCE.get('deskripsi').getContent();
         var tahu = tinyMCE.get('perlu_diketahui').getContent();
         var batal = tinyMCE.get('kebijakan_pembatalan').getContent();
@@ -667,12 +670,24 @@ $( document ).ready(function() {
             processData:false,
             success: function(res){
                 // window.location = "{{route('properti-index')}}";
-                $('.simpan_draf').text('Simpan Draf');
+                $("#spinner").addClass('d-none');
+                $('#txt-btn').text('Simpan Draf');
                 $('#id_properti').val(res.id);
                 $('#id_ref_bahasa').val(res.id);
             }
         });
     }
+
+    $('#tanggal_mulai_periode').on('change',function(){
+        var date2 = $('.pickerdate').datepicker('getDate', '+1d'); 
+        // date2.setDate(date2.getDate()+1); 
+        // console.log(date2);
+        $(".pickerdate2").datepicker("destroy");
+        $(".pickerdate2").datepicker( {
+            format: "dd-mm-yyyy",
+            startDate: date2,
+        });      
+    }); 
 
     $("#multiupload").on('change', function(){    
       var formData = new FormData();
@@ -680,6 +695,20 @@ $( document ).ready(function() {
       let files = $('#multiupload')[0];
       for (let i = 0; i < TotalFiles; i++) {
           formData.append('files' + i, files.files[i]);
+        let html ='<div class="col-3 loding-gambar">\
+                        <div class="d-flex justify-content-center">\
+                            <div id="spinner" class="circle-loader"></div>\
+                        </div>\
+                        <div class="d-flex justify-content-between">\
+                            <div class="form-check">\
+                                <a class="text-primary" ><span class="mdi mdi-star-outline mdi-24px"></span></a>\
+                            </div>\
+                            <div class="form-check">\
+                                <a class="text-primary" ><span class="mdi mdi-delete mdi-24px"></span></a>\
+                            </div>\
+                        </div>\
+                    </div>';
+        $('.pre-gambar').append(html);          
       }
       formData.append('TotalFiles', TotalFiles);      
 
@@ -691,6 +720,7 @@ $( document ).ready(function() {
             cache: false,
             processData:false,
             success: function(res){
+            $('.loding-gambar').remove();
                 for (let index = 0; index < res.gambar.length; index++) {
                     const element = res.gambar[index];
                     var img = "{{asset('upload/properti')}}/"+element;
@@ -830,7 +860,7 @@ $( document ).ready(function() {
 
         $('.simpan-periode').click(function (e) {
             e.preventDefault();
-            $(this).html('Sending..');
+            $(this).html('Loading ...');
             var tanggal_mulai_periode = $('#tanggal_mulai_periode').val();
             var tanggal_selesai_periode = $('#tanggal_selesai_periode').val();
             var harga_periode = $('#harga_periode').val();
@@ -846,7 +876,13 @@ $( document ).ready(function() {
                                 <td><input type="hidden" name="akhir_pekan_periode[]" value="'+akhir_pekan_periode+'"/>'+akhir_pekan_periode+'</td>\
                                 <td><input type="button" class="btn btn-danger btn-sm" value="Hapus" onclick="myFunction(this)"></td>\
                             </tr>';
-            $('.t-properti').append(html);                
+            $('.t-properti').append(html);
+
+            $('#tanggal_mulai_periode').val('');
+            $('#tanggal_selesai_periode').val('');
+            $('#harga_periode').val('');
+            $('#harga_tamu_periode').val('');
+            $('#akhir_pekan_periode').val('');              
         });
 
     function myFunction(selectObject) {                
@@ -854,12 +890,13 @@ $( document ).ready(function() {
     }
     $('#id_provinsi').on('change',function(){
             let provinsi = $(this).val();
-
+            document.getElementById('id_kota').options[0].text = 'loading ...';
             $.ajax({
                 url: '{{ url("/properti/kota-provinsi/") }}',
                 type: "GET",
                 data: { provinsi:provinsi } ,                
                 success: function(res){
+                    document.getElementById('id_kota').options[0].text = 'Pilih';
                     $('#id_kota').html(res.data);
                 }
             });

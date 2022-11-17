@@ -482,7 +482,7 @@ class CProperti extends Controller
     public function data()
     {
         $bahasa = (!empty($_GET["bahasa"])) ? ($_GET["bahasa"]) : (0);
-        $model = MProperti::where('deleted','!=',0)->where('id_bahasa',$bahasa)->orderBy('id_ref_bahasa');
+        $model = MProperti::where('deleted','!=',0)->where('id_bahasa',$bahasa)->orderBy('created_date','desc');
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';      
