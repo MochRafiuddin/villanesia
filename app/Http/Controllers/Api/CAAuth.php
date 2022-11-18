@@ -20,14 +20,28 @@ class CAAuth extends Controller
 {
     public function register(Request $request)
     {
-        $cek_user = User::where('deleted',1)
-                ->where('username',$request->username)
+        $cek_user_username = User::where('deleted',1)
+                ->where('username',$request->username)                
+                ->get();
+        $cek_user_email = User::where('deleted',1)
                 ->where('email',$request->email)
                 ->get();
-        if (count($cek_user)>0) {
+        if (count($cek_user_username)>0 && count($cek_user_email)>0) {
             return response()->json([
                 'success' => false,
-                'message' => 'username atau email is already used, please enter new username atau email',
+                'message' => 'username and email is already used, please enter new username and email',
+                'code' => 0,
+            ], 400);
+        }elseif (count($cek_user_username)>0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'username is already used, please enter new username',
+                'code' => 0,
+            ], 400);
+        }elseif (count($cek_user_email)>0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'email is already used, please enter new email',
                 'code' => 0,
             ], 400);
         }
@@ -175,7 +189,7 @@ class CAAuth extends Controller
         User::where('id_user',$cek_email->id_user)->update(['password' => Hash::make($password)]);
         return response()->json([
             'success' => true,
-            'message' => 'Account found, please check your email for new password',
+            'message' => "Account found, please check your email for new password. If you can't find the email in your inbox, also check your spam.",
             'code' => 1,
         ], 200);
     }

@@ -125,11 +125,24 @@ class CAProfile extends Controller
                 $muser = User::where('id_user',$user->id_user)->update(['no_telfon' => $no_telfon]);
             }
         }else {
-            $cek_user = User::where('email',$email)->where('no_telfon',$no_telfon)->get()->count();
-            if ($cek_user > 0) {
+            $cek_user_email = User::where('email',$email)->where('id_user','<>',$user->id_user)->get()->count();
+            $cek_user_telfon = User::where('no_telfon',$no_telfon)->where('id_user','<>',$user->id_user)->get()->count();
+            if ($cek_user_email > 0 && $cek_user_telfon > 0) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'phone number atau email is already used, please enter new phone number atau email',
+                    'message' => 'phone number and email is already used, please enter new phone number and email',
+                    'code' => 0,            
+                ], 400);
+            }elseif ($cek_user_email > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'email is already used, please enter new email',
+                    'code' => 0,            
+                ], 400);
+            }elseif ($cek_user_telfon > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'phone number is already used, please enter new phone number',
                     'code' => 0,            
                 ], 400);
             }
@@ -155,7 +168,7 @@ class CAProfile extends Controller
     {        
         $user = MApiKey::where('token',$request->header('auth-key'))->first();
         $data = User::from('m_users as a')
-            ->selectRaw('a.id_user, a.email, a.no_telfon, b.tentang, b.id_negara, c.nama_negara')
+            ->selectRaw('a.id_user, a.email, a.no_telfon, b.tentang, b.id_negara, c.nama_negara, b.nama_foto, b.nama_depan, b.jenis_kelamin')
             ->leftJoin('m_customer as b','a.id_ref','=','b.id')
             ->leftJoin('m_negara as c','b.id_negara','=','c.id_negara')
             ->where('a.deleted',1)
@@ -164,11 +177,22 @@ class CAProfile extends Controller
             ->where('a.id_user',$user->id_user)
             ->first();
         
+        if ($data->email != null && $data->nama_foto != null && $data->id_negara != null && $data->tentang != null && $data->nama_depan != null && $data->jenis_kelamin != null && $data->no_telfon != null ) {
+            $complite = "100%";
+        }elseif ($data->email != null && $data->nama_foto != null && $data->id_negara != null && $data->tentang != null && $data->nama_depan != null && $data->jenis_kelamin != null) {
+            $complite = "75%";
+        }elseif ($data->email != null && $data->nama_foto != null && $data->id_negara != null && $data->tentang != null) {
+            $complite = "50%";
+        }else {
+            $complite = "25%";
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Success',
             'code' => 1,
             'data' => $data,
+            'profile_complete' => $complite,
         ], 200);
     }
 
@@ -197,6 +221,7 @@ class CAProfile extends Controller
         $email = $request->email;
         $cek_user = User::where('deleted',1)                
                 ->where('email',$email)
+                ->where('id_user','<>',$user->id_user)
                 ->get();
         if (count($cek_user)>0) {
             return response()->json([
@@ -218,9 +243,14 @@ class CAProfile extends Controller
     public function put_phone(Request $request)
     {        
         $user = MApiKey::where('token',$request->header('auth-key'))->first();
-        $no_telfon = $request->no_telfon;
+        $no_telfon = (string)$request->no_telfon;
+        if($no_telfon[0] != 0){
+            $no_telfon = '0'.$no_telfon;
+        }
+        
         $cek_user = User::where('deleted',1)                
                 ->where('no_telfon',$no_telfon)
+                ->where('id_user','<>',$user->id_user)
                 ->get();
         if (count($cek_user)>0) {
             return response()->json([
@@ -257,7 +287,11 @@ class CAProfile extends Controller
             $tlplain = [];
             $notlp = explode(",",$no_telfon_lain);
             for ($i=0; $i < count($notlp) ; $i++) { 
-                $tlplain[] = $notlp[$i];
+                if ($notlp[$i][0] != 0) {
+                    $tlplain[] = '0'.$notlp[$i];
+                }else {
+                    $tlplain[] = $notlp[$i];
+                }
             }
         }
         $output = array_merge($var, $tlplain);
@@ -288,10 +322,14 @@ class CAProfile extends Controller
             $tlplain = [];
             $notlp = explode(",",$no_telfon_lain);
             for ($i=0; $i < count($notlp) ; $i++) { 
-                $tlplain[] = $notlp[$i];
+                if ($notlp[$i][0] != 0) {
+                    $tlplain[] = "0".$notlp[$i];
+                }else {
+                    $tlplain[] = $notlp[$i];
+                }
             }
         }
-        $output = array_diff($var, $tlplain);
+        $output = array_values(array_diff($var, $tlplain));
         $muser = MCustomer::where('id',$data->id)->update(['no_telfon_lain' => $output]);
         
         return response()->json([

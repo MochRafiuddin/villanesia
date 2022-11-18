@@ -15,6 +15,7 @@ class CAFavorit extends Controller
         $id_bahasa = $request->id_bahasa;
         $page = ($request->page-1)*6;
         $id_tipe = $request->id_tipe;
+        $nama_properti = strtolower($request->nama_properti);
         $order_by = $request->order_by;
         $user = MApiKey::where('token',$request->header('auth-key'))->first();
         
@@ -32,6 +33,9 @@ class CAFavorit extends Controller
             if ($id_tipe != null) {
                 $tipe = $tipe->where('m_properti.id_tipe_properti',$id_tipe);
             }
+        }
+        if ($nama_properti != null) {
+            $tipe = $tipe->where('m_properti.judul', 'like', '%'.$nama_properti.'%');
         }
         if ($order_by == 1) {
             $tipe = $tipe->orderBy('m_properti.harga_tampil','asc');

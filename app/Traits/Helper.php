@@ -271,7 +271,7 @@ trait Helper
                     $day['harga'] = $day['harga'] + $pro->harga_tampil;
                 }
             }
-            $day['tamu'] = $pro->harga_tamu_tambahan;
+            $day['tamu'] = ($pro->harga_tamu_tambahan != null ? $pro->harga_tamu_tambahan : 0);
         }
         return $day;
     }
@@ -298,7 +298,7 @@ trait Helper
                         }else {
                             $day['harga'] = $day['harga'] + $c->harga;
                         }
-                        $day['tamu'] = $c->harga_tamu_tambahan;
+                        $day['tamu'] = ($c->harga_tamu_tambahan != null ? $c->harga_tamu_tambahan : 0);
                         $day['harga_tampil'] = $c->harga;
                     }
                 }
