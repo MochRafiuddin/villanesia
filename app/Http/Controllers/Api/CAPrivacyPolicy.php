@@ -12,8 +12,13 @@ class CAPrivacyPolicy extends Controller
     {        
         $id_bahasa = $request->id_bahasa;
 
-        $tipe = MPrivacyPolicyDetail::where('id_bahasa',$id_bahasa)
-                ->where('deleted',1)
+        // $tipe = MPrivacyPolicyDetail::where('id_bahasa',$id_bahasa)
+        //         ->where('deleted',1)
+        //         ->get();
+
+        $tipe = MPrivacyPolicyDetail::selectRaw('page_privacy_policy_detail.*, (select IFNULL((select id_tipe from page_privacy_policy_detail as a where a.id_bahasa = '.$id_bahasa.' and a.id < page_privacy_policy_detail.id ORDER BY a.id DESC LIMIT 1),0)) as id_tipe_sebelumnya')
+                ->where('page_privacy_policy_detail.id_bahasa',$id_bahasa)
+                ->where('page_privacy_policy_detail.deleted',1)
                 ->get();
 
         if (count($tipe)>0) {

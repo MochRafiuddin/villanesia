@@ -12,8 +12,13 @@ class CATermCondition extends Controller
     {        
         $id_bahasa = $request->id_bahasa;
 
-        $tipe = MTermConditionDetail::where('id_bahasa',$id_bahasa)
-                ->where('deleted',1)
+        // $tipe = MTermConditionDetail::where('id_bahasa',$id_bahasa)
+        //         ->where('deleted',1)
+        //         ->get();
+
+        $tipe = MTermConditionDetail::selectRaw('page_term_condition_detail.*, (select IFNULL((select id_tipe from page_term_condition_detail as a where a.id_bahasa = '.$id_bahasa.' and a.id < page_term_condition_detail.id ORDER BY a.id DESC LIMIT 1),0)) as id_tipe_sebelumnya')
+                ->where('page_term_condition_detail.id_bahasa',$id_bahasa)
+                ->where('page_term_condition_detail.deleted',1)
                 ->get();
 
         if (count($tipe)>0) {

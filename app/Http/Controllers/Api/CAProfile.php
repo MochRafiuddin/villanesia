@@ -99,12 +99,30 @@ class CAProfile extends Controller
         $bahasa_asli = $request->bahasa_asli;
         $bahasa_lain = $request->bahasa_lain;
 
+        $tlplain = [];
+        if ($no_telfon != null) {
+            $no_telfon2 = (string)$no_telfon;
+            if($no_telfon2[0] != 0){
+                $no_telfon = '0'.$no_telfon2;
+            }
+        }
+
         if ($no_telfon_lain != null) {
-            $tlplain = [];
+            /*$tlplain = [];
             $notlp = explode(",",$no_telfon_lain);
             for ($i=0; $i < count($notlp) ; $i++) { 
                 $tlplain[] = $notlp[$i];
+            }*/
+
+            $notlp = explode(",",$no_telfon_lain);
+            for ($i=0; $i < count($notlp) ; $i++) { 
+                if ($notlp[$i][0] != 0) {
+                    $tlplain[] = '0'.$notlp[$i];
+                }else {
+                    $tlplain[] = $notlp[$i];
+                }
             }
+
         }
 
         if ($muser->id_ref == 0) {
@@ -125,36 +143,80 @@ class CAProfile extends Controller
                 $muser = User::where('id_user',$user->id_user)->update(['no_telfon' => $no_telfon]);
             }
         }else {
-            $cek_user_email = User::where('email',$email)->where('id_user','<>',$user->id_user)->get()->count();
-            $cek_user_telfon = User::where('no_telfon',$no_telfon)->where('id_user','<>',$user->id_user)->get()->count();
-            if ($cek_user_email > 0 && $cek_user_telfon > 0) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'phone number and email is already used, please enter new phone number and email',
-                    'code' => 0,            
-                ], 400);
-            }elseif ($cek_user_email > 0) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'email is already used, please enter new email',
-                    'code' => 0,            
-                ], 400);
-            }elseif ($cek_user_telfon > 0) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'phone number is already used, please enter new phone number',
-                    'code' => 0,            
-                ], 400);
-            }
-            $muser = MCustomer::where('id',$muser->id_ref)->update(['nama_depan' => $nama_depan, 'nama_belakang' => $nama_belakang, 'jenis_kelamin' => $jenis_kelamin, 'no_telfon_lain' => $tlplain, 'bahasa_asli' => $bahasa_asli, 'bahasa_lain' => $bahasa_lain]);
 
-            // $muser = User::where('id_user',$user->id_user)->update(['email' => $email, 'no_telfon' => $no_telfon]);
-            if ($email != null) {
-                $muser = User::where('id_user',$user->id_user)->update(['email' => $email]);
+            if ($no_telfon != null && $email != null) {
+
+                $cek_user_email = User::where('email',$email)->where('id_user','<>',$user->id_user)->get()->count();
+                $cek_user_telfon = User::where('no_telfon',$no_telfon)->where('id_user','<>',$user->id_user)->get()->count();
+                if ($cek_user_email > 0 && $cek_user_telfon > 0) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'phone number and email is already used, please enter new phone number and email',
+                        'code' => 0,            
+                    ], 400);
+                }elseif ($cek_user_email > 0) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'email is already used, please enter new email',
+                        'code' => 0,            
+                    ], 400);
+                }elseif ($cek_user_telfon > 0) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'phone number is already used, please enter new phone number',
+                        'code' => 0,            
+                    ], 400);
+                }
+                $muser = MCustomer::where('id',$muser->id_ref)->update(['nama_depan' => $nama_depan, 'nama_belakang' => $nama_belakang, 'jenis_kelamin' => $jenis_kelamin, 'no_telfon_lain' => $tlplain, 'bahasa_asli' => $bahasa_asli, 'bahasa_lain' => $bahasa_lain]);
+
+                // $muser = User::where('id_user',$user->id_user)->update(['email' => $email, 'no_telfon' => $no_telfon]);
+                if ($email != null) {
+                    $muser = User::where('id_user',$user->id_user)->update(['email' => $email]);
+                }
+                if ($no_telfon != null) {
+                    $muser = User::where('id_user',$user->id_user)->update(['no_telfon' => $no_telfon]);
+                }
+
+            }else{
+
+                if($no_telfon != null){
+                    $cek_user_telfon = User::where('no_telfon',$no_telfon)->where('id_user','<>',$user->id_user)->get()->count();
+
+                    if ($cek_user_telfon > 0) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'phone number is already used, please enter new phone number',
+                            'code' => 0,            
+                        ], 400);
+                    }
+
+                    $muser = MCustomer::where('id',$muser->id_ref)->update(['nama_depan' => $nama_depan, 'nama_belakang' => $nama_belakang, 'jenis_kelamin' => $jenis_kelamin, 'no_telfon_lain' => $tlplain, 'bahasa_asli' => $bahasa_asli, 'bahasa_lain' => $bahasa_lain]);
+                    if ($no_telfon != null) {
+                        $muser = User::where('id_user',$user->id_user)->update(['no_telfon' => $no_telfon]);
+                    }
+
+                }
+
+                if($email != null){
+                    $cek_user_email = User::where('email',$email)->where('id_user','<>',$user->id_user)->get()->count();
+
+                    if ($cek_user_email > 0) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'email is already used, please enter new email',
+                            'code' => 0,            
+                        ], 400);
+                    }
+
+                    $muser = MCustomer::where('id',$muser->id_ref)->update(['nama_depan' => $nama_depan, 'nama_belakang' => $nama_belakang, 'jenis_kelamin' => $jenis_kelamin, 'no_telfon_lain' => $tlplain, 'bahasa_asli' => $bahasa_asli, 'bahasa_lain' => $bahasa_lain]);
+                    if ($email != null) {
+                        $muser = User::where('id_user',$user->id_user)->update(['email' => $email]);
+                    }
+
+                }
+
             }
-            if ($no_telfon != null) {
-                $muser = User::where('id_user',$user->id_user)->update(['no_telfon' => $no_telfon]);
-            }
+
         }
 
         return response()->json([

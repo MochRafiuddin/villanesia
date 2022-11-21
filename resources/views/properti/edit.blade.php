@@ -297,7 +297,7 @@ use App\Traits\Helper;
                                 </div>                                
                                 <div class="form-group col-6">
                                     <label for="">Sampai Tanggal</label>
-                                    <input class="form-control pickerdate" type="text" name="tanggal_selesai_periode" id="tanggal_selesai_periode">
+                                    <input class="form-control pickerdate2" type="text" name="tanggal_selesai_periode" id="tanggal_selesai_periode">
                                 </div>                          
                                 <div class="form-group col-4">
                                     <label for="">Harga</label>
@@ -636,6 +636,18 @@ use App\Traits\Helper;
         dropdown: true,
         scrollbar: true
     });
+
+    $('#tanggal_mulai_periode').on('change',function(){
+        var date2 = $('.pickerdate').datepicker('getDate', '+1d'); 
+        // date2.setDate(date2.getDate()+1); 
+        // console.log(date2);
+        $(".pickerdate2").datepicker("destroy");
+        $(".pickerdate2").datepicker( {
+            format: "dd-mm-yyyy",
+            startDate: date2,
+        });      
+    });
+
     $('.layanan-conten').on('click', 'input.hapus_layanan', function(events){
           events.preventDefault();
           let idx = $(this).closest('#layanan').index();
@@ -675,6 +687,20 @@ use App\Traits\Helper;
       let files = $('#multiupload')[0];
       for (let i = 0; i < TotalFiles; i++) {
           formData.append('files' + i, files.files[i]);
+        let html ='<div class="col-3 loding-gambar">\
+                        <div class="d-flex justify-content-center">\
+                            <div id="spinner" class="circle-loader"></div>\
+                        </div>\
+                        <div class="d-flex justify-content-between">\
+                            <div class="form-check">\
+                                <a class="text-primary" ><span class="mdi mdi-star-outline mdi-24px"></span></a>\
+                            </div>\
+                            <div class="form-check">\
+                                <a class="text-primary" ><span class="mdi mdi-delete mdi-24px"></span></a>\
+                            </div>\
+                        </div>\
+                    </div>';
+        $('.pre-gambar').append(html);          
       }
       formData.append('TotalFiles', TotalFiles);      
 
@@ -686,6 +712,7 @@ use App\Traits\Helper;
             cache: false,
             processData:false,
             success: function(res){
+            $('.loding-gambar').remove();
                 for (let index = 0; index < res.gambar.length; index++) {
                     const element = res.gambar[index];
                     var img = "{{asset('upload/properti')}}/"+element;
@@ -707,7 +734,7 @@ use App\Traits\Helper;
                 }
             }
         });
-    });    
+    });
 
     $('.pre-gambar').on('click', 'a.feature', function(events){
           events.preventDefault();
@@ -802,6 +829,12 @@ use App\Traits\Helper;
                                 <td><input type="button" class="btn btn-danger btn-sm" value="Hapus" onclick="myFunction(this,'+data['id_periode']+')"></td>\
                             </tr>';
                     $('.t-properti').append(html);
+
+                    $('#tanggal_mulai_periode').val('');
+                    $('#tanggal_selesai_periode').val('');
+                    $('#harga_periode').val('');
+                    $('#harga_tamu_periode').val('');
+                    $('#akhir_pekan_periode').val('');
                 },
                 error: function (data) {
                     console.log('Error:', data);
@@ -824,12 +857,13 @@ use App\Traits\Helper;
     }
     $('#id_provinsi').on('change',function(){
             let provinsi = $(this).val();
-
+            document.getElementById('id_kota').options[0].text = 'loading ...';
             $.ajax({
                 url: '{{ url("/properti/kota-provinsi/") }}',
                 type: "GET",
                 data: { provinsi:provinsi } ,                
                 success: function(res){
+                    document.getElementById('id_kota').options[0].text = 'Pilih';
                     $('#id_kota').html(res.data);
                 }
             });
