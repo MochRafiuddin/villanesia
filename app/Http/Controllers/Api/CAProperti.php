@@ -1048,10 +1048,12 @@ class CAProperti extends Controller
         $cus = MPropertiHargaPeriode::where('id_properti',$id_properti)->get();
 
         $tamu_tambahan = ((($tamu_dewasa+$tamu_anak) - $pro->jumlah_tamu) < 0 ? 0 : (($tamu_dewasa+$tamu_anak) - $pro->jumlah_tamu));
-        
-        $squencedtoday = MBooking::where('deleted',1)->get()->count();
+        		
+        $date_now = date('Y-m-d');
+        $squencedtoday = MBooking::where('deleted',1)->where('created_date','>=',$date_now)->get()->count();
 		$squence = $squencedtoday+1;
 		$squence = str_pad($squence,4,0,STR_PAD_LEFT);
+		$squence = date('Ymd').$squence;
 		// dd($squence);
 
         if ($id_tipe_booking == 1) {
@@ -1523,23 +1525,9 @@ class CAProperti extends Controller
         $no_telfon = $request->no_telfon;
         $email = $request->email;
         $catatan = $request->catatan;
+        $id_negara = $request->id_negara;
+        $iso_code = $request->iso_code;
         $user = MApiKey::where('token',$request->header('auth-key'))->first();
-
-        $bayar = new TKonfirmasiBayar;
-        // $bayar->id_bahasa = $id_bahasa;
-        $bayar->id_booking = $id_booking;
-        $bayar->kode_booking = $kode_booking;
-        $bayar->nama_depan = $nama_depan;
-        $bayar->nama_belakang = $nama_belakang;
-        $bayar->nama_perusahaan = $nama_perusahaan;
-        $bayar->alamat = $alamat;
-        $bayar->nama_provinsi = $nama_provinsi;
-        $bayar->nama_kota = $nama_kota;
-        $bayar->kode_pos = $kode_pos;
-        $bayar->no_telfon = $no_telfon;
-        $bayar->email = $email;
-        $bayar->catatan = $catatan;
-        $bayar->save();
 
         $detail_booking = MBooking::from( 't_booking as a' )
             ->selectRaw('a.*, b.id_bahasa, b.id_ref_bahasa, b.judul, b.alamat, b.harga_tampil, b.total_rating, b.nilai_rating, b.nama_file, c.nama_status_booking, CONCAT(e.nama_depan," ",e.nama_belakang) as nama_pemilik_properti, CONCAT(g.nama_depan," ",g.nama_belakang) as nama_pemesan, h.nama_tipe_properti')
@@ -1557,12 +1545,56 @@ class CAProperti extends Controller
             ->where('b.id_bahasa',$id_bahasa)
             ->where('a.id_booking',$id_booking)
             ->where('d.deleted',1)
-            ->where('f.deleted',1)->get();
+            ->where('f.deleted',1)->first();
         
         $detail_booking_harga_satuan = MBookingHargaSatuan::where('id_booking',$id_booking)->get();
         $detail_booking_properti_extra = MBookingPropertiExtra::where('id_booking',$id_booking)->get();
         $detail_booking_extra = MBookingExtra::where('id_booking',$id_booking)->get();
         $detail_booking_discount = MBookingDiscount::where('id_booking',$id_booking)->get();
+        $cek_kode = TKonfirmasiBayar::where('kode_booking',$kode_booking)->get()->count();
+
+        if ($cek_kode == 0) {                    
+            $bayar = new TKonfirmasiBayar;
+            // $bayar->id_bahasa = $id_bahasa;
+            $bayar->id_booking = $id_booking;
+            $bayar->kode_booking = $kode_booking;
+            $bayar->nama_depan = $nama_depan;
+            $bayar->nama_belakang = $nama_belakang;
+            $bayar->nama_perusahaan = $nama_perusahaan;
+            $bayar->alamat = $alamat;
+            $bayar->nama_provinsi = $nama_provinsi;
+            $bayar->nama_kota = $nama_kota;
+            $bayar->kode_pos = $kode_pos;
+            $bayar->no_telfon = $no_telfon;
+            $bayar->email = $email;
+            $bayar->catatan = $catatan;
+            $bayar->save();
+
+            // dd($detail_booking->harga_total);
+            $curl =  $this->postCURL($kode_booking ,$detail_booking->harga_total, $nama_depan, $nama_belakang, $alamat, $nama_provinsi, $nama_kota, $kode_pos,$no_telfon, $email, $iso_code);            
+
+            $payment_url = json_decode($curl)->data->payment_url;
+
+            MBooking::where('id_booking',$id_booking)->update(['respone_payment_page' => $curl, 'pg_order_code' => 'PG'.$kode_booking, 'pg_url' => $payment_url]);
+        }else {
+            $cek_booking = MBooking::where('id_booking',$id_booking)->first();
+            $expired_time = json_decode($cek_booking->respone_payment_page)->data->expired_time;
+            // dd($expired_time);
+            if ($cek_booking->pg_url == null) {
+                $curl =  $this->postCURL($kode_booking ,$detail_booking->harga_total, $nama_depan, $nama_belakang, $alamat, $nama_provinsi, $nama_kota, $kode_pos,$no_telfon, $email, $iso_code);            
+                $payment_url = json_decode($curl)->data->payment_url;
+                MBooking::where('id_booking',$id_booking)->update(['respone_payment_page' => $curl, 'pg_order_code' => 'PG'.$kode_booking, 'pg_url' => $payment_url]);
+            }else {
+                if ($expired_time < date('Y-m-d H:i:s')) {
+                    $curl =  $this->postCURL($kode_booking ,$detail_booking->harga_total, $nama_depan, $nama_belakang, $alamat, $nama_provinsi, $nama_kota, $kode_pos,$no_telfon, $email, $iso_code);            
+                    $payment_url = json_decode($curl)->data->payment_url;
+                    MBooking::where('id_booking',$id_booking)->update(['respone_payment_page' => $curl, 'pg_order_code' => 'PG'.$kode_booking, 'pg_url' => $payment_url]);
+                }else{
+                    $curl = $cek_booking->respone_payment_page;
+                    // dd($curl);
+                }
+            }
+        }
 
         return response()->json([
             'success' => true,
@@ -1574,7 +1606,9 @@ class CAProperti extends Controller
                 'detail_booking_properti_extra' => $detail_booking_properti_extra,
                 'detail_booking_extra' => $detail_booking_extra,
                 'detail_booking_discount' => $detail_booking_discount,
-            ]
+            ],
+            'respone_payment_gateway' => $curl
+
         ], 200);        
     }
 

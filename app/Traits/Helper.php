@@ -354,6 +354,84 @@ trait Helper
         return $day;
     }
 
+    public function postCURL($kode_booking ,$harga_total, $nama_depan, $nama_belakang, $alamat, $nama_provinsi, $nama_kota, $kode_pos,$no_telfon, $email, $iso_code){
+        $merchant_id = "MCP2022040419";
+		$secret_unbound_id = "0x001d961efa2c3f4fdc";
+		$hash_key = "EtP0y6yGGikjONW";
+        $signature = hash('sha256',$hash_key.'PG'.$kode_booking.$kode_booking);
+
+        $url = "https://api-stage.mcpayment.id/payment-page/payment";
+        $header[] = "Content-Type: application/json";
+        $header[] = "Authorization: Basic TUNQMjAyMjA0MDQxOToweDAwMWQ5NjFlZmEyYzNmNGZkYw==";
+        $header[] = "x-req-signature: ".$signature;
+        $header[] = "x-version: v3";
+        $postData = '{
+                        "order_id": "'.$kode_booking.'",
+                        "external_id": "PG'.$kode_booking.'",
+                        "amount": 2938000,
+                        "description": "Pembayaran Villanesia order #'.$kode_booking.'",
+                        "customer_details": {
+                            "full_name": "'.$nama_depan.' '.$nama_belakang.'",
+                            "email": "'.$email.'",
+                            "phone": "'.$no_telfon.'",
+                            "address": "'.$alamat.'",
+                            "is_email_show": false,
+                            "is_phone_show": false
+                        },
+                        "item_details": [
+                            {
+                                "item_id": "1",
+                                "name": "harga_final_properti",
+                                "amount": 2938000,
+                                "qty":  1
+                            }
+                        ],
+                        "selected_channels": [
+                            {"channel":"CARD", "acq": "BCACC"},
+                            {"channel":"VA", "acq": "CIMB"},
+                            {"channel":"VA", "acq": "PERMATA"}
+                        ],
+                        "billing_address": {
+                            "full_name": "'.$nama_depan.' '.$nama_belakang.'",
+                            "phone": "'.$no_telfon.'",
+                            "address": "'.$alamat.'",
+                            "city": "'.$nama_kota.'",
+                            "postal_code": "'.$kode_pos.'",
+                            "country": "'.$iso_code.'"
+                        },
+                        "shipping_address": {
+                            "full_name": "'.$nama_depan.' '.$nama_belakang.'",
+                            "phone": "'.$no_telfon.'",
+                            "address": "'.$alamat.'",
+                            "city": "'.$nama_kota.'",
+                            "postal_code": "'.$kode_pos.'",
+                            "country": "'.$iso_code.'"
+                        },
+                        "save_card": false,
+                        "callback_url": "http://all.aptikmabiz.com/mcpayment-villanesia/callback-mcpayment.php",
+                        "success_redirect_url": "http://all.aptikmabiz.com/mcpayment-villanesia/redirect-invoice-sukses.php",
+                        "failed_redirect_url": "http://all.aptikmabiz.com/mcpayment-villanesia/redirect-invoice-gagal.php"
+                    }';
+        // $postData = json_decode($postData);
+        //local
+        // $header[] = "Origin: http://localhost";
+        // dd($postData);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL,$url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_HEADER, false); 
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);    
+
+        $output=curl_exec($ch);
+
+        curl_close($ch);
+
+        // dd($output);
+        return $output;
+    }
+
    public function can_akses($kode = null) {
 
   $data_akses   =   DB::table('m_action as a')
