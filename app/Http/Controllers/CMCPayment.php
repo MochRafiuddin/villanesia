@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\HMcpaymentCallback;
 use App\Models\MBooking;
 use App\Models\TKonfirmasiBayar;
+use App\Models\User;
+use Auth;
+
 
 class CMCPayment extends Controller
 {
@@ -22,7 +25,7 @@ class CMCPayment extends Controller
 		// $txt = date("Y-m-d H:i:s") . " -> " . $data;
 		// $myfile = file_put_contents('callback_mcpayment.txt', $txt . PHP_EOL, FILE_APPEND | LOCK_EX);
         $input = json_decode($dataJson);
-		// dd($input->external_id);
+		// dd($input);
 		$mHMCPaymentCallback = new HMcpaymentCallback;
 		$mHMCPaymentCallback->pg_order_code = $input->external_id;
 		$tBooking = MBooking::where('pg_order_code', $input->external_id)->first();
@@ -39,6 +42,7 @@ class CMCPayment extends Controller
 			$mHMCPaymentCallback->status = 2;
 			$tBooking->payment_status = 3;
 		}
+		$tBooking->pg_name = $input->acq;
 		$tBooking->update();
 		$mHMCPaymentCallback->respon = json_encode($input);
 		$mHMCPaymentCallback->save();
