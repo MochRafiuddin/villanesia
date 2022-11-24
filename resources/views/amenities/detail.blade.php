@@ -30,7 +30,7 @@ $name[] = 'icon';
                     <div class="row">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">Icon</label><br>                            
-                            <img class="rounded" width="40%" src="{{asset('upload/amenities/'.$data->icon)}}" alt="{{$data->nama_amenities}}">
+                            <img class="rounded" src="{{asset('upload/amenities/'.$data->icon)}}" alt="{{$data->nama_amenities}}">
                         </div>                        
                     </div>
                     <a class="btn btn-success" href="{{url('amenities')}}">Kembali</a>
