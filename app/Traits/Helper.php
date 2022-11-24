@@ -359,16 +359,17 @@ trait Helper
 		$secret_unbound_id = "0x001d961efa2c3f4fdc";
 		$hash_key = "EtP0y6yGGikjONW";
         $signature = hash('sha256',$hash_key.'PG'.$kode_booking.$kode_booking);
+        $authorization = $merchant_id.":".$secret_unbound_id;
 
         $url = "https://api-stage.mcpayment.id/payment-page/payment";
         $header[] = "Content-Type: application/json";
-        $header[] = "Authorization: Basic TUNQMjAyMjA0MDQxOToweDAwMWQ5NjFlZmEyYzNmNGZkYw==";
+        $header[] = "Authorization: Basic ".base64_encode($authorization);
         $header[] = "x-req-signature: ".$signature;
         $header[] = "x-version: v3";
         $postData = '{
                         "order_id": "'.$kode_booking.'",
                         "external_id": "PG'.$kode_booking.'",
-                        "amount": 2938000,
+                        "amount": '.$harga_total.',
                         "description": "Pembayaran Villanesia order #'.$kode_booking.'",
                         "customer_details": {
                             "full_name": "'.$nama_depan.' '.$nama_belakang.'",
@@ -381,8 +382,8 @@ trait Helper
                         "item_details": [
                             {
                                 "item_id": "1",
-                                "name": "harga_final_properti",
-                                "amount": 2938000,
+                                "name": "Total Reservation Price",
+                                "amount": '.$harga_total.',
                                 "qty":  1
                             }
                         ],
