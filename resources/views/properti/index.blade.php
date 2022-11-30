@@ -26,6 +26,7 @@
                                         <th>Nama</th>
                                         <th>Alamat</th>
                                         <th>Harga</th>
+                                        <th>Tipe Properti</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -109,6 +110,10 @@
                     {
                         data: 'harga_tampil',
                         name: 'harga_tampil',                        
+                    },
+                    {
+                        data: 'tipe_properti',
+                        name: 'tipe_properti',                        
                     },
                     {
                         data: 'action',

@@ -496,6 +496,11 @@ class CProperti extends Controller
                 $bahasa = MBahasa::where('id_bahasa',$row->id_bahasa)->first();
                 $btn = '<div style="white-space:nowrap;"> <i class="flag-icon '.$bahasa->logo.'"></i> '.$bahasa->nama_bahasa.'</div>';                
                 return $btn;
+            })
+            ->editColumn('tipe_properti', function ($row) {                                
+                $tipe = MTipeProperti::where('id_tipe_properti',$row->id_tipe_properti)->first();
+                $btn = $tipe->nama_tipe_properti;                
+                return $btn;
             })  
             ->rawColumns(['action','bahasa'])
             ->addIndexColumn()

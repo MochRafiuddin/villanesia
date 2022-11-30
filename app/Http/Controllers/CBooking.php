@@ -112,7 +112,7 @@ class CBooking extends Controller
             ->where('t_booking.deleted',1);
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
-                if ($row->tipe_booking == 1) {
+                if ($row->id_status_booking == 1) {
                     $btn = '<a href="'.url('booking/detail/'.$row->id_booking).'" class="btn btn-success text-light">Confirm</a>';
                 }else{
                     $btn = '<a href="'.url('booking/detail/'.$row->id_booking).'" class="btn btn-primary text-light">Detail</a>';
@@ -121,9 +121,9 @@ class CBooking extends Controller
             })
             ->addColumn('status', function ($row) {
                 if ($row->id_status_booking == 1) {
-                    $btn = '<p class="badge badge-primary text-white">'.$row->nama_status_booking.'</p>';
+                    $btn = '<p class="badge badge-primary text-white">New</p>';
                 }elseif ($row->id_status_booking == 5 || $row->id_status_booking == 2) {
-                    $btn = '<p class="badge badge-success text-white">'.$row->nama_status_booking.'</p>';
+                    $btn = '<p class="badge badge-success text-white">Waiting Payment</p>';
                 }else{
                     $btn = '<p class="badge badge-danger text-white">'.$row->nama_status_booking.'</p>';
                 }

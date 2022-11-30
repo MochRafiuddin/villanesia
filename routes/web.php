@@ -23,6 +23,7 @@ use App\Http\Controllers\CTermConditionDetail;
 use App\Http\Controllers\CPrivacyPolicyDetail;
 use App\Http\Controllers\CProperti;
 use App\Http\Controllers\CBooking;
+use App\Http\Controllers\CSetting;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\CMCPayment;
 use Illuminate\Support\Facades\Route;
@@ -48,6 +49,7 @@ Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallba
 Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/dashboard', [CDashboard::class,'index'])->name('dashboard');
+    Route::get('/dashboard/data-booking', [CDashboard::class,'data_booking']);
     //iipe properti
     Route::get('/tipe-properti', [CTipeProperti::class,'index'])->name('tipe-properti-index');
     Route::get('/tipe-properti/data', [CTipeProperti::class,'data']);
@@ -302,4 +304,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/booking/decline/{id}', [CBooking::class,'decline']);
     Route::post('/booking/extra/{id}', [CBooking::class,'extra']);
     Route::post('/booking/discount/{id}', [CBooking::class,'discount']);
+
+    //setting
+    Route::get('/setting', [CSetting::class,'index'])->name('setting-index');
+    Route::get('/setting/data', [CSetting::class,'data']);
+    Route::get('/setting/show/{id}', [CSetting::class,'show']);
+    Route::post('/setting/show-save/{id}', [CSetting::class,'show_save']);
 });

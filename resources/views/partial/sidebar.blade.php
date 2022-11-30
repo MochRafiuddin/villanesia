@@ -1,7 +1,7 @@
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
     <ul class="nav">
         <li class="nav-item">            
-            <a class="nav-link" href="">
+            <a class="nav-link" href="{{url('/dashboard')}}">
                 <i class="mdi mdi-view-dashboard-outline menu-icon"></i>
                 <span class="menu-title">Dashboard</span>
             </a>            
@@ -60,6 +60,18 @@
             <div class="collapse" id="Booking">
                 <ul class="nav flex-column sub-menu">                                        
                     <li class="nav-item"> <a class="nav-link" href="{{url('/list-booking')}}">List Booking</a></li>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#setting" aria-expanded="false" aria-controls="setting">
+                <i class="mdi mdi-puzzle-outline menu-icon"></i>
+                <span class="menu-title">Setting</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="setting">
+                <ul class="nav flex-column sub-menu">                                        
+                    <li class="nav-item"> <a class="nav-link" href="{{url('/setting')}}">Setting</a></li>
                 </ul>
             </div>
         </li>
