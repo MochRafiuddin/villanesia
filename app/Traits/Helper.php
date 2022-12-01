@@ -5,6 +5,8 @@ namespace App\Traits;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use App\Mail\KirimEmail;
+use Mail;
 use Auth;
 use DateInterval;
 use DatePeriod;
@@ -431,6 +433,12 @@ trait Helper
 
         // dd($output);
         return $output;
+    }
+
+    public function kirim_email($email,$username,$view,$judul)
+    {
+        Mail::to($email)->send(new KirimEmail($username,$view,$judul));
+        return TRUE;
     }
 
    public function can_akses($kode = null) {

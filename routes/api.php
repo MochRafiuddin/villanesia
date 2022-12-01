@@ -36,6 +36,8 @@ use App\Http\Controllers\Api\CANegara;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+Route::get('/email-pembayaran', [CABooking::class, 'email_pembayaran']);
+
 Route::group(['middleware' => 'logapi'], function () {	
     Route::get('/get-property-type', [CAPropertiTipe::class, 'get_property_type']);    
     Route::get('/get-property-by-type', [CAProperti::class, 'get_property_type']);

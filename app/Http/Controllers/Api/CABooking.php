@@ -12,9 +12,12 @@ use App\Models\MBookingHargaSatuan;
 use App\Models\MBookingPropertiExtra;
 use App\Models\MApiKey;
 use App\Models\HReviewRating;
+use App\Traits\Helper;
 
 class CABooking extends Controller
 {
+    use Helper;
+
     public function get_booking(Request $request)
     {        
         $id_bahasa = $request->id_bahasa;
@@ -124,6 +127,20 @@ class CABooking extends Controller
         return response()->json([
             'success' => true,
             'message' => 'booking cancel',
+            'code' => 1,            
+        ], 200);        
+    }
+
+    public function email_pembayaran(Request $request)
+    {
+        $email = $request->email;
+        $username = $request->username;
+
+        $this->kirim_email($email,$username,'email.emailPembayaran','Pembayaran');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Kirim Email Success',
             'code' => 1,            
         ], 200);        
     }
