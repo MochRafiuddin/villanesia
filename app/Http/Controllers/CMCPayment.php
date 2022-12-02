@@ -43,9 +43,36 @@ class CMCPayment extends Controller
 			$tBooking->payment_status = 3;
 		}
 		$tBooking->pg_name = $input->acq;
+		$tBooking->id_status_booking = 5;
 		$tBooking->update();
 		$mHMCPaymentCallback->respon = json_encode($input);
 		$mHMCPaymentCallback->save();
+
+        $this->kirim_email($input->customer_details->email,$input->customer_details->full_name,null,null,null,null,null,'email.mailPembayaran','Proof of payment - ORDER ID #'.$input->order_id.' - Villanesia');
+		
+		return response()->json(['status'=>true,'msg'=>'Sukses']);
+    }
+
+	public function set_lunas($kode_booking)
+    {        		
+		$tBooking = MBooking::where('kode_booking', $kode_booking)->first();		
+		if ($tBooking == null) {
+			return response()->json(['status'=>false,'msg'=>'Kode Booking Tidak Sesuai']);
+		}
+		$id_user = $tBooking->id_user;
+		$tBooking->payment_date = date("Y-m-d H:i:s");				
+		$tBooking->id_status_booking = 5;
+		$tBooking->payment_status = 1;
+		$tBooking->update();		
+
+        $get_user = User::selectRaw('m_customer.*, m_users.id_user, m_users.id_ref, m_users.email,')
+                ->leftJoin('m_customer','m_customer.id','=','m_users.id_ref')
+                ->where('m_users.id_user',$id_user)
+                ->where('m_users.deleted',1)
+                ->where('m_customer.deleted',1)
+                ->first();
+
+        $this->kirim_email($get_user->email,$get_user->nama_depan,$get_user->nama_belakang,null,null,null,null,'email.mailPembayaran','Proof of payment - ORDER ID #'.$kode_booking.' - Villanesia');
 		
 		return response()->json(['status'=>true,'msg'=>'Sukses']);
     }

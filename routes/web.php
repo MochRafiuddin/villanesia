@@ -43,6 +43,7 @@ Route::get('/', [CLogin::class,'index'])->middleware("guest");
 Route::post('/auth', [CLogin::class,'authenticate']);
 Route::get('/logout', [CLogin::class,'logout']);
 Route::get('callback-order', [CMCPayment::class, 'index']);
+Route::get('set-lunas/{id}', [CMCPayment::class, 'set_lunas']);
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle']);
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 

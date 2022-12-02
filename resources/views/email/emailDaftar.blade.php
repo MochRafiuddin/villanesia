@@ -13,13 +13,10 @@
 								<div style="padding:56px 32px 48.4px">
 									<div style="color:#35405a;font-size:30px">Welcome to Villanesia</div>
 									<div>
-										<p style="line-height:1.5rem;letter-spacing:0;font-size:16px;color:#35405a;margin-top:16px"> Hello {{$nama_depan}} {{$nama_belakang}} <br> We detected that your account has requested forgot password</p>
-                                        <p style="line-height:1.5rem;letter-spacing:0;font-size:16px;color:#35405a;margin-top:16px"> 
-                                        Here's your new password <br>
-                                        username : {{$username}} <br>
-                                        password : {{$password}} <br>
-                                        </p>
-										<div style="letter-spacing:0;font-size:16px;color:#35405a;margin-top:24px"> Please login to the application using the new password</div>										
+										<p style="line-height:1.5rem;letter-spacing:0;font-size:16px;color:#35405a;margin-top:16px"> Hello {{$nama_depan}} {{$nama_belakang}}</p>
+                                        <p style="line-height:1.5rem;letter-spacing:0;font-size:16px;color:#35405a;margin-top:16px"> Thank you for registering at Villanesia. We're really happy to have you! <br> Enjoy every feature on the Villanesia app.</p>
+										<div style="letter-spacing:0;font-size:16px;color:#35405a;margin-top:24px"> Best Regards,</div>
+										<div style="letter-spacing:0;font-size:16px;color:#35405a;font-weight:600"> Villanesia Team</div>
 									</div>
 								</div>
                                 <table style="margin:0 auto;max-width:600px;height:180px;background-color:#f15e75;border-spacing:0;border-collapse:collapse" width="100%" height="100%">

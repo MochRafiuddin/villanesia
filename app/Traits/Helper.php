@@ -435,9 +435,9 @@ trait Helper
         return $output;
     }
 
-    public function kirim_email($email,$username,$view,$judul)
+    public function kirim_email($email,$nama_depan,$nama_belakang,$username,$password,$nama_properti,$tanggal_check_in,$view,$judul)
     {
-        Mail::to($email)->send(new KirimEmail($username,$view,$judul));
+        Mail::to($email)->send(new KirimEmail($nama_depan,$nama_belakang,$username,$password,$nama_properti,$tanggal_check_in,$view,$judul));
         return TRUE;
     }
 

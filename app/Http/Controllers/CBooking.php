@@ -45,6 +45,13 @@ class CBooking extends Controller
     public function confirm($id)
     {
         MBooking::where('id_booking',$id)->update(['id_status_booking' => 2]);
+        $booking = MBooking::selectRaw('m_customer.nama_depan,m_customer.nama_belakang, m_users.id_user, m_users.id_ref, m_users.email, m_properti.nama_properti, t_booking.tanggal_mulai, t_booking.kode_booking')
+        ->join('m_properti','t_booking.id_ref','m_properti.id_properti','left')
+        ->leftJoin('m_users','m_users.id_user','=','t_booking.id_user')
+        ->leftJoin('m_customer','m_customer.id','=','m_users.id_ref')
+        ->where('id_booking',$id)->first();
+        // dd($booking);        
+        $this->kirim_email($booking->email,$booking->nama_depan,$booking->nama_belakang,null,null,$booking->nama_properti,$booking->tanggal_mulai,'email.mailBooking','Availability Confirmation - ORDER ID #'.$booking->kode_booking.' - Villanesia');
         return redirect()->to('/booking/detail/'.$id)->with('msg','Sukses Menambahkan Data');
     }
     public function decline($id,Request $request)

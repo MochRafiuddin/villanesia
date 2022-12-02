@@ -134,9 +134,17 @@ class CABooking extends Controller
     public function email_pembayaran(Request $request)
     {
         $email = $request->email;
+        $nama_depan = $request->nama_depan;
+        $nama_belakang = $request->nama_belakang;
         $username = $request->username;
+        $password = $request->password;
+        $nama_properti = $request->nama_properti;
+        $tanggal_check_in = $request->tanggal_check_in;
 
-        $this->kirim_email($email,$username,'email.emailPembayaran','Pembayaran');
+        // $this->kirim_email($email,$nama_depan,$nama_belakang,'email.emailDaftar','Thank you for signing up with Villanesia');
+        // $this->kirim_email($email,$nama_depan,$nama_belakang,$username,$password,null,null,'email.mailView','Forgot Password - Villanesia');
+        // $this->kirim_email($email,$nama_depan,$nama_belakang,null,null,$nama_properti,$tanggal_check_in,'email.mailBooking','Availability Confirmation - ORDER ID #202211230001 - Villanesia');
+        // $this->kirim_email($email,$nama_depan,$nama_belakang,null,null,null,null,'email.mailPembayaran','Proof of payment - ORDER ID #202211230001 - Villanesia');
 
         return response()->json([
             'success' => true,

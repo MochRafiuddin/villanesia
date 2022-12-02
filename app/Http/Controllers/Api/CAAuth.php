@@ -15,9 +15,12 @@ use App\Models\User;
 use App\Models\MCustomer;
 use App\Models\MApiKey;
 use Illuminate\Support\Str;
+use App\Traits\Helper;
 
 class CAAuth extends Controller
 {
+    use Helper;
+
     public function register(Request $request)
     {
         $cek_user_username = User::where('deleted',1)
@@ -75,6 +78,8 @@ class CAAuth extends Controller
                 ->where('m_users.deleted',1)
                 ->where('m_customer.deleted',1)
                 ->get();
+
+        $this->kirim_email($request->email,$request->username,null,null,null,null,null,'email.emailDaftar','Thank you for signing up with Villanesia');
 
         return response()->json([
             'success' => true,
@@ -185,7 +190,8 @@ class CAAuth extends Controller
         }
 
         $password = Str::random(6);
-        Mail::to($request->email)->send(new EmailPassword($cek_email->username,$password,"Forgot Password - Villanesia"));
+        // Mail::to($request->email)->send(new EmailPassword($cek_email->username,$password,"Forgot Password - Villanesia"));
+        $this->kirim_email($email,$nama_depan,$nama_belakang,$username,$password,null,null,'email.mailView','Forgot Password - Villanesia');
         User::where('id_user',$cek_email->id_user)->update(['password' => Hash::make($password)]);
         return response()->json([
             'success' => true,
