@@ -52,7 +52,8 @@ class CBooking extends Controller
         ->where('id_booking',$id)->first();
         // dd($booking);        
         $this->kirim_email($booking->email,$booking->nama_depan,$booking->nama_belakang,null,null,$booking->nama_properti,$booking->tanggal_mulai,'email.mailBooking','Availability Confirmation - ORDER ID #'.$booking->kode_booking.' - Villanesia');
-        return redirect()->to('/booking/detail/'.$id)->with('msg','Sukses Menambahkan Data');
+        // return redirect()->to('/booking/detail/'.$id)->with('msg','Sukses Menambahkan Data');
+        return response()->json(['status'=>true,'msg'=>'Sukses Mengubah Data']);
     }
     public function decline($id,Request $request)
     {

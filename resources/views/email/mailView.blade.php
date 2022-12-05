@@ -7,7 +7,7 @@
 				<tr>
 					<td>
 						<u></u>
-						<div style="margin:0;padding:26px 0 40px 0;width:100%;background-color:#f7f7f7;color:#35405a;line-height:1.5rem;letter-spacing:0;font-family:Open Sans,sans-serif">
+						<div style="margin:0;padding:26px 0 40px 0;width:100%;color:#35405a;line-height:1.5rem;letter-spacing:0;font-family:Open Sans,sans-serif">
 							<div style="width:600px;margin:0px auto;background-color:#ffffff;border-radius:8px">
 								<div style="padding:40px 32px 0px"> <img src="{{$message->embed(public_path().'/assets/images/VILLANESIA.png')}}" alt="Villanesia" width="450"></div>
 								<div style="padding:56px 32px 48.4px">

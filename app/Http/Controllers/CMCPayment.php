@@ -34,21 +34,21 @@ class CMCPayment extends Controller
 		if ($input->transaction_status == 'SUCCESS') {
 			$mHMCPaymentCallback->status = $tBooking->payment_status = 1;
 			$tBooking->payment_date = date("Y-m-d H:i:s");
+			$tBooking->id_status_booking = 5;
 			$tKonfirmasiBayar->konfirmasi = 1;
 			$tKonfirmasiBayar->konfirmasi_tanggal = date("Y-m-d H:i:s");
 			$tKonfirmasiBayar->update();
 			
+			$this->kirim_email($input->customer_details->email,$input->customer_details->full_name,null,null,null,null,null,'email.mailPembayaran','Proof of payment - ORDER ID #'.$input->order_id.' - Villanesia');			
 		} else {
 			$mHMCPaymentCallback->status = 2;
 			$tBooking->payment_status = 3;
 		}
 		$tBooking->pg_name = $input->acq;
-		$tBooking->id_status_booking = 5;
 		$tBooking->update();
 		$mHMCPaymentCallback->respon = json_encode($input);
 		$mHMCPaymentCallback->save();
-
-        $this->kirim_email($input->customer_details->email,$input->customer_details->full_name,null,null,null,null,null,'email.mailPembayaran','Proof of payment - ORDER ID #'.$input->order_id.' - Villanesia');
+        
 		
 		return response()->json(['status'=>true,'msg'=>'Sukses']);
     }

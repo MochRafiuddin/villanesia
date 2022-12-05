@@ -30,10 +30,8 @@
 					</td>
 				</tr>
 				<tr>
-					<td style="padding:12px 16px">
-						<div style="border-bottom:1px dashed #dee2ee;padding:0 16px">
-							<p style="margin:0;font-size:16px;line-height:24px">Thank you for choosing Villanesia</p>
-						</div>
+					<td style="padding:12px 16px">						
+						<p style="margin:0;font-size:16px;line-height:24px">Thank you for choosing Villanesia</p>						
 					</td>
 				</tr>
 				<tr>

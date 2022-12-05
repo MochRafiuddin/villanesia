@@ -196,10 +196,7 @@ use App\Traits\Helper;
             <div class="row">
                 <div class="col-12">
                     @if($data->id_status_booking == 1)
-                    <form action="{{url('booking/confirm/'.$id)}}" method="post">
-                        @csrf
-                        <button type="submit" class="btn btn-success col-12 mb-3">Confirm Avaliability</button>
-                    </form>
+                    <button type="button" class="btn btn-success col-12 mb-3 confirm">Confirm Availability</button>                    
                     <button type="button" class="btn btn-secondary col-12 mb-3" data-toggle="modal" data-target="#exampleModal">Decline</button>
                     <button class="btn btn-secondary col-12 mb-3" data-toggle="modal" data-target="#ModalExtra">Extra Expenses</button>
                     <button class="btn btn-secondary col-12 mb-3" data-toggle="modal" data-target="#ModalDiscount">Discount</button>
@@ -379,6 +376,22 @@ use App\Traits\Helper;
           let idx = $(this).closest('.detail-discount').index();
           $(this).parent().parent().remove();
       });
+
+      $('.confirm').click(function(e){
+        $('.confirm').text('Loding....');
+        $.ajax({
+            url: "{{url('booking/confirm/'.$id)}}",
+            type: "POST",            
+            contentType: false,
+            cache: false,
+            processData:false,
+            success: function(res){                
+                $('.confirm').text('Confirm Availability');
+                window.location = "{{url('/booking/detail/'.$id)}}";                
+            }
+        });
+     });
+
     });
 </script>
 @endpush
