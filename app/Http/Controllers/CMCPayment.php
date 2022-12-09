@@ -8,10 +8,13 @@ use App\Models\MBooking;
 use App\Models\TKonfirmasiBayar;
 use App\Models\User;
 use Auth;
+use App\Traits\Helper;
 
 
 class CMCPayment extends Controller
 {
+    use Helper;
+
     public function index()
     {
         $user = User::where('id_user',1)->first();
