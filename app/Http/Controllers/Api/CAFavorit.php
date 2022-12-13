@@ -53,12 +53,18 @@ class CAFavorit extends Controller
             $tipe = $tipe->orderBy('h_favorit.created_date','desc');
         }
         $data = $tipe->get();
+        if ((count($data) % 6) != 0) {  
+            $total_page = intval(count($data) / 6)+1;
+        }else {
+            $total_page = intval(count($data) / 6);
+        }
             return response()->json([
                 'success' => true,
                 'message' => 'Success',
                 'code' => 1,
                 'total_data' => count($data),
                 'result' => $data,
+                'total_page' => $total_page
             ], 200);        
     }
     public function post_favorite(Request $request)

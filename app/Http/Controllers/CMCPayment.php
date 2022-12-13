@@ -42,7 +42,7 @@ class CMCPayment extends Controller
 			$tKonfirmasiBayar->konfirmasi_tanggal = date("Y-m-d H:i:s");
 			$tKonfirmasiBayar->update();
 			
-			$this->kirim_email($input->customer_details->email,$input->customer_details->full_name,null,null,null,null,null,'email.mailPembayaran','Proof of payment - ORDER ID #'.$input->order_id.' - Villanesia');			
+			$this->kirim_email($input->customer_details->email,$input->customer_details->full_name,null,null,null,null,null,'email.emailPembayaran','Proof of payment - ORDER ID #'.$input->order_id.' - Villanesia');			
 		} else {
 			$mHMCPaymentCallback->status = 2;
 			$tBooking->payment_status = 3;

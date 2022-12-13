@@ -292,8 +292,17 @@ use App\Traits\Helper;
                                     <label for="">Harga Akhir Pekan</label>
                                     <input type="text" class="form-control" name="akhir_pekan_periode" id="akhir_pekan_periode" value="" readonly/>
                                 </div>
-                                <div class="col-2">
-                                    <input type="button" class="btn btn-danger btn-sm simpan-periode" value="Simpan" disabled>
+                                <div class="form-group col-4">
+                                    <label for="">Min Durasi Inap</label>
+                                    <input type="text" class="form-control" name="min_durasi_inap_periode" id="min_durasi_inap_periode" value="" readonly/>
+                                </div>                                
+                                <div class="form-group col-2">
+                                    <div class="col">
+                                        <label for="">&nbsp;</label>                                        
+                                    </div>
+                                    <div class="col">
+                                        <button class="btn btn-danger simpan-periode" disabled>Simpan</button>
+                                    </div>
                                 </div>
                             </div><br>
                             <div class="row">
@@ -308,6 +317,7 @@ use App\Traits\Helper;
                                         <tr>
                                             <th>Tanggal Mulai</th>
                                             <th>Tanggal Selesai</th>
+                                            <th>Min Durasi Inap</th>
                                             <th>Harga</th>
                                             <th>Harga Tamu Tambahan</th>
                                             <th>Harga Akhir Pekan</th>
@@ -319,6 +329,7 @@ use App\Traits\Helper;
                                         <tr>
                                             <td>{{date('d-m-Y',strtotime($per->start_date))}}</td>
                                             <td>{{date('d-m-Y',strtotime($per->end_date))}}</td>
+                                            <td>{{$per->min_durasi_inap}}</td>
                                             <td>{{$per->harga}}</td>
                                             <td>{{$per->harga_tamu_tambahan}}</td>
                                             <td>{{$per->harga_weekend}}</td>                                            

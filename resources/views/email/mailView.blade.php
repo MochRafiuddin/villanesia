@@ -11,7 +11,7 @@
 							<div style="width:600px;margin:0px auto;background-color:#ffffff;border-radius:8px">
 								<div style="padding:40px 32px 0px"> <img src="{{$message->embed(public_path().'/assets/images/VILLANESIA.png')}}" alt="Villanesia" width="450"></div>
 								<div style="padding:56px 32px 48.4px">
-									<div style="color:#35405a;font-size:30px">Welcome to Villanesia</div>
+									<!-- <div style="color:#35405a;font-size:30px">Welcome to Villanesia</div> -->
 									<div>
 										<p style="line-height:1.5rem;letter-spacing:0;font-size:16px;color:#35405a;margin-top:16px"> Hello {{$nama_depan}} {{$nama_belakang}} <br> We detected that your account has requested forgot password</p>
                                         <p style="line-height:1.5rem;letter-spacing:0;font-size:16px;color:#35405a;margin-top:16px"> 

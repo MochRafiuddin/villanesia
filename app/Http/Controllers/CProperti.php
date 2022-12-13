@@ -114,6 +114,7 @@ class CProperti extends Controller
                 $periode->harga = $request['harga_periode'][$i];
                 $periode->harga_tamu_tambahan = $request['harga_tamu_periode'][$i];
                 $periode->harga_weekend = $request['akhir_pekan_periode'][$i];
+                $periode->min_durasi_inap = $request['min_durasi_inap_periode'][$i];
                 $periode->save();
             }
         }
@@ -529,11 +530,13 @@ class CProperti extends Controller
         $tipe->harga = $request->harga_periode;
         $tipe->harga_tamu_tambahan = $request->harga_tamu_periode;
         $tipe->harga_weekend = $request->akhir_pekan_periode;
+        $tipe->min_durasi_inap = $request->min_durasi_inap_periode;
         $tipe->save();        
 
         $data['id_periode'] = $tipe->id_properti_periode_cus;
         $data['start_date'] = date('Y-m-d',strtotime($request->tanggal_mulai_periode));
         $data['end_date'] = date('Y-m-d',strtotime($request->tanggal_selesai_periode));
+        $data['durasi_inap'] = $request->min_durasi_inap_periode;
         $data['harga'] = $request->harga_periode;
         $data['harga_tamu_tambahan'] = $request->harga_tamu_periode;
         $data['harga_weekend'] = $request->akhir_pekan_periode;

@@ -35,13 +35,19 @@ class CABooking extends Controller
                 ->limit(6)
                 ->offset($page)
                 ->get();
-        
+
+        if ((count($tipe) % 6) != 0) {  
+            $total_page = intval(count($tipe) / 6)+1;
+        }else {
+            $total_page = intval(count($tipe) / 6);
+        }
         return response()->json([
             'success' => true,
             'message' => 'Success',
             'code' => 1,
             'total_data' => count($tipe),
             'result' => $tipe,
+            'total_page' => $total_page
         ], 200);        
     }
 
@@ -107,7 +113,7 @@ class CABooking extends Controller
         $total_rating = HReviewRating::where('id_properti',$id_properti)->where('id_booking',$id_booking)->get()->sum('rating');
         $rata = $total_rating / $jumlah_rating;
     
-        $prop = MProperti::where('id_ref_bahasa',$id_properti)->update(['nilai_rating' => $rata, 'total_rating' => $total_rating, 'total_review' => $jumlah_rating]);
+        $prop = MProperti::where('id_ref_bahasa',$id_properti)->update(['nilai_rating' => $rata, 'total_rating' => $jumlah_rating, 'total_review' => $jumlah_rating, 'review'=>1]);
 
         return response()->json([
             'success' => true,

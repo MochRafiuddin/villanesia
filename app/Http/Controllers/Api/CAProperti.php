@@ -61,12 +61,18 @@ class CAProperti extends Controller
             $tipe = $tipe->orderBy('created_date','asc');
         }
         $data = $tipe->get();
+        if ((count($data) % 6) != 0) {  
+            $total_page = intval(count($data) / 6)+1;
+        }else {
+            $total_page = intval(count($data) / 6);
+        }
         if (count($data)>0) {
             return response()->json([
                 'success' => true,
                 'message' => 'Success',
                 'code' => 1,
                 'data' => $data,
+                'total_page' => $total_page
             ], 200);
         } else {
             return response()->json([
@@ -1422,7 +1428,9 @@ class CAProperti extends Controller
                 ->join('m_customer','m_customer.id','m_users.id_ref')
                 ->where('m_users.deleted',1)
                 ->where('h_review_rating.id_properti',$id_properti)
-                ->orderBy('h_review_rating.created_date','desc');
+                ->orderBy('h_review_rating.created_date','desc')
+                ->limit(6)
+                ->offset($page);;
         if ($rating != 0) {
             if ($rating != null) {
                 $result = $result->where('h_review_rating.rating',$rating);
@@ -1430,13 +1438,18 @@ class CAProperti extends Controller
         }
 
         $data = $result->get();
-
+        if ((count($data) % 6) != 0) {  
+            $total_page = intval(count($data) / 6)+1;
+        }else {
+            $total_page = intval(count($data) / 6);
+        }
         return response()->json([
             'success' => true,
             'message' => 'Success',
             'code' => 1,
             'total_data' => count($data),
             'result' => $data,
+            'total_page' => $total_page
         ], 200);        
     }
     public function get_properti_by_city(Request $request)
@@ -1466,11 +1479,17 @@ class CAProperti extends Controller
             $tipe = $tipe->orderBy('created_date','asc');
         }
         $data = $tipe->get();
+        if ((count($data) % 6) != 0) {  
+            $total_page = intval(count($data) / 6)+1;
+        }else {
+            $total_page = intval(count($data) / 6);
+        }
         return response()->json([
             'success' => true,
             'message' => 'Success',
             'code' => 1,
             'data' => $data,
+            'total_page' => $total_page
         ], 200);        
     }
     public function get_property_by_facilities(Request $request)
@@ -1502,11 +1521,17 @@ class CAProperti extends Controller
             $tipe = $tipe->orderBy('created_date','asc');
         }
         $data = $tipe->get();
+        if ((count($data) % 6) != 0) {  
+            $total_page = intval(count($data) / 6)+1;
+        }else {
+            $total_page = intval(count($data) / 6);
+        }
         return response()->json([
             'success' => true,
             'message' => 'Success',
             'code' => 1,
             'data' => $data,
+            'total_page' =>$total_page
         ], 200);        
     }
 
@@ -1607,7 +1632,7 @@ class CAProperti extends Controller
                 'detail_booking_extra' => $detail_booking_extra,
                 'detail_booking_discount' => $detail_booking_discount,
             ],
-            'respone_payment_gateway' => $curl
+            'respone_payment_gateway' => json_decode($curl)
 
         ], 200);        
     }

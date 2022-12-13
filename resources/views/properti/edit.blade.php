@@ -311,8 +311,17 @@ use App\Traits\Helper;
                                     <label for="">Harga Akhir Pekan</label>
                                     <input type="text" class="form-control" name="akhir_pekan_periode" id="akhir_pekan_periode" value=""/>
                                 </div>
-                                <div class="col-2">
-                                    <input type="button" class="btn btn-danger btn-sm simpan-periode" value="Simpan">
+                                <div class="form-group col-4">
+                                    <label for="">Min Durasi Inap</label>
+                                    <input type="text" class="form-control" name="min_durasi_inap_periode" id="min_durasi_inap_periode" value=""/>
+                                </div>
+                                <div class="form-group col-2">
+                                    <div class="col">
+                                        <label for="">&nbsp;</label>                                        
+                                    </div>
+                                    <div class="col">
+                                        <button class="btn btn-danger simpan-periode">Simpan</button>
+                                    </div>
                                 </div>
                             </div><br>
                             <div class="row">
@@ -327,6 +336,7 @@ use App\Traits\Helper;
                                         <tr>
                                             <th>Tanggal Mulai</th>
                                             <th>Tanggal Selesai</th>
+                                            <th>Min Durasi Inap</th>
                                             <th>Harga</th>
                                             <th>Harga Tamu Tambahan</th>
                                             <th>Harga Akhir Pekan</th>
@@ -338,6 +348,7 @@ use App\Traits\Helper;
                                         <tr>
                                             <td>{{date('d-m-Y',strtotime($per->start_date))}}</td>
                                             <td>{{date('d-m-Y',strtotime($per->end_date))}}</td>
+                                            <td>{{$per->min_durasi_inap}}</td>
                                             <td>{{$per->harga}}</td>
                                             <td>{{$per->harga_tamu_tambahan}}</td>
                                             <td>{{$per->harga_weekend}}</td>                                            
@@ -806,6 +817,7 @@ use App\Traits\Helper;
             var harga_periode = $('#harga_periode').val();
             var harga_tamu_periode = $('#harga_tamu_periode').val();
             var akhir_pekan_periode = $('#akhir_pekan_periode').val();
+            var min_durasi_inap_periode = $('#min_durasi_inap_periode').val();
             // console.log(id+','+tanggal_mulai_periode);
             $.ajax({
                 data: { id:id, 
@@ -814,6 +826,7 @@ use App\Traits\Helper;
                         harga_periode:harga_periode,
                         harga_tamu_periode:harga_tamu_periode,
                         akhir_pekan_periode:akhir_pekan_periode,
+                        min_durasi_inap_periode:min_durasi_inap_periode,
                       },
                 url: '{{ url("properti/periode-save") }}',
                 type: "POST",
@@ -823,6 +836,7 @@ use App\Traits\Helper;
                     let html ='<tr>\
                                 <td>'+data['start_date']+'</td>\
                                 <td>'+data['end_date']+'</td>\
+                                <td>'+data['durasi_inap']+'</td>\
                                 <td>'+data['harga']+'</td>\
                                 <td>'+data['harga_tamu_tambahan']+'</td>\
                                 <td>'+data['harga_weekend']+'</td>\
@@ -835,6 +849,7 @@ use App\Traits\Helper;
                     $('#harga_periode').val('');
                     $('#harga_tamu_periode').val('');
                     $('#akhir_pekan_periode').val('');
+                    $('#min_durasi_inap_periode').val('');
                 },
                 error: function (data) {
                     console.log('Error:', data);

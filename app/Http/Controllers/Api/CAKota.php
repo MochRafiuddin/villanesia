@@ -47,11 +47,18 @@ class CAKota extends Controller
                 ->offset($page)
                 ->get();        
         
+        if ((count($tipe) % 6) != 0) {  
+            $total_page = intval(count($tipe) / 6)+1;
+        }else {
+            $total_page = intval(count($tipe) / 6);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Success',
             'code' => 1,
             'data' => $tipe,
+            'total_page' => $total_page
         ], 200);        
     }
 

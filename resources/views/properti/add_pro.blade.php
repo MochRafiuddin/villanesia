@@ -226,8 +226,13 @@
                                     <label for="">Harga Akhir Pekan</label>
                                     <input type="text" class="form-control" name="akhir_pekan_periode" id="akhir_pekan_periode" value=""/>
                                 </div>
+                                <div class="form-group col-4">
+                                    <label for="">Min Durasi Inap</label>
+                                    <input type="text" class="form-control" name="min_durasi_inap_periode" id="min_durasi_inap_periode" value=""/>
+                                </div>
                                 <div class="col-2">
-                                    <input type="button" class="btn btn-danger btn-sm simpan-periode" value="Simpan">
+                                    <label for="">&nbsp;</label>
+                                    <input type="button" class="btn btn-danger simpan-periode" value="Simpan">
                                 </div>
                             </div><br>
                             <div class="row">
@@ -242,6 +247,7 @@
                                         <tr>
                                             <th>Tanggal Mulai</th>
                                             <th>Tanggal Selesai</th>
+                                            <th>Min Durasi Inap</th>
                                             <th>Harga</th>
                                             <th>Harga Tamu Tambahan</th>
                                             <th>Harga Akhir Pekan</th>
@@ -866,11 +872,13 @@ $( document ).ready(function() {
             var harga_periode = $('#harga_periode').val();
             var harga_tamu_periode = $('#harga_tamu_periode').val();
             var akhir_pekan_periode = $('#akhir_pekan_periode').val();
+            var min_durasi_inap_periode = $('#min_durasi_inap_periode').val();
 
             $('.simpan-periode').html('Simpan');
                     let html ='<tr>\
                                 <td><input type="hidden" name="tanggal_mulai_periode[]" value="'+tanggal_mulai_periode+'"/>'+tanggal_mulai_periode+'</td>\
                                 <td><input type="hidden" name="tanggal_selesai_periode[]" value="'+tanggal_selesai_periode+'"/>'+tanggal_selesai_periode+'</td>\
+                                <td><input type="hidden" name="min_durasi_inap_periode[]" value="'+min_durasi_inap_periode+'"/>'+min_durasi_inap_periode+'</td>\
                                 <td><input type="hidden" name="harga_periode[]" value="'+harga_periode+'"/>'+harga_periode+'</td>\
                                 <td><input type="hidden" name="harga_tamu_periode[]" value="'+harga_tamu_periode+'"/>'+harga_tamu_periode+'</td>\
                                 <td><input type="hidden" name="akhir_pekan_periode[]" value="'+akhir_pekan_periode+'"/>'+akhir_pekan_periode+'</td>\
@@ -882,7 +890,8 @@ $( document ).ready(function() {
             $('#tanggal_selesai_periode').val('');
             $('#harga_periode').val('');
             $('#harga_tamu_periode').val('');
-            $('#akhir_pekan_periode').val('');              
+            $('#akhir_pekan_periode').val('');
+            $('#min_durasi_inap_periode').val('');
         });
 
     function myFunction(selectObject) {                
