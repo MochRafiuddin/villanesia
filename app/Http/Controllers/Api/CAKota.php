@@ -35,7 +35,8 @@ class CAKota extends Controller
     public function get_best_destination(Request $request)
     {                
         $id_bahasa = $request->id_bahasa;
-        $page = ($request->page-1)*6;
+        $limit = 6;
+        $page = ($request->page-1)*$limit;
 
         $tipe = MKota::selectRaw('m_kota.*, COUNT(m_properti.id_properti) as total_kota')
                 ->join('m_properti', 'm_kota.id_kota','=','m_properti.id_kota')
@@ -46,11 +47,21 @@ class CAKota extends Controller
                 ->limit(6)
                 ->offset($page)
                 ->get();        
-        
-        if ((count($tipe) % 6) != 0) {  
-            $total_page = intval(count($tipe) / 6)+1;
-        }else {
-            $total_page = intval(count($tipe) / 6);
+
+        $get_total_all_data = MKota::selectRaw('m_kota.*, COUNT(m_properti.id_properti) as total_kota')
+                ->join('m_properti', 'm_kota.id_kota','=','m_properti.id_kota')
+                ->where('m_kota.deleted',1)
+                ->where('m_properti.id_bahasa',$id_bahasa)
+                ->groupBy('m_properti.id_kota')
+                ->orderBy('total_kota','desc')
+                ->get()->count();
+
+        $total_page = 0;
+        $hasil_bagi = $get_total_all_data / $limit;
+        if(fmod($get_total_all_data, $limit) == 0){
+            $total_page = $hasil_bagi;
+        }else{
+            $total_page = floor($hasil_bagi)+1;
         }
 
         return response()->json([

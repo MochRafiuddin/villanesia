@@ -13,7 +13,8 @@ class CAFavorit extends Controller
     public function get_favorite(Request $request)
     {        
         $id_bahasa = $request->id_bahasa;
-        $page = ($request->page-1)*6;
+        $limit = 6;
+        $page = ($request->page-1)*$limit;
         $id_tipe = $request->id_tipe;
         $nama_properti = strtolower($request->nama_properti);
         $order_by = $request->order_by;
@@ -26,37 +27,56 @@ class CAFavorit extends Controller
                 ->where('m_properti.deleted',1)
                 ->where('m_properti.id_bahasa',$id_bahasa)
                 ->orderBy('h_favorit.created_date','desc')
-                ->limit(6)
+                ->limit($limit)
                 ->offset($page);
+        $get_total_all_data = MFavorit::selectRaw('h_favorit.id, h_favorit.id_properti, h_favorit.id_user, h_favorit.created_date, h_favorit.deleted, h_favorit.updated_date, m_properti.id_bahasa, m_properti.id_ref_bahasa, m_properti.judul, m_properti.alamat, m_properti.harga_tampil, m_properti.jumlah_kamar_tidur, m_properti.jumlah_kamar_mandi, (m_properti.jumlah_tamu+COALESCE(m_properti.jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, m_properti.sarapan, m_properti.nilai_rating, m_properti.nama_file, m_properti.id_tipe_properti')
+                ->leftJoin('m_properti','h_favorit.id_properti','=','m_properti.id_ref_bahasa')                
+                ->where('h_favorit.deleted',1)
+                ->where('h_favorit.id_user',$user->id_user)                
+                ->where('m_properti.deleted',1)
+                ->where('m_properti.id_bahasa',$id_bahasa)
+                ->orderBy('h_favorit.created_date','desc');    
 
         if ($id_tipe != 0) {
             if ($id_tipe != null) {
                 $tipe = $tipe->where('m_properti.id_tipe_properti',$id_tipe);
+                $get_total_all_data = $get_total_all_data->where('m_properti.id_tipe_properti',$id_tipe);
             }
         }
         if ($nama_properti != null) {
             $tipe = $tipe->where('m_properti.judul', 'like', '%'.$nama_properti.'%');
+            $get_total_all_data = $get_total_all_data->where('m_properti.judul', 'like', '%'.$nama_properti.'%');
         }
         if ($order_by == 1) {
             $tipe = $tipe->orderBy('m_properti.harga_tampil','asc');
+            $get_total_all_data = $get_total_all_data->orderBy('m_properti.harga_tampil','asc');
         }elseif ($order_by == 2) {
             $tipe = $tipe->orderBy('m_properti.harga_tampil','desc');
+            $get_total_all_data = $get_total_all_data->orderBy('m_properti.harga_tampil','desc');
         }elseif ($order_by == 3) {
             $tipe = $tipe->orderBy('m_properti.nilai_rating','desc');
+            $get_total_all_data = $get_total_all_data->orderBy('m_properti.nilai_rating','desc');
         }elseif ($order_by == 4) {
             $tipe = $tipe->orderByRaw('(m_properti.total_amenities + m_properti.total_fasilitas) desc');
+            $get_total_all_data = $get_total_all_data->orderByRaw('(m_properti.total_amenities + m_properti.total_fasilitas) desc');
         }elseif ($order_by == 5) {
             $tipe = $tipe->orderBy('m_properti.created_date','desc');
+            $get_total_all_data = $get_total_all_data->orderBy('m_properti.created_date','desc');
         }elseif ($order_by == 6) {
             $tipe = $tipe->orderBy('m_properti.created_date','asc');
+            $get_total_all_data = $get_total_all_data->orderBy('m_properti.created_date','asc');
         }else {
             $tipe = $tipe->orderBy('h_favorit.created_date','desc');
+            $get_total_all_data = $get_total_all_data->orderBy('h_favorit.created_date','desc');
         }
+        $get_total_all_data = $get_total_all_data->count();
         $data = $tipe->get();
-        if ((count($data) % 6) != 0) {  
-            $total_page = intval(count($data) / 6)+1;
-        }else {
-            $total_page = intval(count($data) / 6);
+        $total_page = 0;
+        $hasil_bagi = $get_total_all_data / $limit;
+        if(fmod($get_total_all_data, $limit) == 0){
+            $total_page = $hasil_bagi;
+        }else{
+            $total_page = floor($hasil_bagi)+1;
         }
             return response()->json([
                 'success' => true,
