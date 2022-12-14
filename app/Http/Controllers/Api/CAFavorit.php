@@ -29,8 +29,8 @@ class CAFavorit extends Controller
                 ->orderBy('h_favorit.created_date','desc')
                 ->limit($limit)
                 ->offset($page);
-        $get_total_all_data = MFavorit::selectRaw('h_favorit.id, h_favorit.id_properti, h_favorit.id_user, h_favorit.created_date, h_favorit.deleted, h_favorit.updated_date, m_properti.id_bahasa, m_properti.id_ref_bahasa, m_properti.judul, m_properti.alamat, m_properti.harga_tampil, m_properti.jumlah_kamar_tidur, m_properti.jumlah_kamar_mandi, (m_properti.jumlah_tamu+COALESCE(m_properti.jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, m_properti.sarapan, m_properti.nilai_rating, m_properti.nama_file, m_properti.id_tipe_properti')
-                ->leftJoin('m_properti','h_favorit.id_properti','=','m_properti.id_ref_bahasa')                
+        $get_total_all_data = MFavorit::selectRaw('h_favorit.id')
+                ->leftJoin('m_properti','h_favorit.id_properti','=','m_properti.id_ref_bahasa')
                 ->where('h_favorit.deleted',1)
                 ->where('h_favorit.id_user',$user->id_user)                
                 ->where('m_properti.deleted',1)

@@ -48,7 +48,7 @@ class CAKota extends Controller
                 ->offset($page)
                 ->get();        
 
-        $get_total_all_data = MKota::selectRaw('m_kota.*, COUNT(m_properti.id_properti) as total_kota')
+        $get_total_all_data = MKota::selectRaw('COUNT(m_properti.id_properti) as total_kota')
                 ->join('m_properti', 'm_kota.id_kota','=','m_properti.id_kota')
                 ->where('m_kota.deleted',1)
                 ->where('m_properti.id_bahasa',$id_bahasa)

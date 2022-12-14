@@ -38,33 +38,49 @@ class CAProperti extends Controller
     {
         $id_tipe = $request->id_tipe;
         $id_bahasa = $request->id_bahasa;
-        $page = ($request->page-1)*6;
+        $limit = 6;
+        $page = ($request->page-1)*$limit;
         $order_by = $request->order_by;
 
         $tipe = MProperti::selectRaw('id_properti, id_bahasa, id_ref_bahasa, judul, alamat, harga_tampil, jumlah_kamar_tidur, jumlah_kamar_mandi, (jumlah_tamu+COALESCE(jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, sarapan, nama_file')
                 ->where('deleted',1)
                 ->where('id_bahasa',$id_bahasa)
                 ->where('id_tipe_properti',$id_tipe)
-                ->limit(6)
+                ->limit($limit)
                 ->offset($page);
+
+        $get_total_all_data = MProperti::selectRaw('id_properti')
+                ->where('deleted',1)
+                ->where('id_bahasa',$id_bahasa)
+                ->where('id_tipe_properti',$id_tipe);
+
         if ($order_by == 1) {
             $tipe = $tipe->orderBy('harga_tampil','asc');
+            $get_total_all_data = $get_total_all_data->orderBy('harga_tampil','asc');
         }elseif ($order_by == 2) {
             $tipe = $tipe->orderBy('harga_tampil','desc');
+            $get_total_all_data = $get_total_all_data->orderBy('harga_tampil','desc');
         }elseif ($order_by == 3) {
             $tipe = $tipe->orderBy('nilai_rating','desc');
+            $get_total_all_data = $get_total_all_data->orderBy('nilai_rating','desc');
         }elseif ($order_by == 4) {
             $tipe = $tipe->orderByRaw('(total_amenities+total_fasilitas) desc');
+            $get_total_all_data = $get_total_all_data->orderByRaw('(total_amenities+total_fasilitas) desc');
         }elseif ($order_by == 5) {
             $tipe = $tipe->orderBy('created_date','desc');
+            $get_total_all_data = $get_total_all_data->orderBy('created_date','desc');
         }else {
             $tipe = $tipe->orderBy('created_date','asc');
+            $get_total_all_data = $get_total_all_data->orderBy('created_date','asc');
         }
         $data = $tipe->get();
-        if ((count($data) % 6) != 0) {  
-            $total_page = intval(count($data) / 6)+1;
-        }else {
-            $total_page = intval(count($data) / 6);
+        $get_total_all_data = $get_total_all_data->get()->count();
+        $total_page = 0;
+        $hasil_bagi = $get_total_all_data / $limit;
+        if(fmod($get_total_all_data, $limit) == 0){
+            $total_page = $hasil_bagi;
+        }else{
+            $total_page = floor($hasil_bagi)+1;
         }
         if (count($data)>0) {
             return response()->json([
@@ -1437,7 +1453,7 @@ class CAProperti extends Controller
                 ->limit($limit)
                 ->offset($page);
 
-        $get_total_all_data = HReviewRating::selectRaw('h_review_rating.*, CONCAT(m_customer.nama_depan," ",m_customer.nama_belakang) as nama_lengkap, m_customer.nama_foto')
+        $get_total_all_data = HReviewRating::selectRaw('h_review_rating.id')
                 ->join('m_users','m_users.id_user','h_review_rating.id_user')
                 ->join('m_customer','m_customer.id','m_users.id_ref')
                 ->where('m_users.deleted',1)
@@ -1482,7 +1498,7 @@ class CAProperti extends Controller
                 ->where('deleted',1)
                 ->limit($limit)
                 ->offset($page);
-        $get_total_all_data = MProperti::selectRaw('id_properti, id_bahasa, id_ref_bahasa, judul, alamat, harga_tampil, jumlah_kamar_tidur, jumlah_kamar_mandi, (jumlah_tamu+COALESCE(jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, sarapan, nama_file')
+        $get_total_all_data = MProperti::selectRaw('id_properti')
                 ->where('id_kota',$id_kota)
                 ->where('id_bahasa',$id_bahasa)                
                 ->where('deleted',1);
@@ -1539,7 +1555,7 @@ class CAProperti extends Controller
                 ->limit($limit)
                 ->offset($page);
         
-        $get_total_all_data = MProperti::selectRaw('id_properti, id_bahasa, id_ref_bahasa, judul, alamat, harga_tampil, jumlah_kamar_tidur, jumlah_kamar_mandi, (jumlah_tamu+COALESCE(jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, sarapan, nama_file')
+        $get_total_all_data = MProperti::selectRaw('id_properti')
                 ->whereIn('id_properti',$list_id_properti_fas)
                 ->where('id_bahasa',$id_bahasa)                
                 ->where('deleted',1);
