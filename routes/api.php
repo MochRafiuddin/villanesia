@@ -91,4 +91,5 @@ Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
     Route::post('/post-property-coupon', [CAProperti::class, 'post_property_coupon']);
     Route::post('/post-property-payment', [CAProperti::class, 'post_property_payment']);
     Route::put('/put-forget-password', [CAAuth::class, 'put_forget_password']);
+    Route::get('/get-billing-address', [CABooking::class, 'get_billing_address']);
 });

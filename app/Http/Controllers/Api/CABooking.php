@@ -12,6 +12,7 @@ use App\Models\MBookingHargaSatuan;
 use App\Models\MBookingPropertiExtra;
 use App\Models\MApiKey;
 use App\Models\HReviewRating;
+use App\Models\TKonfirmasiBayar;
 use App\Traits\Helper;
 
 class CABooking extends Controller
@@ -170,6 +171,21 @@ class CABooking extends Controller
             'success' => true,
             'message' => 'Kirim Email Success',
             'code' => 1,            
+        ], 200);        
+    }
+
+    public function get_billing_address(Request $request)
+    {        
+        $id_bahasa = $request->id_bahasa;
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
+        
+        $detail_t_konfirmasi_bayar = TKonfirmasiBayar::where('created_by',$user->id_user)->where('nama_depan','!=','')->orderBy('created_date','desc')->limit(1)->offset(0)->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Success',
+            'code' => 1,            
+            'detail_billing_address' => $detail_t_konfirmasi_bayar
         ], 200);        
     }
 }

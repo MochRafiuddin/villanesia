@@ -7,6 +7,11 @@ use App\Models\HMcpaymentCallback;
 use App\Models\MBooking;
 use App\Models\TKonfirmasiBayar;
 use App\Models\User;
+use App\Models\MProperti;
+use App\Models\MBookingDiscount;
+use App\Models\MBookingExtra;
+use App\Models\MBookingHargaSatuan;
+use App\Models\MBookingPropertiExtra;
 use Auth;
 use App\Traits\Helper;
 
@@ -42,7 +47,7 @@ class CMCPayment extends Controller
 			$tKonfirmasiBayar->konfirmasi_tanggal = date("Y-m-d H:i:s");
 			$tKonfirmasiBayar->update();
 			
-			$this->kirim_email($input->customer_details->email,$input->customer_details->full_name,null,null,null,null,null,'email.emailPembayaran','Proof of payment - ORDER ID #'.$input->order_id.' - Villanesia');			
+			$this->kirim_email($input->customer_details->email,$input->customer_details->full_name,null,null,null,null,null,'email.emailPembayaran','Proof of payment - ORDER ID #'.$input->order_id.' - Villanesia',$input->order_id,$input->customer_details->phone);			
 		} else {
 			$mHMCPaymentCallback->status = 2;
 			$tBooking->payment_status = 3;
@@ -75,8 +80,135 @@ class CMCPayment extends Controller
                 ->where('m_customer.deleted',1)
                 ->first();
 
-        $this->kirim_email($get_user->email,$get_user->nama_depan,$get_user->nama_belakang,null,null,null,null,'email.mailPembayaran','Proof of payment - ORDER ID #'.$kode_booking.' - Villanesia');
+        $this->kirim_email($get_user->email,$get_user->nama_depan,$get_user->nama_belakang,null,null,null,null,'email.emailPembayaran','Proof of payment - ORDER ID #'.$kode_booking.' - Villanesia',$kode_booking,$get_user->no_telfon);
 		
 		return response()->json(['status'=>true,'msg'=>'Sukses']);
     }
+
+	public function redirect_invoice_sukses(Request $request)
+	{
+
+		$tam_trans_id = $request->transaction_id;
+
+		$data = array();
+
+		if(!empty($tam_trans_id)){
+			$detail_booking = MBooking::from( 't_booking as a' )
+				->selectRaw('a.*, b.id_bahasa, b.id_ref_bahasa, b.judul, b.alamat, b.harga_tampil, b.total_rating, b.nilai_rating, b.nama_file, c.nama_status_booking, CONCAT(e.nama_depan," ",e.nama_belakang) as nama_pemilik_properti, CONCAT(g.nama_depan," ",g.nama_belakang) as nama_pemesan, h.nama_tipe_properti')
+				->leftJoin('m_properti as b','a.id_ref', '=','b.id_ref_bahasa')
+				->leftJoin('m_status_booking as c','a.id_status_booking', '=','c.id_ref_bahasa')
+				->leftJoin('m_users as d','d.id_user', '=','b.created_by')
+				->leftJoin('m_customer as e','d.id_ref', '=','e.id')
+				->leftJoin('m_users as f','f.id_user', '=','a.id_user')
+				->leftJoin('m_customer as g','f.id_ref', '=','g.id')
+				->leftJoin('m_tipe_properti as h','h.id_ref_bahasa', '=','b.id_tipe_booking')
+				->where('h.id_bahasa',1)
+				->where('a.deleted',1)
+				->where('b.deleted',1)
+				->where('b.id_bahasa',1)
+				->where('a.pg_transaction_id',$tam_trans_id)
+				->where('d.deleted',1)
+				->where('f.deleted',1)->get();
+			
+			$id_booking = 0;
+			if($detail_booking->count() > 0){
+				$id_booking = $detail_booking->first()->id_booking;
+			}
+
+			$detail_booking_harga_satuan = MBookingHargaSatuan::where('id_booking',$id_booking)->get();
+			$detail_booking_properti_extra = MBookingPropertiExtra::where('id_booking',$id_booking)->get();
+			$detail_booking_extra = MBookingExtra::where('id_booking',$id_booking)->get();
+			$detail_booking_discount = MBookingDiscount::where('id_booking',$id_booking)->get();
+
+			// return response()->json([
+			//     'success' => true,
+			//     'message' => 'Success',
+			//     'code' => 1,            
+			//     'detail_booking' => $detail_booking,
+			//     'detail_payment' =>[
+			//         'detail_booking_harga_satuan' => $detail_booking_harga_satuan,
+			//         'detail_booking_properti_extra' => $detail_booking_properti_extra,
+			//         'detail_booking_extra' => $detail_booking_extra,
+			//         'detail_booking_discount' => $detail_booking_discount,
+			//     ]
+			// ], 200);  
+			
+			$data = array(
+				'all_data' => array(
+							'detail_booking' => $detail_booking,
+							'detail_payment' =>[
+								'detail_booking_harga_satuan' => $detail_booking_harga_satuan,
+								'detail_booking_properti_extra' => $detail_booking_properti_extra,
+								'detail_booking_extra' => $detail_booking_extra,
+								'detail_booking_discount' => $detail_booking_discount
+							],
+							'message' => 'success',
+							'code' => 1
+						)
+			);
+		}
+
+		return view('mc_payment.redirect_invoice_sukses', $data)            
+			->with('title','Redirect invoice sukses');
+	}
+
+	public function redirect_invoice_gagal(Request $request)
+	{
+
+		$tam_trans_id = $request->transaction_id;
+
+		$data = array();
+
+		if(!empty($tam_trans_id)){
+
+			$detail_booking = MBooking::from( 't_booking as a' )
+				->selectRaw('a.*, b.id_bahasa, b.id_ref_bahasa, b.judul, b.alamat, b.harga_tampil, b.total_rating, b.nilai_rating, b.nama_file, c.nama_status_booking, CONCAT(e.nama_depan," ",e.nama_belakang) as nama_pemilik_properti, CONCAT(g.nama_depan," ",g.nama_belakang) as nama_pemesan, h.nama_tipe_properti')
+				->leftJoin('m_properti as b','a.id_ref', '=','b.id_ref_bahasa')
+				->leftJoin('m_status_booking as c','a.id_status_booking', '=','c.id_ref_bahasa')
+				->leftJoin('m_users as d','d.id_user', '=','b.created_by')
+				->leftJoin('m_customer as e','d.id_ref', '=','e.id')
+				->leftJoin('m_users as f','f.id_user', '=','a.id_user')
+				->leftJoin('m_customer as g','f.id_ref', '=','g.id')
+				->leftJoin('m_tipe_properti as h','h.id_ref_bahasa', '=','b.id_tipe_booking')
+				->where('h.id_bahasa',1)
+				->where('a.deleted',1)
+				->where('b.deleted',1)
+				->where('b.id_bahasa',1)
+				->where('a.pg_transaction_id',$tam_trans_id)
+				->where('d.deleted',1)
+				->where('f.deleted',1)->get();
+			
+			$id_booking = 0;
+			if($detail_booking->count() > 0){
+				$id_booking = $detail_booking->first()->id_booking;
+			}
+
+			$detail_booking_harga_satuan = MBookingHargaSatuan::where('id_booking',$id_booking)->get();
+			$detail_booking_properti_extra = MBookingPropertiExtra::where('id_booking',$id_booking)->get();
+			$detail_booking_extra = MBookingExtra::where('id_booking',$id_booking)->get();
+			$detail_booking_discount = MBookingDiscount::where('id_booking',$id_booking)->get();
+
+			MBooking::where('id_booking',$id_booking)->update(['pg_url' => ""]);
+
+			$data = array(
+				'all_data' => array(
+							'detail_booking' => $detail_booking,
+							'detail_payment' =>[
+								'detail_booking_harga_satuan' => $detail_booking_harga_satuan,
+								'detail_booking_properti_extra' => $detail_booking_properti_extra,
+								'detail_booking_extra' => $detail_booking_extra,
+								'detail_booking_discount' => $detail_booking_discount
+							],
+							'message' => 'failed',
+							'code' => 2
+						)
+			);
+
+		}
+
+		return view('mc_payment.redirect_invoice_gagal', $data)            
+			->with('title','Redirect invoice gagal');
+	}
+
+	
 }

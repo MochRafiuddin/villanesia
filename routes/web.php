@@ -46,6 +46,8 @@ Route::get('callback-order', [CMCPayment::class, 'index']);
 Route::get('set-lunas/{id}', [CMCPayment::class, 'set_lunas']);
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle']);
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+Route::get('redirect-invoice-sukses', [CMCPayment::class, 'redirect_invoice_sukses']);
+Route::get('redirect-invoice-gagal', [CMCPayment::class, 'redirect_invoice_gagal']);
 
 Route::group(['middleware' => 'auth'], function () {
 

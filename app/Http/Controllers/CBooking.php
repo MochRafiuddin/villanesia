@@ -29,7 +29,9 @@ class CBooking extends Controller
             ->join('m_users','t_booking.id_user','m_users.id_user','left')
             ->where('t_booking.id_booking',$id)->first();
         $harga_satuan = MBookingHargaSatuan::where('id_booking',$id)->get();
-        $extra_service = MBookingPropertiExtra::where('id_booking',$id)->get();
+        $extra_service = MBookingPropertiExtra::where('id_booking',$id)
+            ->join('m_properti_extra','m_properti_extra.id_properti_extra','t_booking_properti_extra.id_properti_extra')
+			->select('t_booking_properti_extra.*','m_properti_extra.nama_service')->get();
         $extra = MBookingExtra::where('id_booking',$id)->get();
         $discount = MBookingDiscount::where('id_booking',$id)->get();
         return view('booking.detail')
@@ -51,7 +53,7 @@ class CBooking extends Controller
         ->leftJoin('m_customer','m_customer.id','=','m_users.id_ref')
         ->where('id_booking',$id)->first();
         // dd($booking);        
-        $this->kirim_email($booking->email,$booking->nama_depan,$booking->nama_belakang,null,null,$booking->nama_properti,$booking->tanggal_mulai,'email.mailBooking','Availability Confirmation - ORDER ID #'.$booking->kode_booking.' - Villanesia');
+        $this->kirim_email($booking->email,$booking->nama_depan,$booking->nama_belakang,null,null,$booking->nama_properti,$booking->tanggal_mulai,'email.mailBooking','Availability Confirmation - ORDER ID #'.$booking->kode_booking.' - Villanesia',$id,null);
         // return redirect()->to('/booking/detail/'.$id)->with('msg','Sukses Menambahkan Data');
         return response()->json(['status'=>true,'msg'=>'Sukses Mengubah Data']);
     }

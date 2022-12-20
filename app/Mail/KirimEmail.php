@@ -11,13 +11,13 @@ class KirimEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $nama_depan,$nama_belakang,$username,$password,$nama_properti,$tanggal_check_in,$view,$judul;
+    public $nama_depan,$nama_belakang,$username,$password,$nama_properti,$tanggal_check_in,$view,$judul,$id_booking,$email,$no_telfon;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($nama_depan,$nama_belakang,$username,$password,$nama_properti,$tanggal_check_in,$view,$judul)
+    public function __construct($nama_depan,$nama_belakang,$username,$password,$nama_properti,$tanggal_check_in,$view,$judul,$id_booking,$email,$no_telfon)
     {
         $this->nama_depan = $nama_depan;
         $this->nama_belakang = $nama_belakang;
@@ -27,6 +27,9 @@ class KirimEmail extends Mailable
         $this->tanggal_check_in = $tanggal_check_in;
         $this->view = $view;
         $this->judul = $judul;
+        $this->id_booking = $id_booking;
+        $this->email = $email;
+        $this->no_telfon = $no_telfon;
     }
 
     /**

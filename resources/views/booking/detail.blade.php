@@ -110,14 +110,20 @@ use App\Traits\Helper;
                                 <p>Taxes {{$data->persen_pajak}}%</p>
                             <?php
                                 if ($extra_service->count() > 0) {
-                                    echo "<p>Service</p>";
+                                    foreach ($extra_service as $k1) {                                         
+                                        echo "<p>".$k1->nama_service."</p>";
+                                    }
                                 }
 
                                 if ($data->total_booking_extra != 0) {
-                                    echo "<p>Extra Expenses</p>";
+                                    foreach ($extra as $ex) {                                        
+                                        echo "<p>".$ex->nama_biaya_extra."</p>";
+                                    }
                                 }
                                 if ($data->total_booking_discount != null) {
-                                    echo "<p>Discount</p>";
+                                    foreach ($discount as $dis) {
+                                        echo "<p>".$dis->nama_biaya_discount."</p>";
+                                    }                                    
                                 }
                             ?>
                                 <hr>
@@ -130,13 +136,19 @@ use App\Traits\Helper;
                                 <p>Rp.{{Helper::ribuan(ceil($data->nominal_pajak))}}</p>
                             <?php
                                 if ($extra_service->count() > 0) {
-                                    echo "<p>Rp.".Helper::ribuan(ceil($data->total_extra_service))."</p>";
+                                    foreach ($extra_service as $k1) {                                                                                 
+                                        echo "<p>Rp.".Helper::ribuan(ceil($k1->harga_final))."</p>";
+                                    }
                                 }
                                 if ($data->total_booking_extra != 0) {
-                                    echo "<p>Rp.".Helper::ribuan(ceil($data->total_booking_extra))."</p>";
+                                    foreach ($extra as $ex) {                                                                                
+                                        echo "<p>Rp.".Helper::ribuan(ceil($ex->harga))."</p>";
+                                    }
                                 }
                                 if ($data->total_booking_discount != null) {
-                                    echo "<p>- Rp.".Helper::ribuan(ceil($data->total_booking_discount))."</p>";
+                                    foreach ($discount as $dis) {                                        
+                                        echo "<p>- Rp.".Helper::ribuan(ceil($dis->harga))."</p>";
+                                    }
                                 }
                             ?>
                                 <hr>

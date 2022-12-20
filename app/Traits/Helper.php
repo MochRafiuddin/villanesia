@@ -411,9 +411,9 @@ trait Helper
                             "country": "'.$iso_code.'"
                         },
                         "save_card": false,
-                        "callback_url": "http://all.aptikmabiz.com/mcpayment-villanesia/callback-mcpayment.php",
-                        "success_redirect_url": "http://all.aptikmabiz.com/mcpayment-villanesia/redirect-invoice-sukses.php",
-                        "failed_redirect_url": "http://all.aptikmabiz.com/mcpayment-villanesia/redirect-invoice-gagal.php"
+                        "callback_url": "http://aptikmamid.ngrok.io/villanesia/public/callback-order",
+                        "success_redirect_url": "http://aptikmamid.ngrok.io/villanesia/public/redirect-invoice-sukses",
+                        "failed_redirect_url": "http://aptikmamid.ngrok.io/villanesia/public/redirect-invoice-gagal"
                     }';
         // $postData = json_decode($postData);
         //local
@@ -435,9 +435,9 @@ trait Helper
         return $output;
     }
 
-    public function kirim_email($email,$nama_depan,$nama_belakang,$username,$password,$nama_properti,$tanggal_check_in,$view,$judul)
+    public function kirim_email($email,$nama_depan,$nama_belakang,$username,$password,$nama_properti,$tanggal_check_in,$view,$judul,$id_booking,$no_telfon)
     {
-        Mail::to($email)->send(new KirimEmail($nama_depan,$nama_belakang,$username,$password,$nama_properti,$tanggal_check_in,$view,$judul));
+        Mail::to($email)->send(new KirimEmail($nama_depan,$nama_belakang,$username,$password,$nama_properti,$tanggal_check_in,$view,$judul,$id_booking,$email,$no_telfon));
         return TRUE;
     }
 

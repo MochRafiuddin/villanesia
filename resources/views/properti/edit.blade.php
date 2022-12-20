@@ -299,29 +299,24 @@ use App\Traits\Helper;
                                     <label for="">Sampai Tanggal</label>
                                     <input class="form-control pickerdate2" type="text" name="tanggal_selesai_periode" id="tanggal_selesai_periode">
                                 </div>                          
-                                <div class="form-group col-4">
+                                <div class="form-group col-3">
                                     <label for="">Harga</label>
                                     <input type="text" class="form-control" name="harga_periode" id="harga_periode" value=""/>
                                 </div>
-                                <div class="form-group col-4">
+                                <div class="form-group col-3">
                                     <label for="">Harga Tamu Tambahan</label>
                                     <input type="text" class="form-control" name="harga_tamu_periode" id="harga_tamu_periode" value=""/>
                                 </div>
-                                <div class="form-group col-4">
+                                <div class="form-group col-3">
                                     <label for="">Harga Akhir Pekan</label>
                                     <input type="text" class="form-control" name="akhir_pekan_periode" id="akhir_pekan_periode" value=""/>
                                 </div>
-                                <div class="form-group col-4">
+                                <div class="form-group col-3">
                                     <label for="">Min Durasi Inap</label>
                                     <input type="text" class="form-control" name="min_durasi_inap_periode" id="min_durasi_inap_periode" value=""/>
                                 </div>
-                                <div class="form-group col-2">
-                                    <div class="col">
-                                        <label for="">&nbsp;</label>                                        
-                                    </div>
-                                    <div class="col">
-                                        <button class="btn btn-danger simpan-periode">Simpan</button>
-                                    </div>
+                                <div class="col-2">                                    
+                                        <button class="btn btn-danger simpan-periode">Simpan</button>                                    
                                 </div>
                             </div><br>
                             <div class="row">

@@ -79,7 +79,7 @@ class CAAuth extends Controller
                 ->where('m_customer.deleted',1)
                 ->get();
 
-        $this->kirim_email($request->email,$request->username,null,null,null,null,null,'email.emailDaftar','Thank you for signing up with Villanesia');
+        $this->kirim_email($request->email,$request->username,null,null,null,null,null,'email.emailDaftar','Thank you for signing up with Villanesia',null,null);
 
         return response()->json([
             'success' => true,
@@ -180,7 +180,9 @@ class CAAuth extends Controller
         $id_bahasa = $request->id_bahasa;
         $email = $request->email;
 
-        $cek_email = User::where('email',$request->email)->first();
+        $cek_email = User::join('m_customer','m_customer.id','m_users.id_ref')
+            ->select('m_users.*','m_customer.nama_depan','m_customer.nama_belakang')
+            ->where('email',$request->email)->first();
         if ($cek_email == null) {
             return response()->json([
                 'success' => false,
@@ -191,7 +193,7 @@ class CAAuth extends Controller
 
         $password = Str::random(6);
         // Mail::to($request->email)->send(new EmailPassword($cek_email->username,$password,"Forgot Password - Villanesia"));
-        $this->kirim_email($email,$nama_depan,$nama_belakang,$username,$password,null,null,'email.mailView','Forgot Password - Villanesia');
+        $this->kirim_email($email,$cek_email->nama_depan,$cek_email->nama_belakang,$cek_email->username,$password,null,null,'email.mailView','Forgot Password - Villanesia',null,null);
         User::where('id_user',$cek_email->id_user)->update(['password' => Hash::make($password)]);
         return response()->json([
             'success' => true,
