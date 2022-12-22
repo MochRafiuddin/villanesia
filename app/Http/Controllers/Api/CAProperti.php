@@ -467,6 +467,7 @@ class CAProperti extends Controller
                 $result['total_extra_service'] = 0;
             }
             if ($extra_service != null) {
+                $extra = explode(",",$extra_service);
                 $res = [];
                 for ($i=0; $i < count($extra); $i++) {
                     $ser = MPropertiExtra::find($extra[$i]);
@@ -662,6 +663,7 @@ class CAProperti extends Controller
                     $result['total_extra_service'] = 0;
                 }
                 if ($extra_service != null) {
+                    $extra = explode(",",$extra_service);
                     $res = [];
                     for ($i=0; $i < count($extra); $i++) {
                         $ser = MPropertiExtra::find($extra[$i]);
@@ -789,6 +791,7 @@ class CAProperti extends Controller
                     $result['total_extra_service'] = 0;
                 }
                 if ($extra_service != null) {
+                    $extra = explode(",",$extra_service);
                     $res = [];
                     for ($i=0; $i < count($extra); $i++) {
                         $ser = MPropertiExtra::find($extra[$i]);
@@ -915,6 +918,7 @@ class CAProperti extends Controller
                     $result['total_extra_service'] = 0;
                 }
                 if ($extra_service != null) {
+                    $extra = explode(",",$extra_service);
                     $res = [];
                     for ($i=0; $i < count($extra); $i++) {
                         $ser = MPropertiExtra::find($extra[$i]);
@@ -1033,9 +1037,9 @@ class CAProperti extends Controller
                     $result['cleaning_fee'] = $pro->biaya_kebersihan * $diff_in_hours;
                 }
                 $result['security_deposit'] = $pro->uang_jaminan;
-                $extra = explode(",",$extra_service[0]);
                 // dd($extra);
-                if ($extra_service[0] != null) {
+                if ($extra_service != null) {
+                    $extra = explode(",",$extra_service);
                     $sevice = 0;
                     for ($i=0; $i < count($extra); $i++) {
                         $ser = MPropertiExtra::find($extra[$i]);
@@ -1053,7 +1057,8 @@ class CAProperti extends Controller
                 }else {
                     $result['total_extra_service'] = 0;
                 }
-                if ($extra_service[0] != null) {
+                if ($extra_service != null) {
+                    $extra = explode(",",$extra_service);
                     $res = [];
                     for ($i=0; $i < count($extra); $i++) {
                         $ser = MPropertiExtra::find($extra[$i]);

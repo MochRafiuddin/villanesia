@@ -26,6 +26,7 @@ use App\Http\Controllers\CBooking;
 use App\Http\Controllers\CSetting;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\CMCPayment;
+use App\Http\Controllers\CChat;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -313,4 +314,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/setting/data', [CSetting::class,'data']);
     Route::get('/setting/show/{id}', [CSetting::class,'show']);
     Route::post('/setting/show-save/{id}', [CSetting::class,'show_save']);
+
+    //CHAT
+    Route::get('/chat', [CChat::class,'index'])->name('chat-index');
 });

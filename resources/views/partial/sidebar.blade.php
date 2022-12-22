@@ -64,6 +64,13 @@
             </div>
         </li>
         <li class="nav-item">
+            <a class="nav-link" href="{{url('/chat')}}">
+                <i class="mdi mdi-puzzle-outline menu-icon"></i>
+                <span class="menu-title">Messages</span>
+                <i class="menu-arrow"></i>
+            </a>            
+        </li>
+        <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#setting" aria-expanded="false" aria-controls="setting">
                 <i class="mdi mdi-puzzle-outline menu-icon"></i>
                 <span class="menu-title">Setting</span>
