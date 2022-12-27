@@ -72,11 +72,15 @@ use App\Traits\Helper;
             <li class="nav-item nav-profile dropdown">
                 <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
                     <img src="https://via.placeholder.com/30x30" alt="profile" />                    
-                    <span class="mr-2 d-none d-lg-inline text-gray-600 small">User</span>
+                    <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{Auth::user()->username}}</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-                    <h6 class="dropdown-header text-center">User</h6>
+                    <h6 class="dropdown-header text-center">{{Auth::user()->username}}</h6>
                     <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{{url('user/profile')}}">
+                        <i class="mdi mdi-account-box-outline text-primary"></i>
+                        Profile
+                    </a>
                     <a class="dropdown-item" href="{{url('logout')}}">
                         <i class="mdi mdi-logout text-primary"></i>
                         Logout

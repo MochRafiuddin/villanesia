@@ -27,6 +27,7 @@ use App\Http\Controllers\CSetting;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\CMCPayment;
 use App\Http\Controllers\CChat;
+use App\Http\Controllers\CUser;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -315,6 +316,24 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/setting/show/{id}', [CSetting::class,'show']);
     Route::post('/setting/show-save/{id}', [CSetting::class,'show_save']);
 
+    //user
+    Route::get('/user', [CUser::class,'index'])->name('user-index');
+    Route::get('/user/data', [CUser::class,'data']);
+    Route::get('/user/create', [CUser::class,'create']);
+    Route::post('/user/create-save', [CUser::class,'create_save']);
+    Route::get('/user/show/{id}', [CUser::class,'show']);
+    Route::get('/user/detail/{id}', [CUser::class,'detail']);
+    Route::post('/user/show-save/{id}', [CUser::class,'show_save']);
+    Route::get('/user/delete/{id}', [CUser::class,'delete']);
+    Route::post('/user/reset-pass', [CUser::class,'reset_password']);
+    
+    //profile
+    Route::get('/user/profile', [CUser::class,'profile'])->name('profile-index');
+    Route::post('/user/profile-save/{id}', [CUser::class,'profile_save']);
+    Route::post('/user/ubah-pass', [CUser::class,'ubah_password']);
+
     //CHAT
     Route::get('/chat', [CChat::class,'index'])->name('chat-index');
+
+    // Route::get('/trip-detail', [CMCPayment::class,'pdf_email']);
 });

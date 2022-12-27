@@ -79,6 +79,7 @@
             <div class="collapse" id="setting">
                 <ul class="nav flex-column sub-menu">                                        
                     <li class="nav-item"> <a class="nav-link" href="{{url('/setting')}}">Setting</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="{{url('/user')}}">User</a></li>
                 </ul>
             </div>
         </li>

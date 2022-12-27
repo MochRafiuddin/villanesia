@@ -14,7 +14,9 @@ use App\Models\MBookingHargaSatuan;
 use App\Models\MBookingPropertiExtra;
 use Auth;
 use App\Traits\Helper;
-
+use PDF;
+use App\Mail\EmailPembayaran;
+use Mail;
 
 class CMCPayment extends Controller
 {
@@ -48,7 +50,9 @@ class CMCPayment extends Controller
 			$tKonfirmasiBayar->konfirmasi_tanggal = date("Y-m-d H:i:s");
 			$tKonfirmasiBayar->update();
 			
-			$this->kirim_email($input->customer_details->email,$input->customer_details->full_name,null,null,null,null,null,'email.emailPembayaran','Proof of payment - ORDER ID #'.$input->order_id.' - Villanesia');			
+			// $this->kirim_email($input->customer_details->email,$input->customer_details->full_name,null,null,null,null,null,'email.emailPembayaran','Proof of payment - ORDER ID #'.$input->order_id.' - Villanesia',$kode_booking,$get_user->no_telfon);
+
+			$this->pdf_email($get_user->email,$kode_booking,$get_user->nama_depan,$get_user->nama_belakang,$get_user->no_telfon);
 		} else {
 			$mHMCPaymentCallback->status = 2;
 			$tBooking->payment_status = 3;
@@ -74,14 +78,15 @@ class CMCPayment extends Controller
 		$tBooking->payment_status = 1;
 		$tBooking->update();		
 
-        $get_user = User::selectRaw('m_customer.*, m_users.id_user, m_users.id_ref, m_users.email,')
-                ->leftJoin('m_customer','m_customer.id','=','m_users.id_ref')
+        $get_user = User::select('m_customer.*', 'm_users.id_user', 'm_users.id_ref', 'm_users.email')
+                ->leftJoin('m_customer','m_customer.id','m_users.id_ref')
                 ->where('m_users.id_user',$id_user)
                 ->where('m_users.deleted',1)
                 ->where('m_customer.deleted',1)
                 ->first();
 
-        $this->kirim_email($get_user->email,$get_user->nama_depan,$get_user->nama_belakang,null,null,null,null,'email.emailPembayaran','Proof of payment - ORDER ID #'.$kode_booking.' - Villanesia',$kode_booking,$get_user->no_telfon);
+        // $this->kirim_email($get_user->email,$get_user->nama_depan,$get_user->nama_belakang,null,null,null,null,'email.emailPembayaran','Proof of payment - ORDER ID #'.$kode_booking.' - Villanesia',$kode_booking,$get_user->no_telfon);
+		$this->pdf_email($get_user->email,$kode_booking,$get_user->nama_depan,$get_user->nama_belakang,$get_user->no_telfon);
 		
 		return response()->json(['status'=>true,'msg'=>'Sukses']);
     }
@@ -229,4 +234,18 @@ class CMCPayment extends Controller
 
 		return $this->content;
 	}
+	
+	public function pdf_email($email,$kode_booking,$nama_depan,$nama_belakang,$no_telfon)
+    {        				
+		
+		$pdf = PDF::loadview('pdf.tripDetail',['kode_booking'=>$kode_booking]);
+		// return $pdf->stream('result.pdf');
+		// $pdf = PDF::loadview('pdf.tripDetail',['kode_booking'=>$kode_booking]);  
+
+        // $this->kirim_email($get_user->email,$get_user->nama_depan,$get_user->nama_belakang,null,null,null,null,'email.emailPembayaran','Proof of payment - ORDER ID #'.$kode_booking.' - Villanesia',$kode_booking,$get_user->no_telfon);
+
+		Mail::to($email)->send(new EmailPembayaran($nama_depan,$nama_belakang,'email.emailPembayaran','Proof of payment - ORDER ID #'.$kode_booking.' - Villanesia',$kode_booking,$no_telfon,$pdf->output(),$email));
+
+		return true;
+    }
 }

@@ -12,8 +12,7 @@
 								<div style="padding:40px 32px 0px"> 
 									<img src="{{$message->embed(public_path().'/assets/images/VILLANESIA.png')}}" alt="Villanesia" width="450">
 								</div>
-								<div style="padding:56px 32px 48.4px">
-									<!-- <div style="color:#35405a;font-size:30px">Welcome to Villanesia</div> -->
+								<div style="padding:56px 32px 48.4px">									
 									<div>
 										<p style="line-height:1.5rem;letter-spacing:0;font-size:16px;margin-top:16px"> Hello {{$nama_depan}} {{$nama_belakang}}</p>
                                         <p style="line-height:1.5rem;letter-spacing:0;font-size:16px;margin-top:16px"> We have received payment for your order. Now you can enjoy all the services from us according to your order.</p>
@@ -23,8 +22,8 @@
 										@php
 											$booking = DB::table('t_booking')
 												->join('m_properti','m_properti.id_properti','t_booking.id_ref')
-												->select('t_booking.*','m_properti.id_tipe_booking','m_properti.harga_tampil','m_properti.nama_properti')
-												->where('t_booking.kode_booking',$id_booking)
+												->select('t_booking.*','m_properti.id_tipe_booking','m_properti.harga_tampil','m_properti.nama_properti','m_properti.judul')
+												->where('t_booking.kode_booking',$kode_booking)
 												->first();
 											$id_booking = $booking->id_booking;
 											$harga_satuan = DB::table('t_booking_harga_satuan')
@@ -95,7 +94,7 @@
 										</tr>
 										<tr>
 											<td width='25%' style="font-size:14px;line-height:21px;font-weight: bold;">Property</td>
-											<td width='75%' style="font-size:14px;line-height:21px;">{{$booking->nama_properti}}</td>
+											<td width='75%' style="font-size:14px;line-height:21px;">{{$booking->judul}}</td>
 										</tr>
 										<tr>
 											<td width='25%' style="font-size:14px;line-height:21px;font-weight: bold;">Rented By</td>
@@ -242,8 +241,6 @@
                                         <td width="35%" align="center">
                                             <img src="{{$message->embed(public_path().'/assets/images/design-logo-VILLANESIA-putih-02-150x150.png')}}" width="80" alt="">
                                             <p style="font-size:13px;font-weight:600;color:white;">Managed by Jetwings Bali</p>
-                                            <!-- <img src="{{$message->embed(public_path().'/assets/images/google-play-badge-logo-png-transparent.png')}}" alt="" width="80">
-                                            <img src="{{$message->embed(public_path().'/assets/images/download-on-the-app-store-apple-logo-png-transparent.png')}}" alt="" width="80"> -->
                                         </td>
                                         <td width="65%">
                                             <p style="margin:-70px 0 10px 0;font-size:15px;color:white;">Jl. Pulau Moyo No. 34B Pedungan, Denpasar Selatan – Bali, Indonesia</p>

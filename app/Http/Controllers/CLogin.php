@@ -20,7 +20,7 @@ class CLogin extends Controller
             'password' => ['required'],
         ]);
  
-        if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'deleted' => 1])) {                        
+        if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'deleted' => 1, 'tipe_user' => 1])) {
             $request->session()->regenerate();            
             // return redirect(url('dashboard'));   
             redirect()->route('dashboard');         

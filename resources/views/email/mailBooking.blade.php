@@ -29,7 +29,7 @@
 								@php
 									$booking = DB::table('t_booking')
 										->join('m_properti','m_properti.id_properti','t_booking.id_ref')
-										->select('t_booking.*','m_properti.id_tipe_booking','m_properti.harga_tampil')
+										->select('t_booking.*','m_properti.id_tipe_booking','m_properti.harga_tampil','m_properti.judul')
 										->where('t_booking.id_booking',$id_booking)
 										->first();
 									$harga_satuan = DB::table('t_booking_harga_satuan')										
@@ -85,7 +85,7 @@
                              	@endphp
 								<tr>
 									<td width='25%' style="font-size:14px;line-height:21px;font-weight: bold;">Property</td>
-									<td width='75%' style="font-size:14px;line-height:21px;">{{$nama_properti}}</td>
+									<td width='75%' style="font-size:14px;line-height:21px;">{{$booking->judul}}</td>
 								</tr>
 								<tr>
 									<td width='25%' style="font-size:14px;line-height:21px;font-weight:bold;">Period :</td>
@@ -209,7 +209,7 @@
 							<table width='100%'>
 								<tr>
 									<td width='40%' style="font-size:16px;line-height:21px;font-weight: bold;">
-										Total
+										You Pay
 									</td>
 									<td width='60%' style="font-size:16px;line-height:21px;font-weight: bold;">
 										Rp. {{number_format($booking->harga_total)}}

@@ -23,9 +23,7 @@
                                     <tr>
                                         <td width="35%" align="center">
                                             <img src="{{$message->embed(public_path().'/assets/images/design-logo-VILLANESIA-putih-02-150x150.png')}}" width="80" alt="">
-                                            <p style="font-size:13px;font-weight:600;color:white;">Managed by Jetwings Bali</p>
-                                            <!-- <img src="{{$message->embed(public_path().'/assets/images/google-play-badge-logo-png-transparent.png')}}" alt="" width="80">
-                                            <img src="{{$message->embed(public_path().'/assets/images/download-on-the-app-store-apple-logo-png-transparent.png')}}" alt="" width="80"> -->
+                                            <p style="font-size:13px;font-weight:600;color:white;">Managed by Jetwings Bali</p>                                            
                                         </td>
                                         <td width="65%">
                                             <p style="margin:-70px 0 10px 0;font-size:15px;color:white;">Jl. Pulau Moyo No. 34B Pedungan, Denpasar Selatan – Bali, Indonesia</p>

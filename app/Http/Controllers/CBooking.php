@@ -11,6 +11,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\Helper;
 use DataTables;
+use PDF;
+use App\Mail\EmailBooking;
+use Mail;
 
 class CBooking extends Controller
 {
@@ -52,9 +55,11 @@ class CBooking extends Controller
         ->leftJoin('m_users','m_users.id_user','=','t_booking.id_user')
         ->leftJoin('m_customer','m_customer.id','=','m_users.id_ref')
         ->where('id_booking',$id)->first();
-        // dd($booking);        
-        $this->kirim_email($booking->email,$booking->nama_depan,$booking->nama_belakang,null,null,$booking->nama_properti,$booking->tanggal_mulai,'email.mailBooking','Availability Confirmation - ORDER ID #'.$booking->kode_booking.' - Villanesia',$id,null);
+        // dd($booking);
+        $pdf = PDF::loadview('pdf.invoice',['kode_booking'=>$booking->kode_booking]);
+        // $this->kirim_email($booking->email,$booking->nama_depan,$booking->nama_belakang,null,null,$booking->nama_properti,$booking->tanggal_mulai,'email.mailBooking','Availability Confirmation - ORDER ID #'.$booking->kode_booking.' - Villanesia',$id,null);
         // return redirect()->to('/booking/detail/'.$id)->with('msg','Sukses Menambahkan Data');
+        Mail::to($booking->email)->send(new EmailBooking($booking->nama_depan,$booking->nama_belakang,$booking->nama_properti,$booking->tanggal_mulai,'email.mailBooking','Availability Confirmation - ORDER ID #'.$booking->kode_booking.' - Villanesia',$id,$pdf->output()));
         return response()->json(['status'=>true,'msg'=>'Sukses Mengubah Data']);
     }
     public function decline($id,Request $request)
@@ -188,4 +193,5 @@ class CBooking extends Controller
             ->addIndexColumn()
             ->toJson();
     }    
+
 }

@@ -21,6 +21,8 @@ use App\Http\Controllers\Api\CAProfile;
 use App\Http\Controllers\Api\CAAds;
 use App\Http\Controllers\Api\CASetting;
 use App\Http\Controllers\Api\CANegara;
+use App\Http\Controllers\Api\CAPesan;
+use App\Http\Controllers\Api\CADownload;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,9 +38,9 @@ use App\Http\Controllers\Api\CANegara;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
-Route::get('/email-pembayaran', [CABooking::class, 'email_pembayaran']);
 
 Route::group(['middleware' => 'logapi'], function () {	
+    Route::get('/email-pembayaran', [CABooking::class, 'email_pembayaran']);
     Route::get('/get-property-type', [CAPropertiTipe::class, 'get_property_type']);    
     Route::get('/get-property-by-type', [CAProperti::class, 'get_property_type']);
     Route::get('/get-promotion-tour', [CAPromosiWisata::class, 'get_promotion_tour']);
@@ -92,4 +94,7 @@ Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
     Route::post('/post-property-payment', [CAProperti::class, 'post_property_payment']);
     Route::put('/put-forget-password', [CAAuth::class, 'put_forget_password']);
     Route::get('/get-billing-address', [CABooking::class, 'get_billing_address']);
+    Route::get('/get-chat', [CAPesan::class, 'get_chat']);
+    Route::get('/download-invoice', [CADownload::class, 'download_invoice']);
+    Route::get('/download-trip-detail', [CADownload::class, 'download_trip_detail']);
 });
