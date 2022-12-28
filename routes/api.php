@@ -38,6 +38,7 @@ use App\Http\Controllers\Api\CADownload;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+Route::get('/coba', [CADownload::class, 'coba']);
 
 Route::group(['middleware' => 'logapi'], function () {	
     Route::get('/email-pembayaran', [CABooking::class, 'email_pembayaran']);
@@ -94,7 +95,11 @@ Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
     Route::post('/post-property-payment', [CAProperti::class, 'post_property_payment']);
     Route::put('/put-forget-password', [CAAuth::class, 'put_forget_password']);
     Route::get('/get-billing-address', [CABooking::class, 'get_billing_address']);
+
     Route::get('/get-chat', [CAPesan::class, 'get_chat']);
+    Route::get('/get-detail-chat', [CAPesan::class, 'get_chat_detail']);
+    Route::post('/insert-chat-detail', [CAPesan::class, 'insert_chat_detail']);
+
     Route::get('/download-invoice', [CADownload::class, 'download_invoice']);
     Route::get('/download-trip-detail', [CADownload::class, 'download_trip_detail']);
 });

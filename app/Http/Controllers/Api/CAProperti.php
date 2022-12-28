@@ -24,12 +24,16 @@ use App\Models\MKota;
 use App\Models\HReviewRating;
 use App\Models\TKonfirmasiBayar;
 use App\Models\MKupon;
+use App\Models\HPesan;
+use App\Models\HPesanDetail;
 use DateInterval;
 use DatePeriod;
 use DateTime;
 use DB;
 use Carbon\Carbon;
 use App\Traits\Helper;
+use App\Services\Firestore;
+use Google\Cloud\Firestore\Timestamp;
 
 class CAProperti extends Controller
 {
@@ -1102,8 +1106,7 @@ class CAProperti extends Controller
         $catatan = $request->catatan;
         $jam_mulai = $request->jam_mulai;
         $jam_selesai = $request->jam_selesai;
-        $extra_service = $request->extra_service;
-        $catatan = $request->catatan;
+        $extra_service = $request->extra_service;        
         
         $operator_where = '>';
         if($id_tipe_booking == "1"){
@@ -1246,21 +1249,23 @@ class CAProperti extends Controller
                     }
                 }
 
-                
-                if ($pro->harga_weekend == null) {
-                    $fin = $pro->harga_tampil * $durasi_inap;
-                    $this->booking_harga($tipe->id_booking, 1, 1, null, null, $date_week[0], date('Y-m-d', strtotime(end($date_week).' +1 day')), $pro->harga_tampil, $fin);
-                }elseif ($pro->harga_weekend != null) {
-                    $final = $this->get_harga_by_input($date_week,$pro);
-                    $fin = $final['harga'];
-                    $this->booking_harga($tipe->id_booking, 1, 1, null, null, $date_week[0], date('Y-m-d', strtotime(end($date_week).' +1 day')), $pro->harga_tampil, $fin);
-                }
+                if (count($date_week) > 0) {
+                    if ($pro->harga_weekend == null) {
+                        //$fin = $pro->harga_tampil * $durasi_inap;
+                        $fin = $pro->harga_tampil * count($date_week);
+                        $this->booking_harga($tipe->id_booking, 1, 1, null, null, $date_week[0], date('Y-m-d', strtotime(end($date_week).' +1 day')), $pro->harga_tampil, $fin);
+                    }elseif ($pro->harga_weekend != null) {
+                        $final = $this->get_harga_by_input($date_week,$pro);
+                        $fin = $final['harga'];
+                        $this->booking_harga($tipe->id_booking, 1, 1, null, null, $date_week[0], date('Y-m-d', strtotime(end($date_week).' +1 day')), $pro->harga_tampil, $fin);
+                    }
 
-                if ($tamu_tambahan > 0) {
-                    $har_week = $this->get_harga_by_input($date_week,$pro);
-                    $tamu_add = $tamu_tambahan * $durasi_inap * $har_week['tamu'];                
+                    if ($tamu_tambahan > 0) {
+                        $har_week = $this->get_harga_by_input($date_week,$pro);
+                        $tamu_add = $tamu_tambahan * $durasi_inap * $har_week['tamu'];                
 
-                    $this->booking_harga($tipe->id_booking, 2, $tamu_tambahan, null, null, $date_week[0], date('Y-m-d', strtotime(end($date_week).' +1 day')), $har_week['tamu'], $tamu_add);
+                        $this->booking_harga($tipe->id_booking, 2, $tamu_tambahan, null, null, $date_week[0], date('Y-m-d', strtotime(end($date_week).' +1 day')), $har_week['tamu'], $tamu_add);
+                    }
                 }
                             
             }elseif ($id_tipe_booking == 3) {
@@ -1410,6 +1415,57 @@ class CAProperti extends Controller
                 MBooking::where('id_booking',$tipe->id_booking)->update($data_update);
 
             if ($tipe) {
+                $judul_p = 'Booking #'.$squence.' - '.$pro->judul;
+                $id_user_pengirim = $user->id_user;
+                $id_user_penerima = 1;
+                $pesan_terakhir = ($catatan == null ? 'check availability for '.date('Y-m-d', strtotime($tanggal_mulai)).' to '.date('Y-m-d', strtotime($tanggal_selesai)) : $catatan);
+                $id_ref_p = $squence;
+
+                $hpesan = new HPesan;
+                $hpesan->judul = $judul_p;
+                $hpesan->id_user_pengirim = $id_user_pengirim;
+                $hpesan->id_user_penerima = $id_user_penerima;
+                $hpesan->pesan_terakhir = $pesan_terakhir;
+                $hpesan->waktu_pesan_terakhir = date('Y-m-d H:i:s');
+                $hpesan->save();
+
+                $hdetail = new HPesanDetail;
+                $hdetail->id_pesan = $hpesan->id_pesan;
+                $hdetail->id_ref = $id_ref_p;
+                $hdetail->id_tipe = 3;
+                $hdetail->pesan = $pesan_terakhir;
+                $hdetail->save();
+                
+                // $timestamp = Timestamp::fromDate(date('Y-m-d H:i:s'));
+                $firestore = Firestore::get();
+                $firePesan = $firestore->collection('h_pesan')->newDocument();
+                $firePesan->set([    
+                    'badge' => 1,
+                    'created_date' => date('Y-m-d H:i:s'),
+                    'id_pesan' => $hpesan->id_pesan,
+                    'id_ref' => $id_ref_p,
+                    'id_user_penerima' => $id_user_penerima,
+                    'id_user_pengirim' => $id_user_pengirim,
+                    'judul' => $judul_p,
+                    'penerima_lihat' => 0,
+                    'pengirim_lihat' => 0,
+                    'pesan_terakhir' => $pesan_terakhir,
+                    'updatedDate' => date('Y-m-d H:i:s'),
+                    'waktu_pesan_terakhir' => date('Y-m-d H:i:s')
+                ]);
+
+                $fireDetail = $firestore->collection('h_pesan_detail')->newDocument();
+                $fireDetail->set([    
+                    'id_pesan_detail' => $hdetail->id_pesan_detail,
+                    'id_pesan' => $hpesan->id_pesan,
+                    'id_ref' => $id_ref_p,
+                    'id_tipe' => 3,
+                    'url' => "",
+                    'pesan' => $pesan_terakhir,
+                    'created_date' => date('Y-m-d H:i:s'),
+                    'id_user' => $id_user_pengirim,
+                ]);
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Booking request sent. Please wait for confirmation!',

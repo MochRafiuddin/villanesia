@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice</title>
+    <title>Trip Detail</title>
 
 <style>
     .left, .right{
@@ -88,6 +88,10 @@ table td{
 					->select('t_booking.*','m_properti.*','m_jenis_tempat.nama_jenis_tempat','m_customer.nama_depan','m_customer.nama_belakang','m_tipe_properti.nama_tipe_properti')
 					->where('t_booking.kode_booking',$kode_booking)
 					->first();
+                    $id_booking = $booking->id_booking;
+                    $harga_satuan = DB::table('t_booking_harga_satuan')										
+                    ->where('id_booking',$id_booking)
+                    ->get();
                 if($booking->id_tipe_booking == 1){
 					$label = 'Day';
 					$inap = $booking->durasi_inap;

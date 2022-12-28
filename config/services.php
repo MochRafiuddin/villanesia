@@ -36,4 +36,8 @@ return [
         'redirect' => 'http://aptikmamid.ngrok.io/villanesia/public/auth/google/callback',
     ],
 
+    'firebase' => [
+        'key_file_path' => env('FIREBASE_KEY_FILE_PATH'),
+        'project_id' => env('FIREBASE_PROJECT_ID'),
+    ],
 ];

@@ -7,7 +7,9 @@
     "require": {
         "php": "^7.3|^8.0",
         "barryvdh/laravel-dompdf": "^2.0",
+        "firebase/php-jwt": "^6.3",
         "fruitcake/laravel-cors": "^2.0",
+        "google/cloud": "^0.195.0",
         "guzzlehttp/guzzle": "^7.5",
         "intervention/image": "^2.7",
         "laravel/framework": "^8.75",
