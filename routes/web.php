@@ -334,6 +334,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     //CHAT
     Route::get('/chat', [CChat::class,'index'])->name('chat-index');
+    Route::get('/chat/get-chat/{id}', [CChat::class,'chat_detail']);
+    Route::post('/chat/tambah-chat-detail', [CChat::class,'tambah_chat_detail']);
 
     // Route::get('/trip-detail', [CMCPayment::class,'pdf_email']);
 });

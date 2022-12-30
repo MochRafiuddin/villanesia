@@ -27,6 +27,7 @@ class CAPesan extends Controller
                 ->leftJoin('m_customer as c','c.id', '=','e.id_ref')
                 ->where('a.id_user_pengirim',$id_user)
                 ->OrWhere('a.id_user_penerima',$id_user)
+                ->orderBy('a.waktu_pesan_terakhir','desc')
                 ->get();
         
         return response()->json([
@@ -48,6 +49,7 @@ class CAPesan extends Controller
                 ->leftJoin('m_users as d','d.id_user', '=','a.id_user')
                 ->leftJoin('m_customer as b','b.id', '=','d.id_ref')                
                 ->where('a.id_pesan',$id_pesan)
+                ->orderBy('a.created_date','desc')
                 ->get();
         
         return response()->json([
@@ -59,87 +61,89 @@ class CAPesan extends Controller
     }
 
     public function insert_chat_detail(Request $request)
-    {                
-        $user = MApiKey::where('token',$request->header('auth-key'))->first();
-        // $muser = User::where('id_user',$user->id_user)->first();
+	{                
+		$user = MApiKey::where('token',$request->header('auth-key'))->first();
+			// $muser = User::where('id_user',$user->id_user)->first();
 
-        $id_pesan = intval($request->id_pesan);;
-        $id_ref = $request->id_ref;
-        $id_tipe = $request->id_tipe;
-        $pesan = $request->pesan;
+			$id_pesan = intval($request->id_pesan);;
+			$id_ref = $request->id_ref;
+			$id_tipe = $request->id_tipe;
+			$pesan = $request->pesan;
 
-        $hdetail = new HPesanDetail();
-        $hdetail->id_pesan = $id_pesan;
-        $hdetail->id_ref = $id_ref;
-        $hdetail->id_tipe = $id_tipe;
-        $hdetail->pesan = $pesan;
-        $hdetail->save();
+			$hdetail = new HPesanDetail();
+			$hdetail->id_pesan = $id_pesan;
+			$hdetail->id_ref = $id_ref;
+			$hdetail->id_tipe = $id_tipe;
+			$hdetail->pesan = $pesan;
+			$hdetail->id_user = $user->id_user;
+			$hdetail->save();
 
-        $hpesan = HPesan::find($id_pesan);
-        $hpesan->pesan_terakhir = $pesan;
-        $hpesan->waktu_pesan_terakhir = date('Y-m-d H:i:s');
-        $hpesan->update();
+			$hpesan = HPesan::find($id_pesan);
+			$hpesan->pesan_terakhir = $pesan;
+			$hpesan->waktu_pesan_terakhir = date('Y-m-d H:i:s');
+			$hpesan->update();
 
-        $firestore = Firestore::get();
+			$firestore = Firestore::get();
 
-        $fireDetail = $firestore->collection('h_pesan_detail')->newDocument();
-        $fireDetail->set([    
-            'id_pesan_detail' => $hdetail->id_pesan_detail,
-            'id_pesan' => $id_pesan,
-            'id_ref' => $id_ref,
-            'id_tipe' => $id_tipe,
-            'url' => "",
-            'pesan' => $pesan,
-            'created_date' => date('Y-m-d H:i:s'),
-            'id_user' => $user->id_user,
-        ]);
+			$fireDetail = $firestore->collection('h_pesan_detail')->newDocument();
+			$fireDetail->set([    
+				'id_pesan_detail' => $hdetail->id_pesan_detail,
+				'id_pesan' => $id_pesan,
+				'id_ref' => $id_ref,
+				'id_tipe' => $id_tipe,
+				'url' => "",
+				'pesan' => $pesan,
+				'created_date' => date('Y-m-d H:i:s'),
+				'updated_date' => new \Google\Cloud\Core\Timestamp(new \DateTime(date('Y-m-d H:i:s'))),
+				'id_user' => $user->id_user,
+			]);
 
-        $query = $firestore->collection('h_pesan')
-            ->where('id_pesan', '=', $id_pesan);
-        
-        $documents = $query->documents();        
-        $id = null;
-        foreach ($documents as $document) {
-            $id = $document->id();
-            $doc = $firestore->collection('h_pesan')->document($id)
-                ->set([
-                    'badge' => $document['badge'],
-                    'created_date' => $document['created_date'],
-                    'id_pesan' => $document['id_pesan'],
-                    'id_ref' => $document['id_ref'],
-                    'id_user_penerima' => $document['id_user_penerima'],
-                    'id_user_pengirim' => $document['id_user_pengirim'],
-                    'judul' => $document['judul'],
-                    'penerima_lihat' => $document['penerima_lihat'],
-                    'pengirim_lihat' => $document['pengirim_lihat'],
-                    'pesan_terakhir' => $pesan,
-                    'updatedDate' => $document['updatedDate'],
-                    'waktu_pesan_terakhir' => date('Y-m-d H:i:s')
-                ]);
-        }
-            // $docu = $firestore->collection('h_pesan')->document($id);
-            // $data = $docu->get();     
-            // $data = $document->get();
-        // $doc = $firestore->collection('h_pesan')->document($id);
-        // $doc->update([   
-        //     ['badge' => $data['badge']],
-        //     ['created_date' => $data['created_date']],
-        //     ['id_pesan' => $data['id_pesan']],
-        //     ['id_ref' => $data['id_ref']],
-        //     ['id_user_penerima' => $data['id_user_penerima']],
-        //     ['id_user_pengirim' => $data['id_user_pengirim']],
-        //     ['judul' => $data['judul']],
-        //     ['penerima_lihat' => $data['penerima_lihat']],
-        //     ['pengirim_lihat' => $data['pengirim_lihat']],
-        //     ['pesan_terakhir' => $pesan],
-        //     ['updatedDate' => $data['updatedDate']],
-        //     ['waktu_pesan_terakhir' => date('Y-m-d H:i:s')]
-        // ]);
+			$query = $firestore->collection('h_pesan')
+				->where('id_pesan', '=', $id_pesan);
+			
+			$documents = $query->documents();        
+			$id = null;
+			foreach ($documents as $document) {
+				$id = $document->id();
+				$doc = $firestore->collection('h_pesan')->document($id)
+					->set([
+						'badge' => $document['badge'],
+						'created_date' => $document['created_date'],
+						'id_pesan' => $document['id_pesan'],
+						'id_ref' => $document['id_ref'],
+						'id_user_penerima' => $document['id_user_penerima'],
+						'id_user_pengirim' => $document['id_user_pengirim'],
+						'judul' => $document['judul'],
+						'penerima_lihat' => $document['penerima_lihat'],
+						'pengirim_lihat' => $document['pengirim_lihat'],
+						'pesan_terakhir' => $pesan,
+						'updated_date' => new \Google\Cloud\Core\Timestamp(new \DateTime(date('Y-m-d H:i:s'))),
+						'waktu_pesan_terakhir' => date('Y-m-d H:i:s')
+					]);
+			}
+				// $docu = $firestore->collection('h_pesan')->document($id);
+				// $data = $docu->get();     
+				// $data = $document->get();
+			// $doc = $firestore->collection('h_pesan')->document($id);
+			// $doc->update([   
+			//     ['badge' => $data['badge']],
+			//     ['created_date' => $data['created_date']],
+			//     ['id_pesan' => $data['id_pesan']],
+			//     ['id_ref' => $data['id_ref']],
+			//     ['id_user_penerima' => $data['id_user_penerima']],
+			//     ['id_user_pengirim' => $data['id_user_pengirim']],
+			//     ['judul' => $data['judul']],
+			//     ['penerima_lihat' => $data['penerima_lihat']],
+			//     ['pengirim_lihat' => $data['pengirim_lihat']],
+			//     ['pesan_terakhir' => $pesan],
+			//     ['updatedDate' => $data['updatedDate']],
+			//     ['waktu_pesan_terakhir' => date('Y-m-d H:i:s')]
+			// ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Success',
-            'code' => 1,            
-        ], 200);        
-    }
+		return response()->json([
+			'success' => true,
+			'message' => 'Success',
+			'code' => 1,            
+		], 200);        
+	}
 }
