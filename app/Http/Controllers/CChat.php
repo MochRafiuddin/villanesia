@@ -25,12 +25,18 @@ class CChat extends Controller
         // dd($id);
         $pesan = HPesanDetail::join('m_users','m_users.id_user','h_pesan_detail.id_user')
             ->join('m_customer','m_customer.id','m_users.id_ref')
-            ->select('h_pesan_detail.*','m_customer.nama_depan','m_customer.nama_belakang')
+            ->select('h_pesan_detail.*','m_customer.nama_depan','m_customer.nama_belakang','m_customer.nama_foto')
             ->where('h_pesan_detail.id_pesan',$id)
             ->orderBy('h_pesan_detail.created_date','asc')
             ->get();
+        $title = HPesanDetail::join('m_users','m_users.id_user','h_pesan_detail.id_user')
+            ->join('m_customer','m_customer.id','m_users.id_ref')
+            ->select('h_pesan_detail.id_ref','m_customer.nama_depan','m_customer.nama_belakang')
+            ->where('h_pesan_detail.id_pesan',$id)
+            ->where('h_pesan_detail.id_user','!=',1)
+            ->first();
         // dd($pesan);
-        return response()->json(['data'=>$pesan]);
+        return response()->json(['data'=>$pesan,'title'=>$title]);
     }
     public function tambah_chat_detail(Request $request)
     {        
@@ -91,7 +97,7 @@ class CChat extends Controller
 
         $data = HPesanDetail::join('m_users','m_users.id_user','h_pesan_detail.id_user')
             ->join('m_customer','m_customer.id','m_users.id_ref')
-            ->select('h_pesan_detail.*','m_customer.nama_depan','m_customer.nama_belakang')
+            ->select('h_pesan_detail.*','m_customer.nama_depan','m_customer.nama_belakang','m_customer.nama_foto')
             ->where('h_pesan_detail.id_pesan_detail',$pesan->id_pesan_detail)->first();
         // dd($data);
 

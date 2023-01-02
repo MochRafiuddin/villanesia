@@ -49,7 +49,7 @@
                 <div class="card rounded-0 d-none d-md-block col-9 bg-white" style="padding-right:5px!important;padding-left:5px!important">
                     <div class="chat_view">
                     <div class="card-header bg-primary text-white">
-                        <span class="mdi mdi-comment"></span> Chat
+                        <span class="mdi mdi-comment"></span><span class="title_chat"> Chat</span>
                     </div>                    
                     <div class="card-body panel-body" style="padding:0!important;background: #f3f3f9;">
                     <div class='more' style="width: 7%;border-radius: 10px 10px 10px 10px;background: #fbfbfc; padding:5px;margin-left: 44%;">More</div><br>
@@ -61,7 +61,10 @@
                         <div class="input-group mb-3">
                             <input id="btn-input" type="text" class="form-control input-sm" placeholder="Type your message here..." />
                             <div class="input-group-append">
-                                <button class="btn btn-warning btn-sm send-buttons" id="btn-chats">Send</button>
+                                <button class="btn btn-warning btn-sm send-buttons" id="btn-chats">
+                                    <span id="spinner" class="circle-loader d-none" style="margin-left:-20px"></span>
+                                    <span id="txt-btn">Send</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -90,6 +93,7 @@
 <script>
     $(document).ready(function() {
         div_klik();
+        fungsi_div_klik();
         $('.more').hide();
         $('.chat_view').hide();
         var Json_pesan = <?php echo json_encode($pesan); ?>;
@@ -102,6 +106,7 @@
     var nilai = 0;
     var awal = 0;
     var id_pesan = 0;
+    let len = 0;
 
     const data_list_awal = [];
 
@@ -125,6 +130,10 @@
             id_tipe:data.id_tipe,
             pesan:data.pesan,
             waktu:date,
+            id_user:data.id_user,
+            nama_depan:data.nama_depan,
+            nama_belakang:data.nama_belakang,
+            foto:data.nama_foto,
         });
     }
 
@@ -143,87 +152,114 @@
         $("#message_text_"+id_pesan).text(pesan);
     }
 
-    $('.klik').click(function(){
-        $('.more').hide();
-        $('.chat_view').show();
+    function fungsi_div_klik(){
+        $('.klik').click(function(){
+            $('.more').hide();        
 
-        nilai = 0;
-        awal = 0;
+            nilai = 0;
+            awal = 0;
 
-        data_list_detail = [];
+            data_list_detail = [];
 
-        var namaChat = $(this).attr('nama');
-        id_pesan = $(this).attr('id_pesan');
-        // console.log(id_pesan);
+            var namaChat = $(this).attr('nama');
+            id_pesan = $(this).attr('id_pesan');
+            // console.log(id_pesan);
 
-        $('.chat').remove();
+            $('.chat').remove();
 
-        $('.klik').removeClass('new_mail');
-        $(this).addClass('new_mail');
+            $('.klik').removeClass('new_mail');
+            $(this).addClass('new_mail');
 
-        var html = '<ul class="chat"> </ul>';
-        $('.card-body').append(html);
-        // datachat(namaChat);
+            var html = '<ul class="chat"> </ul>';
+            $('.card-body').append(html);
+            // datachat(namaChat);
 
-        $.ajax({
-            url: "{{url('chat/get-chat')}}/"+id_pesan,
-            type: "GET",            
-            success: function(res){
-                nilai = res.data.length - 5;
-                awal = res.data.length;
-                res.data.forEach(function(data){
-                    pushJsonDetail(data);
-                });
-                // console.log(data_list_detail);
-                res.data.forEach(e => {
-                    var mydate = new Date(e.created_date);                    
-                    var date = moment(mydate).format('YYYY-MM-DD HH:mm:ss');
-                    if (e.id_user ==1) {                        
-                        var html = '<li class="left clearfix list_chat" style="width: 58%;border-radius: 10px 10px 0px 10px;background: #7fdbb4;margin-left: 40%;padding:10px">\
-                            <img src="assets/images/avatar.png" width="12%" alt="User Avatar" class="img-circle pull-left" style="margin-top:13px;margin-right:10px;"/>\
-                        <div class="chat-body clearfix">\
-                            <div class="header">\
-                                <strong class="primary-font">'+e.nama_depan+' '+e.nama_belakang+'</strong> <small class="pull-right text-muted">\
-                                <span class="mdi mdi-clock"></span>'+date+'</small>\
+            $.ajax({
+                url: "{{url('chat/get-chat')}}/"+id_pesan,
+                type: "GET",            
+                success: function(res){
+                    $('.chat_view').show();
+                    var url = '{{url("booking/detail")}}/'+res.title.id_ref;
+                    var head_chat="<a href='"+url+"' class='text-white'> "+res.title.id_ref+'</a>'+' - '+res.title.nama_depan+' '+res.title.nama_belakang;
+                    $('.title_chat').html(head_chat);
+                    nilai = res.data.length - 5;
+                    awal = res.data.length;
+                    res.data.forEach(function(data){
+                        pushJsonDetail(data);
+                    });
+                    // console.log(data_list_detail);
+                    res.data.forEach(e => {
+                        var mydate = new Date(e.created_date);                    
+                        var date = moment(mydate).format('YYYY-MM-DD HH:mm:ss');
+                        var foto ='';
+                        if (e.nama_foto != null) {
+                            var foto ='{{asset("upload/profile_img/")}}/'+e.nama_foto;
+                        }else{                        
+                            var foto ='{{asset("assets/images/avatar.png")}}';
+                        }
+                        if (e.id_user ==1) {
+                                var html = '<li class="left clearfix list_chat" style="width: 58%;border-radius: 10px 10px 0px 10px;background: #7fdbb4;margin-left: 40%;padding:10px">\
+                                    <img src="'+foto+'" width="12%" alt="User Avatar" class="img-circle pull-left" style="margin-top:13px;margin-right:10px;"/>\
+                                <div class="chat-body clearfix">\
+                                    <div class="header">\
+                                        <strong class="primary-font">'+e.nama_depan+' '+e.nama_belakang+'</strong> <small class="pull-right text-muted">\
+                                        <span class="mdi mdi-clock"></span>'+date+'</small>\
+                                    </div>\
+                                    <p id="'+e.id_pesan_detail+'">\
+                                        '+e.pesan+'\
+                                    </p>\
+                                </div>\
+                                </li>';
+                                $('.chat').append(html);
+                        }else {
+                            if (e.id_tipe == 2) {
+                                var html = '<li class="left clearfix list_chat" style="width: 32%;border-radius: 10px 10px 10px 10px;background: #c6cbdf;margin-left: 35%;padding:5px">\
+                                    <small class="text-center">\
+                                        Admin has confirmed the availability of the villa\
+                                    </small>\
+                                </li>';
+                                $('.chat').append(html);
+                            }else{
+                            var html = '<li class="clearfix list_chat" style="width: 60%;border-radius: 10px 10px 10px 0px;background: #fbfbfc; padding:10px">\
+                            <img src="'+foto+'" width="12%" alt="User Avatar" class="img-circle pull-right" style="margin-top:13px;margin-right:10px;"/>\
+                            <div class="chat-body clearfix">\
+                                <div class="header">\
+                                    <small class=" text-muted">\
+                                        <span class="mdi mdi-clock"></span>'+date+'</small>\
+                                    <strong class="pull-right primary-font">'+e.nama_depan+' '+e.nama_belakang+'</strong>\
+                                </div>\
+                                <p id="'+e.id_pesan_detail+'-message">\
+                                    '+e.pesan+'\
+                                </p>\
                             </div>\
-                            <p id="'+e.id_pesan_detail+'">\
-                                '+e.pesan+'\
-                            </p>\
-                            <span onclick="deleteMessage('+e.id_pesan_detail+')" class="mdi mdi-delete"></span>\
-                        </div>\
-                        </li>';
-                        
-                        $('.chat').append(html);
-                    }else {
+                            </li>';
 
-                        var html = '<li class="clearfix list_chat" style="width: 60%;border-radius: 10px 10px 10px 0px;background: #fbfbfc; padding:10px">\
-                        <img src="assets/images/avatar.png" width="12%" alt="User Avatar" class="img-circle pull-right" style="margin-top:13px;margin-right:10px;"/>\
-                        <div class="chat-body clearfix">\
-                            <div class="header">\
-                                <small class=" text-muted">\
-                                    <span class="mdi mdi-clock"></span>'+date+'</small>\
-                                <strong class="pull-right primary-font">'+e.nama_depan+' '+e.nama_belakang+'</strong>\
-                            </div>\
-                            <p id="'+e.id_pesan_detail+'-message">\
-                                '+e.pesan+'\
-                            </p>\
-                            <span onclick="deleteMessage('+e.id_pesan_detail+')" class="mdi mdi-delete"></span>\
-                        </div>\
-                        </li>';
-
-                        $('.chat').append(html);
-
-                    }
-                    $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 250);
-                    $('.list_chat').hide().slice(-5).show();
-                });                
-                load_kanan();
-            }
+                            $('.chat').append(html);
+                            }
+                        }
+                        $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 250);
+                        $('.list_chat').hide().slice(-5).show();
+                    });                
+                    load_kanan();
+                }
+            });
         });
+    }
+
+    $('#btn-input').keypress(function(e){
+        if(e.which == 13){
+            kirim_pesan();
+        }
     });
 
     $('.send-buttons').click(function(){        
+        kirim_pesan();
+    });
+
+    function kirim_pesan(){
         var pesan = $('#btn-input').val();
+        $("#spinner").removeClass('d-none');
+        $('#txt-btn').text('');
         $.ajax({
             url: "{{url('chat/tambah-chat-detail')}}",
             type: "post",
@@ -234,8 +270,13 @@
             success: function(e){
                 var mydate = new Date(e.data.created_date);                    
                 var date = moment(mydate).format('YYYY-MM-DD HH:mm:ss');
+                    if (e.data.nama_foto != null) {
+                        var foto ='{{asset("upload/profile_img")}}/'+e.data.nama_foto;
+                    }else{
+                        var foto ='{{asset("assets/images/avatar.png")}}';
+                    }
                 var html = '<li class="left clearfix list_chat" style="width: 58%;border-radius: 10px 10px 0px 10px;background: #7fdbb4;margin-left: 40%;padding:10px">\
-                <img src="assets/images/avatar.png" width="12%" alt="User Avatar" class="img-circle pull-left" style="margin-top:13px;margin-right:10px;"/>\
+                <img src="'+foto+'" width="12%" alt="User Avatar" class="img-circle pull-left" style="margin-top:13px;margin-right:10px;"/>\
                 <div class="chat-body clearfix">\
                     <div class="header">\
                         <strong class="primary-font">'+e.data.nama_depan+' '+e.data.nama_belakang+'</strong> <small class="pull-right text-muted">\
@@ -244,7 +285,6 @@
                     <p id="'+e.data.id_pesan_detail+'">\
                         '+e.data.pesan+'\
                     </p>\
-                    <span onclick="deleteMessage('+e.data.id_pesan_detail+')" class="mdi mdi-delete"></span>\
                 </div>\
                 </li>';
                 pushJsonDetail(e.data);
@@ -252,9 +292,11 @@
                 $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 100);
                 $('#btn-input').val('');
                 pindah(e.data.id_pesan,e.data.pesan);
+                $("#spinner").addClass('d-none');
+                $('#txt-btn').text('Send');
             }
         });
-    });
+    }
 
     $('.panel-body').scroll(function() {
         if ($(this).scrollTop() == 0) {
@@ -320,13 +362,13 @@
         }
     }
     function load_kanan(){        
-        let len =  data_list_detail.length - 1 ;
+        len =  data_list_detail.length - 1 ;
         console.log(data_list_detail[len]);        
-    db.collection("h_pesan_detail")
-    .where('id_pesan_detail','>',data_list_detail[len]['id_pesan_detail'])
-    .where('id_pesan','==',id_pesan)
-    .orderBy('id_pesan_detail','desc')
-    .limit(1).onSnapshot(onResultDetail, onErrorDetail);
+        db.collection("h_pesan_detail")
+        .where('id_pesan_detail','>',data_list_detail[len]['id_pesan_detail'])
+        .where('id_pesan','==',parseInt(id_pesan))
+        .orderBy('id_pesan_detail','desc')
+        .limit(1).onSnapshot(onResultDetail, onErrorDetail);
         function onResultDetail(QuerySnapshot) {  
             if (QuerySnapshot == null) {
               return
@@ -359,11 +401,10 @@
             $("#div_list #div_"+tampung_id).parents('.mail-list').hide().prependTo("#div_list").slideDown();
         }else{
             //diappend
-            var html = '<div class="mail-list klik" nama="baru">\
+            var html = '<div class="mail-list klik" nama="baru" id_pesan="'+tampung_id+'">\
                 <div class="content" id="div_'+tampung_id+'">\
                     <p class="sender-name">'+data.judul+'</p>\
                     <p class="message_text">'+data.pesan_terakhir+'</p>\
-                    <p class="waktu">18:08</p>\
                     <div class="badge-cus"></div>\
                 </div>\
             </div>';
@@ -374,7 +415,6 @@
             data_list_awal.push(data_new);
             div_klik();
             fungsi_div_klik();
-
         }
 
     }
@@ -384,17 +424,43 @@
         var waktu = data.created_date;
         var pesan = data.pesan;
         var id_pesan_detail = data.id_pesan_detail;
-        console.log(data.pesan_terakhir);
-        
+        var nama_depan = '';
+        var nama_belakang = '';
+        var foto = '';
+        console.log(data.pesan);
+
+        $.each(data_list_detail, function(i, v) {
+            if (v.id_user == tampung_id_user) {
+                nama_depan = v.nama_depan;
+                nama_belakang = v.nama_belakang;
+                foto = v.foto;
+                // console.log(v);
+            }
+        });
+
+        if (foto != null) {
+            var foto ='{{asset("upload/profile_img")}}/'+foto;
+        }else{
+            var foto ='{{asset("assets/images/avatar.png")}}';
+        }
+
+        if (data.id_tipe == 2) {
+            var html = '<li class="left clearfix list_chat" style="width: 32%;border-radius: 10px 10px 10px 10px;background: #c6cbdf;margin-left: 35%;padding:5px">\
+                <small class="text-center">\
+                     Admin has confirmed the availability of the villa\
+                </small>\
+            </li>';
+            $('.chat').append(html);
+        }
         //diappend
         if(tampung_id_user != 1){
             var html = '<li class="clearfix" style="width: 58%;border-radius: 10px 10px 10px 0px;background: #fbfbfc; padding:10px">\
-                <img src="assets/images/avatar.png" width="12%" alt="User Avatar" class="img-circle pull-right" style="margin-top:13px;margin-right:10px;"/>\
+                <img src="'+foto+'" width="12%" alt="User Avatar" class="img-circle pull-right" style="margin-top:13px;margin-right:10px;"/>\
                 <div class="chat-body clearfix">\
                     <div class="header">\
                         <small class=" text-muted">\
                             <span class="mdi mdi-clock"></span>'+waktu+'</small>\
-                        <strong class="pull-right primary-font">User 4</strong>\
+                        <strong class="pull-right primary-font">'+nama_depan+' '+nama_belakang+'</strong>\
                     </div>\
                     <p id="'+id_pesan_detail+'-message">'+pesan+'</p>\
                 </div>\
@@ -403,6 +469,7 @@
             $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
             console.log("di append h_pesan_detail");
             data_list_detail.push(data);
+            len =  data_list_detail.length - 1 ;
         }        
 
     }    

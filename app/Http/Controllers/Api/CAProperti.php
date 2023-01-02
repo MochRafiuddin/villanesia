@@ -1436,7 +1436,7 @@ class CAProperti extends Controller
 			$hdetail->id_ref = $id_ref_p;
 			$hdetail->id_tipe = 3;
 			$hdetail->pesan = $pesan_terakhir;
-			$hdetail->id_user = $id_user_penerima;
+			$hdetail->id_user = $id_user_pengirim;
 			$hdetail->save();
 			
 			// $timestamp = Timestamp::fromDate(date('Y-m-d H:i:s'));

@@ -14,6 +14,10 @@ use DataTables;
 use PDF;
 use App\Mail\EmailBooking;
 use Mail;
+use App\Models\HPesan;
+use App\Models\HPesanDetail;
+use App\Services\Firestore;
+use Google\Cloud\Firestore\DocumentReference;
 
 class CBooking extends Controller
 {
@@ -30,27 +34,29 @@ class CBooking extends Controller
             ->join('m_properti','t_booking.id_ref','m_properti.id_properti','left')
             ->join('m_status_booking','t_booking.id_status_booking','m_status_booking.id_status_booking','left')
             ->join('m_users','t_booking.id_user','m_users.id_user','left')
-            ->where('t_booking.id_booking',$id)->first();
-        $harga_satuan = MBookingHargaSatuan::where('id_booking',$id)->get();
-        $extra_service = MBookingPropertiExtra::where('id_booking',$id)
+            ->where('t_booking.id_booking',$id)
+            ->orWhere('t_booking.kode_booking',$id)
+            ->first();
+        $harga_satuan = MBookingHargaSatuan::where('id_booking',$data->id_booking)->get();
+        $extra_service = MBookingPropertiExtra::where('id_booking',$data->id_booking)
             ->join('m_properti_extra','m_properti_extra.id_properti_extra','t_booking_properti_extra.id_properti_extra')
 			->select('t_booking_properti_extra.*','m_properti_extra.nama_service')->get();
-        $extra = MBookingExtra::where('id_booking',$id)->get();
-        $discount = MBookingDiscount::where('id_booking',$id)->get();
+        $extra = MBookingExtra::where('id_booking',$data->id_booking)->get();
+        $discount = MBookingDiscount::where('id_booking',$data->id_booking)->get();
         return view('booking.detail')
             ->with('data',$data)
             ->with('harga_satuan',$harga_satuan)
             ->with('extra_service',$extra_service)
             ->with('extra',$extra)
             ->with('discount',$discount)
-            ->with('id',$id)            
+            ->with('id',$data->id_booking)
             ->with('title','Booking')
             ->with('titlePage','Detail');
     }
     public function confirm($id)
     {
         MBooking::where('id_booking',$id)->update(['id_status_booking' => 2]);
-        $booking = MBooking::selectRaw('m_customer.nama_depan,m_customer.nama_belakang, m_users.id_user, m_users.id_ref, m_users.email, m_properti.nama_properti, t_booking.tanggal_mulai, t_booking.kode_booking')
+        $booking = MBooking::selectRaw('m_customer.nama_depan,m_customer.nama_belakang, m_users.id_user, m_users.id_ref, m_users.email, m_properti.nama_properti, t_booking.tanggal_mulai, t_booking.kode_booking, m_properti.judul')
         ->join('m_properti','t_booking.id_ref','m_properti.id_properti','left')
         ->leftJoin('m_users','m_users.id_user','=','t_booking.id_user')
         ->leftJoin('m_customer','m_customer.id','=','m_users.id_ref')
@@ -60,6 +66,86 @@ class CBooking extends Controller
         // $this->kirim_email($booking->email,$booking->nama_depan,$booking->nama_belakang,null,null,$booking->nama_properti,$booking->tanggal_mulai,'email.mailBooking','Availability Confirmation - ORDER ID #'.$booking->kode_booking.' - Villanesia',$id,null);
         // return redirect()->to('/booking/detail/'.$id)->with('msg','Sukses Menambahkan Data');
         Mail::to($booking->email)->send(new EmailBooking($booking->nama_depan,$booking->nama_belakang,$booking->nama_properti,$booking->tanggal_mulai,'email.mailBooking','Availability Confirmation - ORDER ID #'.$booking->kode_booking.' - Villanesia',$id,$pdf->output()));
+
+            $judul_p = 'Booking #'.$booking->kode_booking.' - '.$booking->judul;
+			$id_user_pengirim = $booking->id_user;
+			$id_user_penerima = 1;
+			$pesan_terakhir = 'Confirm Availability';
+			$id_ref_p = $booking->kode_booking;
+
+			$hpesan = new HPesan;
+			$hpesan->judul = $judul_p;
+			$hpesan->id_user_pengirim = $id_user_pengirim;
+			$hpesan->id_user_penerima = $id_user_penerima;
+			$hpesan->pesan_terakhir = $pesan_terakhir;
+			$hpesan->waktu_pesan_terakhir = date('Y-m-d H:i:s');
+			// $hpesan->id_ref = $id_ref_p;
+			// $hpesan->updated_date = date('Y-m-d H:i:s');
+			$hpesan->save();
+
+			$hdetail = new HPesanDetail;
+			$hdetail->id_pesan = $hpesan->id_pesan;
+			$hdetail->id_ref = $id_ref_p;
+			$hdetail->id_tipe = 2;
+			$hdetail->pesan = $pesan_terakhir;
+			$hdetail->id_user = $id_user_pengirim;
+			$hdetail->save();
+			
+			// $timestamp = Timestamp::fromDate(date('Y-m-d H:i:s'));
+			$firestore = Firestore::get();
+			$firePesan = $firestore->collection('h_pesan')->newDocument();
+			$firePesan->set([    
+				'badge' => 1,
+				'created_date' => date('Y-m-d H:i:s'),
+				'id_pesan' => $hpesan->id_pesan,
+				'id_ref' => $id_ref_p,
+				'id_user_penerima' => $id_user_penerima,
+				'id_user_pengirim' => $id_user_pengirim,
+				'judul' => $judul_p,
+				'penerima_lihat' => 0,
+				'pengirim_lihat' => 0,
+				'pesan_terakhir' => '',//$pesan_terakhir,
+				'updated_date' => new \Google\Cloud\Core\Timestamp(new \DateTime(date('Y-m-d H:i:s'))),
+				'waktu_pesan_terakhir' => date('Y-m-d H:i:s')
+			]);
+
+			$fireDetail = $firestore->collection('h_pesan_detail')->newDocument();
+			$fireDetail->set([    
+				'id_pesan_detail' => $hdetail->id_pesan_detail,
+				'id_pesan' => $hpesan->id_pesan,
+				'id_ref' => $id_ref_p,
+				'id_tipe' => 3,
+				'url' => "",
+				'pesan' => $pesan_terakhir,
+				'created_date' => date('Y-m-d H:i:s'),
+				'updated_date' => new \Google\Cloud\Core\Timestamp(new \DateTime(date('Y-m-d H:i:s'))),
+				'id_user' => $id_user_pengirim,
+			]);
+
+			$query = $firestore->collection('h_pesan')
+			->where('id_pesan', '=', $hpesan->id_pesan);
+		
+			$documents = $query->documents();        
+			$id = null;
+			foreach ($documents as $document) {
+				$id = $document->id();
+				$doc = $firestore->collection('h_pesan')->document($id)
+					->set([
+						'badge' => $document['badge'],
+						'created_date' => $document['created_date'],
+						'id_pesan' => $document['id_pesan'],
+						'id_ref' => $document['id_ref'],
+						'id_user_penerima' => $document['id_user_penerima'],
+						'id_user_pengirim' => $document['id_user_pengirim'],
+						'judul' => $document['judul'],
+						'penerima_lihat' => $document['penerima_lihat'],
+						'pengirim_lihat' => $document['pengirim_lihat'],
+						'pesan_terakhir' => $pesan_terakhir,
+						'updated_date' => new \Google\Cloud\Core\Timestamp(new \DateTime(date('Y-m-d H:i:s'))),
+						'waktu_pesan_terakhir' => date('Y-m-d H:i:s')
+					]);
+			}
+
         return response()->json(['status'=>true,'msg'=>'Sukses Mengubah Data']);
     }
     public function decline($id,Request $request)
