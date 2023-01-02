@@ -41,6 +41,9 @@
                             <div class="content" id="div_{{$p->id_pesan}}">
                                 <p class="sender-name">{{$p->judul}}</p>
                                 <p class="message_text" id="message_text_{{$p->id_pesan}}">{{$p->pesan_terakhir}}</p>
+                                @if($p->penerima_lihat == 0)
+                                    <div class="badge-cus"></div>
+                                @endif
                             </div>
                         </div>
                         @endforeach
@@ -150,11 +153,13 @@
     function pindah(id_pesan,pesan){              
         $("#div_list #div_"+id_pesan).parents('.mail-list').hide().prependTo("#div_list").slideDown();
         $("#message_text_"+id_pesan).text(pesan);
+        $("#div_list #div_"+id_pesan).append("<div class='badge-cus'></div>");
     }
 
     function fungsi_div_klik(){
         $('.klik').click(function(){
-            $('.more').hide();        
+            $('.more').hide();       
+            // $(this).find('.badge-cus').remove(); 
 
             nilai = 0;
             awal = 0;
@@ -213,15 +218,15 @@
                                 $('.chat').append(html);
                         }else {
                             if (e.id_tipe == 2) {
-                                var html = '<li class="left clearfix list_chat" style="width: 32%;border-radius: 10px 10px 10px 10px;background: #c6cbdf;margin-left: 35%;padding:5px">\
-                                    <small class="text-center">\
+                                var html = '<li class="text-center clearfix list_chat" style="width: 32%;border-radius: 10px 10px 10px 10px;background: #c6cbdf;margin-left: 35%;padding:5px">\
+                                    <small class="">\
                                         Admin has confirmed the availability of the villa\
                                     </small>\
                                 </li>';
                                 $('.chat').append(html);
                             }else{
                             var html = '<li class="clearfix list_chat" style="width: 60%;border-radius: 10px 10px 10px 0px;background: #fbfbfc; padding:10px">\
-                            <img src="'+foto+'" width="12%" alt="User Avatar" class="img-circle pull-right" style="margin-top:13px;margin-right:10px;"/>\
+                            <img src="'+foto+'" width="12%" alt="User Avatar" class="img-circle pull-right" style="margin-top:13px;margin-left:10px;"/>\
                             <div class="chat-body clearfix">\
                                 <div class="header">\
                                     <small class=" text-muted">\
@@ -443,17 +448,18 @@
         }else{
             var foto ='{{asset("assets/images/avatar.png")}}';
         }
-
-        if (data.id_tipe == 2) {
-            var html = '<li class="left clearfix list_chat" style="width: 32%;border-radius: 10px 10px 10px 10px;background: #c6cbdf;margin-left: 35%;padding:5px">\
-                <small class="text-center">\
-                     Admin has confirmed the availability of the villa\
-                </small>\
-            </li>';
-            $('.chat').append(html);
-        }
+        
         //diappend
         if(tampung_id_user != 1){
+            if (data.id_tipe == 2) {
+                var html = '<li class="text-center clearfix list_chat" style="width: 32%;border-radius: 10px 10px 10px 10px;background: #c6cbdf;margin-left: 35%;padding:5px">\
+                    <small class="">\
+                        Admin has confirmed the availability of the villa\
+                    </small>\
+                </li>';
+                $('.chat').append(html);
+                pindah(tampung_id_user,pesan)
+            }else{
             var html = '<li class="clearfix" style="width: 58%;border-radius: 10px 10px 10px 0px;background: #fbfbfc; padding:10px">\
                 <img src="'+foto+'" width="12%" alt="User Avatar" class="img-circle pull-right" style="margin-top:13px;margin-right:10px;"/>\
                 <div class="chat-body clearfix">\
@@ -467,6 +473,7 @@
             </li>';
             $('.chat').append(html);
             $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
+            }
             console.log("di append h_pesan_detail");
             data_list_detail.push(data);
             len =  data_list_detail.length - 1 ;

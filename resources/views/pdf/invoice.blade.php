@@ -9,7 +9,7 @@
     <title>Invoice</title>
 
 <style>
-    .left, .right{
+.left, .right{
     width: 50%;
 }
 .information{
@@ -96,6 +96,11 @@ table td{
     border: 1px solid grey;
     margin-top: 0.5rem;
 }
+.garis-3{
+    padding: 0.5rem;
+    border: 3px solid grey;
+    margin-top: 0.5rem;
+}
 </style>
 </head>
 <body>
@@ -163,7 +168,7 @@ table td{
         </div>
         <div class="content">
             <h2>Invoice {{$booking->kode_booking}}</h2>            
-            <div class="information garis" style="">                
+            <div class="information garis-3" style="">                
                 <table>
                     <tr>
                         <tr>
@@ -294,7 +299,7 @@ table td{
 				<table width='100%'>
 					<tr>
 						<td width='40%' style="font-size:16px;line-height:21px;font-weight: bold;">
-							You Pay
+							Total
 						</td>
 						<td width='60%' style="font-size:16px;line-height:21px;font-weight: bold;">
 							Rp. {{number_format($booking->harga_total)}}

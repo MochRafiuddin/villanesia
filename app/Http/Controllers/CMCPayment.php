@@ -244,7 +244,7 @@ class CMCPayment extends Controller
 
         // $this->kirim_email($get_user->email,$get_user->nama_depan,$get_user->nama_belakang,null,null,null,null,'email.emailPembayaran','Proof of payment - ORDER ID #'.$kode_booking.' - Villanesia',$kode_booking,$get_user->no_telfon);
 
-		Mail::to($email)->send(new EmailPembayaran($nama_depan,$nama_belakang,'email.emailPembayaran','Proof of payment - ORDER ID #'.$kode_booking.' - Villanesia',$kode_booking,$no_telfon,$pdf->output(),$email));
+		Mail::to($email)->send(new EmailPembayaran($nama_depan,$nama_belakang,'email.emailPembayaran','Payment Confirmation - ORDER ID #'.$kode_booking.' - Villanesia',$kode_booking,$no_telfon,$pdf->output(),$email));
 
 		return true;
     }

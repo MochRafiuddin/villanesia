@@ -17,8 +17,12 @@
 										<p style="line-height:1.5rem;letter-spacing:0;font-size:16px;margin-top:16px"> Hello {{$nama_depan}} {{$nama_belakang}}</p>
                                         <p style="line-height:1.5rem;letter-spacing:0;font-size:16px;margin-top:16px"> We have received payment for your order. Now you can enjoy all the services from us according to your order.</p>
                                         <p style="line-height:1.5rem;letter-spacing:0;font-size:16px;margin-top:16px"> Thank you for choosing Villanesia</p>
-
-										<table width='100%'>
+								<table style="max-width:600px;border-spacing:0;border-collapse:collapse" width="100%">
+                                    <tr>
+                                        <td width="100%" style="padding:12px 16px">
+                                            <h2 style="background:#f15e75;font-size:16px;line-height:24px;margin:0;padding:8px 16px;border-color:#dee2ee;border-style:solid;border-width:1px 1px 0;color:white;"> Order Details </h2>
+											<div style="border-color:#dee2ee;border-style:solid;border-width:0 1px 1px;padding:16px;">
+											<table width='100%'>
 										@php
 											$booking = DB::table('t_booking')
 												->join('m_properti','m_properti.id_properti','t_booking.id_ref')
@@ -75,7 +79,7 @@
 											$tamu_dewasa = ($booking->tamu_dewasa == 0 ? 0 : $booking->tamu_dewasa);
 											$tamu_anak = ($booking->tamu_anak == 0 ? 0 : $booking->tamu_anak);
 											$tamu_bayi = ($booking->tamu_bayi == 0 ? 0 : $booking->tamu_bayi);
-										@endphp
+										@endphp										
 										<tr>
 											<td width='25%' style="font-size:14px;line-height:21px;font-weight:bold;">Period :</td>
 											<td width='75%' style="font-size:14px;line-height:21px;">{{date('d-m-Y', strtotime($booking->tanggal_mulai))}} to {{date('d-m-Y', strtotime($booking->tanggal_selesai))}}</td>
@@ -230,10 +234,13 @@
 											</td>
 										</tr>
 									</table>
-									<br>
-										<div style="letter-spacing:0;font-size:16px;margin-top:24px"> Best Regards,</div>
-										<div style="letter-spacing:0;font-size:16px;font-weight:600"> Villanesia Team</div>
-									</div>
+											</div>
+                                        </td>                                        
+                                    </tr>
+                                </table>									
+								<br>
+								<div style="letter-spacing:0;font-size:16px;margin-top:24px"> Best Regards,</div>
+								<div style="letter-spacing:0;font-size:16px;font-weight:600"> Villanesia Team</div>									
 
 								</div>
                                 <table style="margin:0 auto;max-width:600px;height:180px;background-color:#f15e75;border-spacing:0;border-collapse:collapse" width="100%" height="100%">

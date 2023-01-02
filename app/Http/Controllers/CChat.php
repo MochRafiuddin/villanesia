@@ -23,6 +23,9 @@ class CChat extends Controller
     public function chat_detail($id)
     {        
         // dd($id);
+        $p = HPesan::find($id);
+        $p->penerima_lihat = 1;
+        $p->update();
         $pesan = HPesanDetail::join('m_users','m_users.id_user','h_pesan_detail.id_user')
             ->join('m_customer','m_customer.id','m_users.id_ref')
             ->select('h_pesan_detail.*','m_customer.nama_depan','m_customer.nama_belakang','m_customer.nama_foto')

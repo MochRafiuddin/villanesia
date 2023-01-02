@@ -1427,7 +1427,7 @@ class CAProperti extends Controller
 			$hpesan->id_user_penerima = $id_user_penerima;
 			$hpesan->pesan_terakhir = $pesan_terakhir;
 			$hpesan->waktu_pesan_terakhir = date('Y-m-d H:i:s');
-			$hpesan->id_ref = $id_ref_p;
+			// $hpesan->id_ref = $id_ref_p;
 			// $hpesan->updated_date = date('Y-m-d H:i:s');
 			$hpesan->save();
 

@@ -209,7 +209,7 @@
 							<table width='100%'>
 								<tr>
 									<td width='40%' style="font-size:16px;line-height:21px;font-weight: bold;">
-										You Pay
+										Total
 									</td>
 									<td width='60%' style="font-size:16px;line-height:21px;font-weight: bold;">
 										Rp. {{number_format($booking->harga_total)}}

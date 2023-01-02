@@ -70,6 +70,11 @@ table td{
     border: 1px solid grey;
     margin-top: 0.5rem;
 }
+.garis-3{
+    padding: 0.5rem;
+    border: 3px solid grey;
+    margin-top: 0.5rem;
+}
 .page-break {
     page-break-after: always;
 }
@@ -129,8 +134,8 @@ table td{
 				$tamu_anak = ($booking->tamu_anak == 0 ? 0 : $booking->tamu_anak);
 				$tamu_bayi = ($booking->tamu_bayi == 0 ? 0 : $booking->tamu_bayi);
             @endphp
-            <div class="information" style="">
-                <h2>Yout Trip Detail</h2>
+            <div class="information garis-3" style="">
+                <h2>Your Trip Detail</h2>
 
                 <p style="font-size:14px;line-height:21px;">Hi {{$booking->nama_depan}} {{$booking->nama_belakang}}</p>
                 <p style="font-size:14px;line-height:21px;">Here's your itinerary, including the address and check-in details.</p>                          
@@ -141,7 +146,7 @@ table td{
                 <p style="font-size:14px;line-height:21px;margin-top:-10px;">Listed in {{$booking->nama_jenis_tempat}} and {{$booking->nama_tipe_properti}}</p>
 
                 <p style="font-size:16px;line-height:21px;font-weight: bold;">Date</p>
-                <p style="font-size:14px;line-height:21px;margin-top:-10px;">No of {{$label}} {{$inap}}</p>
+                <p style="font-size:14px;line-height:21px;margin-top:-10px;">No of {{$label}}: {{$inap}}</p>
                 <p style="font-size:14px;line-height:21px;margin-top:-10px;"><span style="font-weight: bold;">From</span> {{date('l, j-m-Y', strtotime($booking->tanggal_mulai))}} <span style="font-weight: bold;">To</span> {{date('l, j-m-Y', strtotime($booking->tanggal_selesai))}}</p>
 
                 <p style="font-size:16px;line-height:21px;font-weight: bold;">Guest</p>
@@ -150,7 +155,16 @@ table td{
                 <p style="font-size:16px;line-height:21px;font-weight: bold;">Address</p>
                 <p style="font-size:14px;line-height:21px;margin-top:-10px;">{{$booking->alamat}}</p>
 
-                <p style="font-size:16px;line-height:21px;font-weight: bold;">You Host</p>
+                <p style="font-size:16px;line-height:21px;font-weight: bold;">
+                <?php
+                    $profil = DB::table('m_users')
+                    ->join('m_customer','m_customer.id','m_users.id_ref')
+                    ->select('m_customer.nama_depan','m_customer.nama_belakang')
+                    ->where('id_user',1)
+                    ->first();
+                ?>    
+                {{$profil->nama_depan}} {{$profil->nama_belakang}}
+                </p>
                 <img src="{{ public_path('/assets/images/logo-VILLANESIA-02.png') }}" alt="images" width="110px">
                 <p style="font-size:16px;line-height:21px;font-weight: bold;">Villanesia Bali</p>
                 <p style="font-size:16px;line-height:21px;margin-top:-10px;"><span style="font-weight: bold;">Mobile</span> : 085101728858</p>
