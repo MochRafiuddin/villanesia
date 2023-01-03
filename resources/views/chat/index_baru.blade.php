@@ -292,8 +292,7 @@
                 pushJsonDetail(e.data);
                 $('.chat').append(html);
                 $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 100);
-                $('#btn-input').val('');
-                pindah(e.data.id_pesan,e.data.pesan,e.data.created_date);
+                $('#btn-input').val('');                
             }
         });
     }
@@ -397,7 +396,12 @@
         // console.log(doc.doc.data().pesan_terakhir);
         var hasil_search = data_list_awal.find(o => o.id_pesan === tampung_id); 
         if(hasil_search){
-            pindah(data.id_pesan,data.pesan_terakhir,data.waktu_pesan_terakhir);
+            // pindah(data.id_pesan,data.pesan_terakhir,data.waktu_pesan_terakhir);
+                var mydate1 = new Date(data.waktu_pesan_terakhir);
+                var date1 = moment(mydate1).format('HH:mm');    
+                $("#div_list #div_"+data.id_pesan).parents('.mail-list').hide().prependTo("#div_list").slideDown();
+                $("#message_text_"+data.id_pesan).text(data.pesan_terakhir);
+                $("#div_list #div_"+data.id_pesan+" .waktu").text(date1);
         }else{
             //diappend
             var mydate = new Date(data.created_date);                    
