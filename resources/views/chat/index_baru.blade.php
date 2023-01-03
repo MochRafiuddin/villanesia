@@ -293,7 +293,7 @@
                 $('.chat').append(html);
                 $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 100);
                 $('#btn-input').val('');
-                pindah(e.data.id_pesan,e.data.pesan,e.created_date);
+                pindah(e.data.id_pesan,e.data.pesan,e.data.created_date);
             }
         });
     }
@@ -400,10 +400,15 @@
             pindah(data.id_pesan,data.pesan_terakhir,data.waktu_pesan_terakhir);
         }else{
             //diappend
+            var mydate = new Date(data.created_date);                    
+                var date = moment(mydate).format('HH:mm');
             var html = '<div class="mail-list klik" nama="baru" id_pesan="'+tampung_id+'">\
                 <div class="content" id="div_'+tampung_id+'">\
                     <p class="sender-name">'+data.judul+'</p>\
                     <p class="message_text">'+data.pesan_terakhir+'</p>\
+                    <div class="waktu">\
+                    '+date+'\
+                    </div>\
                     <div class="badge-cus"></div>\
                 </div>\
             </div>';
@@ -454,17 +459,17 @@
                 $('.chat').append(html);
                 pindah(tampung_id_user,pesan,data.created_date)
             }else{
-            var html = '<li class="clearfix" style="width: 50%;border-radius: 10px 10px 10px 0px;background: #fbfbfc; padding:10px">\
-                <div class="chat-body clearfix">\
-                    <div class="header">\
-                        <small class=" text-muted">\
-                            <span class="mdi mdi-clock"></span>'+waktu+'</small>\
+                var html = '<li class="clearfix" style="width: 50%;border-radius: 10px 10px 10px 0px;background: #fbfbfc; padding:10px">\
+                    <div class="chat-body clearfix">\
+                        <div class="header">\
+                            <small class=" text-muted">\
+                                <span class="mdi mdi-clock"></span>'+waktu+'</small>\
+                        </div>\
+                        <p id="'+id_pesan_detail+'-message">'+pesan+'</p>\
                     </div>\
-                    <p id="'+id_pesan_detail+'-message">'+pesan+'</p>\
-                </div>\
-            </li>';
-            $('.chat').append(html);
-            $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
+                </li>';
+                $('.chat').append(html);
+                $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 1000);
             }
             console.log("di append h_pesan_detail");
             data_list_detail.push(data);
