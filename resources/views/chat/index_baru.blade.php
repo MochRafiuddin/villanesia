@@ -396,12 +396,12 @@
         // console.log(doc.doc.data().pesan_terakhir);
         var hasil_search = data_list_awal.find(o => o.id_pesan === tampung_id); 
         if(hasil_search){
-            // pindah(data.id_pesan,data.pesan_terakhir,data.waktu_pesan_terakhir);
-                var mydate1 = new Date(data.waktu_pesan_terakhir);
-                var date1 = moment(mydate1).format('HH:mm');    
-                $("#div_list #div_"+data.id_pesan).parents('.mail-list').hide().prependTo("#div_list").slideDown();
-                $("#message_text_"+data.id_pesan).text(data.pesan_terakhir);
-                $("#div_list #div_"+data.id_pesan+" .waktu").text(date1);
+            pindah(data.id_pesan,data.pesan_terakhir,data.waktu_pesan_terakhir);
+                // var mydate1 = new Date(data.waktu_pesan_terakhir);
+                // var date1 = moment(mydate1).format('HH:mm');    
+                // $("#div_list #div_"+data.id_pesan).parents('.mail-list').hide().prependTo("#div_list").slideDown();
+                // $("#message_text_"+data.id_pesan).text(data.pesan_terakhir);
+                // $("#div_list #div_"+data.id_pesan+" .waktu").text(date1);
         }else{
             //diappend
             var mydate = new Date(data.created_date);                    
