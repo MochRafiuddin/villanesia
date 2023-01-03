@@ -182,7 +182,7 @@ use App\Traits\Helper;
                         </tr>
                         @if($extra_service->count() > 0)
                         <tr>
-                            <td style="padding-bottom: 10px;" ><p>Service</p></td>
+                            <td style="padding-bottom: 10px;" ><p>Extra Service</p></td>
                             <td style="padding-bottom: 10px;" class="text-right"><p>Rp.{{Helper::ribuan(ceil($data->total_extra_service))}}</p></td>
                         </tr>
                         @endif

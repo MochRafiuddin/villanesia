@@ -159,16 +159,16 @@ table td{
                 <?php
                     $profil = DB::table('m_users')
                     ->join('m_customer','m_customer.id','m_users.id_ref')
-                    ->select('m_customer.nama_depan','m_customer.nama_belakang')
+                    ->select('m_customer.nama_depan','m_customer.nama_belakang','m_users.email','m_users.no_telfon')
                     ->where('id_user',1)
                     ->first();
                 ?>    
-                {{$profil->nama_depan}} {{$profil->nama_belakang}}
+                Your Host
                 </p>
                 <img src="{{ public_path('/assets/images/logo-VILLANESIA-02.png') }}" alt="images" width="110px">
-                <p style="font-size:16px;line-height:21px;font-weight: bold;">Villanesia Bali</p>
-                <p style="font-size:16px;line-height:21px;margin-top:-10px;"><span style="font-weight: bold;">Mobile</span> : 085101728858</p>
-                <p style="font-size:16px;line-height:21px;margin-top:-10px;"><span style="font-weight: bold;">Email</span> : reservation@villanesia.com</p>
+                <p style="font-size:16px;line-height:21px;font-weight: bold;">{{$profil->nama_depan}} {{$profil->nama_belakang}}</p>
+                <p style="font-size:16px;line-height:21px;margin-top:-10px;"><span style="font-weight: bold;">Mobile</span> : {{$profil->no_telfon}}</p>
+                <p style="font-size:16px;line-height:21px;margin-top:-10px;"><span style="font-weight: bold;">Email</span> : {{$profil->email}}</p>
                 
                 <p style="font-size:16px;line-height:21px;font-weight: bold;">House Rules</p>
                 <p style="font-size:16px;line-height:21px;font-weight: bold;">Cancellation Policy</p>

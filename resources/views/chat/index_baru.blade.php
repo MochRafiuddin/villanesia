@@ -5,13 +5,14 @@
         .waktu {
             float: right;
             margin-top: -35px;
-            margin-right: -60px;
+            margin-right: -50px;
+            font-size: 13px;
         }
 
         .badge-cus {
             float: right;
             margin-top: -15px;
-            margin-right: -60px;
+            margin-right: -50px;
             padding: 0.4em;
             font-size: 75%;
             font-weight: 700;
@@ -41,6 +42,13 @@
                             <div class="content" id="div_{{$p->id_pesan}}">
                                 <p class="sender-name">{{$p->judul}}</p>
                                 <p class="message_text" id="message_text_{{$p->id_pesan}}">{{$p->pesan_terakhir}}</p>
+                                <div class="waktu">
+                                    @if(date('Y-m-d',strtotime($p->waktu_pesan_terakhir)) < date('Y-m-d'))
+                                    {{date('d-m-y',strtotime($p->waktu_pesan_terakhir))}}
+                                    @else
+                                    {{date('H:i',strtotime($p->waktu_pesan_terakhir))}}
+                                    @endif
+                                </div>
                                 @if($p->penerima_lihat == 0)
                                     <div class="badge-cus"></div>
                                 @endif
@@ -65,19 +73,13 @@
                             <input id="btn-input" type="text" class="form-control input-sm" placeholder="Type your message here..." />
                             <div class="input-group-append">
                                 <button class="btn btn-warning btn-sm send-buttons" id="btn-chats">
-                                    <span id="spinner" class="circle-loader d-none" style="margin-left:-20px"></span>
-                                    <span id="txt-btn">Send</span>
+                                    Send
                                 </button>
                             </div>
                         </div>
                     </div>
                     </div>
                 </div>
-                <!-- <div class="col-md-12">
-                    <button class="btn btn-danger btn-sm" id="btn-coba" onclick="pindah()">pindah</button>
-                    <button class="btn btn-default btn-sm" id="btn-coba" onclick="insert_baru()">Insert baru</button>
-                    <button class="btn btn-warning btn-sm" id="btn-coba" onclick="insert_detail()">Insert detail saja</button>
-                </div> -->
             </div>
         </div>
     </div>
@@ -150,16 +152,19 @@
         });
 
     }
-    function pindah(id_pesan,pesan){              
+    function pindah(id_pesan,pesan,waktu_pesan_terakhir){          
+        var mydate = new Date(waktu_pesan_terakhir);                    
+        var date = moment(mydate).format('HH:mm');    
         $("#div_list #div_"+id_pesan).parents('.mail-list').hide().prependTo("#div_list").slideDown();
         $("#message_text_"+id_pesan).text(pesan);
         $("#div_list #div_"+id_pesan).append("<div class='badge-cus'></div>");
+        $("#div_list #div_"+id_pesan+" .waktu").text(date);
     }
 
     function fungsi_div_klik(){
         $('.klik').click(function(){
             $('.more').hide();       
-            // $(this).find('.badge-cus').remove(); 
+            $(this).find('.badge-cus').remove(); 
 
             nilai = 0;
             awal = 0;
@@ -187,7 +192,7 @@
                     var url = '{{url("booking/detail")}}/'+res.title.id_ref;
                     var head_chat="<a href='"+url+"' class='text-white'> "+res.title.id_ref+'</a>'+' - '+res.title.nama_depan+' '+res.title.nama_belakang;
                     $('.title_chat').html(head_chat);
-                    nilai = res.data.length - 5;
+                    nilai = res.data.length - 10;
                     awal = res.data.length;
                     res.data.forEach(function(data){
                         pushJsonDetail(data);
@@ -203,12 +208,10 @@
                             var foto ='{{asset("assets/images/avatar.png")}}';
                         }
                         if (e.id_user ==1) {
-                                var html = '<li class="left clearfix list_chat" style="width: 58%;border-radius: 10px 10px 0px 10px;background: #7fdbb4;margin-left: 40%;padding:10px">\
-                                    <img src="'+foto+'" width="12%" alt="User Avatar" class="img-circle pull-left" style="margin-top:13px;margin-right:10px;"/>\
-                                <div class="chat-body clearfix">\
+                                var html = '<li class="left clearfix list_chat" style="width: 50%;border-radius: 10px 10px 0px 10px;background: #7fdbb4;margin-left: 49%;padding:10px">\
+                                <div class="chat-body clearfix text-right">\
                                     <div class="header">\
-                                        <strong class="primary-font">'+e.nama_depan+' '+e.nama_belakang+'</strong> <small class="pull-right text-muted">\
-                                        <span class="mdi mdi-clock"></span>'+date+'</small>\
+                                        <small><span class="mdi mdi-clock"></span>'+date+'</small>\
                                     </div>\
                                     <p id="'+e.id_pesan_detail+'">\
                                         '+e.pesan+'\
@@ -225,13 +228,11 @@
                                 </li>';
                                 $('.chat').append(html);
                             }else{
-                            var html = '<li class="clearfix list_chat" style="width: 60%;border-radius: 10px 10px 10px 0px;background: #fbfbfc; padding:10px">\
-                            <img src="'+foto+'" width="12%" alt="User Avatar" class="img-circle pull-right" style="margin-top:13px;margin-left:10px;"/>\
+                            var html = '<li class="clearfix list_chat" style="width: 50%;border-radius: 10px 10px 10px 0px;background: #fbfbfc; padding:10px">\
                             <div class="chat-body clearfix">\
                                 <div class="header">\
                                     <small class=" text-muted">\
                                         <span class="mdi mdi-clock"></span>'+date+'</small>\
-                                    <strong class="pull-right primary-font">'+e.nama_depan+' '+e.nama_belakang+'</strong>\
                                 </div>\
                                 <p id="'+e.id_pesan_detail+'-message">\
                                     '+e.pesan+'\
@@ -243,7 +244,7 @@
                             }
                         }
                         $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 250);
-                        $('.list_chat').hide().slice(-5).show();
+                        $('.list_chat').hide().slice(-10).show();
                     });                
                     load_kanan();
                 }
@@ -262,9 +263,7 @@
     });
 
     function kirim_pesan(){
-        var pesan = $('#btn-input').val();
-        $("#spinner").removeClass('d-none');
-        $('#txt-btn').text('');
+        var pesan = $('#btn-input').val();        
         $.ajax({
             url: "{{url('chat/tambah-chat-detail')}}",
             type: "post",
@@ -280,12 +279,10 @@
                     }else{
                         var foto ='{{asset("assets/images/avatar.png")}}';
                     }
-                var html = '<li class="left clearfix list_chat" style="width: 58%;border-radius: 10px 10px 0px 10px;background: #7fdbb4;margin-left: 40%;padding:10px">\
-                <img src="'+foto+'" width="12%" alt="User Avatar" class="img-circle pull-left" style="margin-top:13px;margin-right:10px;"/>\
-                <div class="chat-body clearfix">\
+                var html = '<li class="left clearfix list_chat" style="width: 50%;border-radius: 10px 10px 0px 10px;background: #7fdbb4;margin-left: 49%;padding:10px">\
+                <div class="chat-body clearfix text-right">\
                     <div class="header">\
-                        <strong class="primary-font">'+e.data.nama_depan+' '+e.data.nama_belakang+'</strong> <small class="pull-right text-muted">\
-                        <span class="mdi mdi-clock"></span>'+date+'</small>\
+                        <small><span class="mdi mdi-clock"></span>'+date+'</small>\
                     </div>\
                     <p id="'+e.data.id_pesan_detail+'">\
                         '+e.data.pesan+'\
@@ -296,9 +293,7 @@
                 $('.chat').append(html);
                 $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 100);
                 $('#btn-input').val('');
-                pindah(e.data.id_pesan,e.data.pesan);
-                $("#spinner").addClass('d-none');
-                $('#txt-btn').text('Send');
+                pindah(e.data.id_pesan,e.data.pesan,e.created_date);
             }
         });
     }
@@ -314,7 +309,7 @@
         }
     });
     $('.more').click(function(){        
-        nilai = nilai - 5;
+        nilai = nilai - 10;
         if (nilai <= 0) {
             nilai = 0;
         }
@@ -402,8 +397,7 @@
         // console.log(doc.doc.data().pesan_terakhir);
         var hasil_search = data_list_awal.find(o => o.id_pesan === tampung_id); 
         if(hasil_search){
-            $("#div_list #div_"+tampung_id+" .message_text").html(data.pesan_terakhir);
-            $("#div_list #div_"+tampung_id).parents('.mail-list').hide().prependTo("#div_list").slideDown();
+            pindah(data.id_pesan,data.pesan_terakhir,data.waktu_pesan_terakhir);
         }else{
             //diappend
             var html = '<div class="mail-list klik" nama="baru" id_pesan="'+tampung_id+'">\
@@ -458,15 +452,13 @@
                     </small>\
                 </li>';
                 $('.chat').append(html);
-                pindah(tampung_id_user,pesan)
+                pindah(tampung_id_user,pesan,data.created_date)
             }else{
-            var html = '<li class="clearfix" style="width: 58%;border-radius: 10px 10px 10px 0px;background: #fbfbfc; padding:10px">\
-                <img src="'+foto+'" width="12%" alt="User Avatar" class="img-circle pull-right" style="margin-top:13px;margin-right:10px;"/>\
+            var html = '<li class="clearfix" style="width: 50%;border-radius: 10px 10px 10px 0px;background: #fbfbfc; padding:10px">\
                 <div class="chat-body clearfix">\
                     <div class="header">\
                         <small class=" text-muted">\
                             <span class="mdi mdi-clock"></span>'+waktu+'</small>\
-                        <strong class="pull-right primary-font">'+nama_depan+' '+nama_belakang+'</strong>\
                     </div>\
                     <p id="'+id_pesan_detail+'-message">'+pesan+'</p>\
                 </div>\

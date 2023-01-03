@@ -89,6 +89,8 @@ class CMCPayment extends Controller
 		$this->pdf_email($get_user->email,$kode_booking,$get_user->nama_depan,$get_user->nama_belakang,$get_user->no_telfon);
 		
 		return response()->json(['status'=>true,'msg'=>'Sukses']);
+		// $pdf = PDF::loadview('pdf.tripDetail',['kode_booking'=>$kode_booking]);
+		// return $pdf->stream('result.pdf');
     }
 
 	public function redirect_invoice_sukses(Request $request)

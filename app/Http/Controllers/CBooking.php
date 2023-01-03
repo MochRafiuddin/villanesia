@@ -75,7 +75,7 @@ class CBooking extends Controller
 			$pesan_terakhir = 'Confirm Availability';
 			$id_ref_p = $booking->kode_booking;
             
-            $hpesan = HPesanDetail::where('id_ref',$id_ref_p)->first();
+            $hpesan = HPesan::where('id_ref',$id_ref_p)->first();
 
 			$hdetail = new HPesanDetail;
 			$hdetail->id_pesan = $hpesan->id_pesan;
@@ -83,7 +83,7 @@ class CBooking extends Controller
 			$hdetail->id_tipe = 2;
 			$hdetail->pesan = $pesan_terakhir;
 			$hdetail->id_user = $id_user_pengirim;
-			$hdetail->url = $id_ref_p;
+			$hdetail->url = $id;
 			$hdetail->save();
 
             $firestore = Firestore::get();
@@ -93,7 +93,7 @@ class CBooking extends Controller
 				'id_pesan' => $hpesan->id_pesan,
 				'id_ref' => $id_ref_p,
 				'id_tipe' => 2,
-				'url' => $id_ref_p,
+				'url' => $id,
 				'pesan' => $pesan_terakhir,
 				'created_date' => date('Y-m-d H:i:s'),
 				'updated_date' => new \Google\Cloud\Core\Timestamp(new \DateTime(date('Y-m-d H:i:s'))),
