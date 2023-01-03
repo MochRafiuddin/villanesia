@@ -15,64 +15,57 @@ class CADownload extends Controller
         $user = MApiKey::where('token',$request->header('auth-key'))->first();
 
         $kode_booking = $request->kode_booking;
-        $html = view("pdf.invoice")
-        ->with('kode_booking',$kode_booking);
+        // $html = view("pdf.invoice")
+        // ->with('kode_booking',$kode_booking);
+        $pdf = PDF::loadView('pdf.invoice', ['kode_booking'=>$kode_booking]);
 
         $my_pdf_path_for_example = 'download/invoice/';
         if (!file_exists(public_path($my_pdf_path_for_example))) {
             mkdir(public_path($my_pdf_path_for_example), 0777, true);
-            $path =public_path($my_pdf_path_for_example).time().rand(1,100).'-invoice.pdf';
-            PDF::loadHTML($html, 'utf-8')->save($path);
+            $path =time().rand(1,100).'-invoice.pdf';
+            $pdf->save($my_pdf_path_for_example.$path);
         }else{
-            $path =public_path($my_pdf_path_for_example).time().rand(1,100).'-invoice.pdf';
-            PDF::loadHTML($html, 'utf-8')->save($path);
+            $path =time().rand(1,100).'-invoice.pdf';
+            $pdf->save($my_pdf_path_for_example.$path);
         }        
         
-        $headers = array(
-            'Content-Type: application/pdf',
-        );
-
-        return Response::download($path, 'invoice.pdf', $headers);;
-        
-        
-        // return response()->json([
-        //     'success' => true,
-        //     'message' => 'Success',
-        //     'code' => 1,
-        //     'data' => $tipe,
-        // ], 200);        
+        return response()->json([
+            'success' => true,
+            'message' => 'Success',
+            'code' => 1,
+            'url' => url($my_pdf_path_for_example.$path),
+        ], 200);        
     }
 
     public function download_trip_detail(Request $request)
     {                
         $user = MApiKey::where('token',$request->header('auth-key'))->first();
 
-        $kode_booking = $request->kode_booking;
-        $html = view("pdf.tripDetail")
-        ->with('kode_booking',$kode_booking);
+        $kode_booking = $request->kode_booking;        
+        $pdf = PDF::loadView('pdf.tripDetail', ['kode_booking'=>$kode_booking]);
 
         $my_pdf_path_for_example = 'download/trip_detail/';
         if (!file_exists(public_path($my_pdf_path_for_example))) {
             mkdir(public_path($my_pdf_path_for_example), 0777, true);
-            $path =public_path($my_pdf_path_for_example).time().rand(1,100).'-trip_detail.pdf';
-            PDF::loadHTML($html, 'utf-8')->save($path);
+            $path = time().rand(1,100).'-trip_detail.pdf';
+            $pdf->save($my_pdf_path_for_example.$path);
         }else{
-            $path =public_path($my_pdf_path_for_example).time().rand(1,100).'-trip_detail.pdf';
-            PDF::loadHTML($html, 'utf-8')->save($path);
+            $path = time().rand(1,100).'-trip_detail.pdf';
+            $pdf->save($my_pdf_path_for_example.$path);
         }        
         
-        $headers = array(
-            'Content-Type: application/pdf',
-        );
+        // $headers = array(
+        //     'Content-Type: application/pdf',
+        // );
 
-        return Response::download($path, 'trip_detail.pdf', $headers);;
+        // return Response::download($path, 'trip_detail.pdf', $headers);;
         
         
-        // return response()->json([
-        //     'success' => true,
-        //     'message' => 'Success',
-        //     'code' => 1,
-        //     'data' => $tipe,
-        // ], 200);        
+        return response()->json([
+            'success' => true,
+            'message' => 'Success',
+            'code' => 1,
+            'url' => url($my_pdf_path_for_example.$path),
+        ], 200);        
     }
 }
