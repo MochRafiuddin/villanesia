@@ -58,6 +58,8 @@ class CChat extends Controller
         $p = HPesan::find($request->id_pesan);
         $p->pesan_terakhir = $request->pesan;
         $p->waktu_pesan_terakhir = Carbon::now();
+        $pengirim_lihat = $p->pengirim_lihat +1;
+        $p->pengirim_lihat = $pengirim_lihat;
         $p->update();
 
         $firestore = Firestore::get();
@@ -92,7 +94,7 @@ class CChat extends Controller
                     'id_user_pengirim' => $document['id_user_pengirim'],
                     'judul' => $document['judul'],
                     'penerima_lihat' => $document['penerima_lihat'],
-                    'pengirim_lihat' => $document['pengirim_lihat'],
+                    'pengirim_lihat' => $pengirim_lihat,
                     'pesan_terakhir' => $pesan->pesan,
                     'updated_date' => new \Google\Cloud\Core\Timestamp(new \DateTime(date('Y-m-d H:i:s'))),
                     'waktu_pesan_terakhir' => date('Y-m-d H:i:s')

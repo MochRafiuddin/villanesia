@@ -42,7 +42,7 @@ class CAPesan extends Controller
     {                
         $user = MApiKey::where('token',$request->header('auth-key'))->first();
         // $muser = User::where('id_user',$user->id_user)->first();
-        $id_pesan = $request->id_pesan;
+        $id_pesan = intval($request->id_pesan);
 
         $tipe = HPesanDetail::from('h_pesan_detail as a')
                 ->selectRaw('a.*, b.nama_depan as nama_depan_pengirim, b.nama_belakang as nama_belakang_pengirim')
@@ -51,6 +51,35 @@ class CAPesan extends Controller
                 ->where('a.id_pesan',$id_pesan)
                 ->orderBy('a.created_date','desc')
                 ->get();
+
+		$p = HPesan::find($id_pesan);
+		$p->pengirim_lihat = 0;
+		$p->update();
+
+		$firestore = Firestore::get();
+		$query = $firestore->collection('h_pesan')
+				->where('id_pesan', '=', $id_pesan);
+			
+		$documents = $query->documents();        
+		$id = null;
+		foreach ($documents as $document) {
+			$id = $document->id();
+			$doc = $firestore->collection('h_pesan')->document($id)
+				->set([
+					'badge' => $document['badge'],
+					'created_date' => $document['created_date'],
+					'id_pesan' => $document['id_pesan'],
+					'id_ref' => $document['id_ref'],
+					'id_user_penerima' => $document['id_user_penerima'],
+					'id_user_pengirim' => $document['id_user_pengirim'],
+					'judul' => $document['judul'],
+					'penerima_lihat' => $document['penerima_lihat'],
+					'pengirim_lihat' => 0,
+					'pesan_terakhir' => $document['pesan_terakhir'],
+					'updated_date' => new \Google\Cloud\Core\Timestamp(new \DateTime(date('Y-m-d H:i:s'))),
+					'waktu_pesan_terakhir' => $document['waktu_pesan_terakhir']
+				]);
+		}
         
         return response()->json([
             'success' => true,
@@ -65,7 +94,7 @@ class CAPesan extends Controller
 		$user = MApiKey::where('token',$request->header('auth-key'))->first();
 			// $muser = User::where('id_user',$user->id_user)->first();
 
-			$id_pesan = intval($request->id_pesan);;
+			$id_pesan = intval($request->id_pesan);
 			$id_ref = $request->id_ref;
 			$id_tipe = $request->id_tipe;
 			$pesan = $request->pesan;
@@ -147,4 +176,45 @@ class CAPesan extends Controller
 			'code' => 1,            
 		], 200);        
 	}
+	public function update_pengirim_lihat(Request $request)
+    {                
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
+        // $muser = User::where('id_user',$user->id_user)->first();
+        $id_pesan = intval($request->id_pesan);
+				
+		$p = HPesan::find($id_pesan);
+		$p->pengirim_lihat = 0;
+		$p->update();
+
+		$firestore = Firestore::get();
+		$query = $firestore->collection('h_pesan')
+				->where('id_pesan', '=', $id_pesan);
+			
+		$documents = $query->documents();        
+		$id = null;
+		foreach ($documents as $document) {
+			$id = $document->id();
+			$doc = $firestore->collection('h_pesan')->document($id)
+				->set([
+					'badge' => $document['badge'],
+					'created_date' => $document['created_date'],
+					'id_pesan' => $document['id_pesan'],
+					'id_ref' => $document['id_ref'],
+					'id_user_penerima' => $document['id_user_penerima'],
+					'id_user_pengirim' => $document['id_user_pengirim'],
+					'judul' => $document['judul'],
+					'penerima_lihat' => $document['penerima_lihat'],
+					'pengirim_lihat' => 0,
+					'pesan_terakhir' => $document['pesan_terakhir'],
+					'updated_date' => new \Google\Cloud\Core\Timestamp(new \DateTime(date('Y-m-d H:i:s'))),
+					'waktu_pesan_terakhir' => $document['waktu_pesan_terakhir']
+				]);
+		}
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Success Update Pengirim lihat',
+            'code' => 1,            
+        ], 200);        
+    }
 }

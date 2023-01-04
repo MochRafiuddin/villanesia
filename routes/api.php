@@ -99,6 +99,7 @@ Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
     Route::get('/get-chat', [CAPesan::class, 'get_chat']);
     Route::get('/get-detail-chat', [CAPesan::class, 'get_chat_detail']);
     Route::post('/insert-chat-detail', [CAPesan::class, 'insert_chat_detail']);
+    Route::post('/update-pengirim-lihat', [CAPesan::class, 'update_pengirim_lihat']);
 
     Route::get('/download-invoice', [CADownload::class, 'download_invoice']);
     Route::get('/download-trip-detail', [CADownload::class, 'download_trip_detail']);
