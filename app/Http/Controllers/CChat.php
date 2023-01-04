@@ -32,11 +32,12 @@ class CChat extends Controller
             ->where('h_pesan_detail.id_pesan',$id)
             ->orderBy('h_pesan_detail.created_date','asc')
             ->get();
-        $title = HPesanDetail::join('m_users','m_users.id_user','h_pesan_detail.id_user')
+        $title = HPesan::join('m_users','m_users.id_user','h_pesan.id_user_pengirim')
             ->join('m_customer','m_customer.id','m_users.id_ref')
-            ->select('h_pesan_detail.id_ref','m_customer.nama_depan','m_customer.nama_belakang')
-            ->where('h_pesan_detail.id_pesan',$id)
-            ->where('h_pesan_detail.id_user','!=',1)
+            ->join('t_booking','t_booking.kode_booking','h_pesan.id_ref')
+            ->join('m_properti','m_properti.id_properti','t_booking.id_ref')
+            ->select('h_pesan.id_ref','m_customer.nama_depan','m_customer.nama_belakang','m_properti.judul')
+            ->where('h_pesan.id_pesan',$id)
             ->first();
         // dd($pesan);
         return response()->json(['data'=>$pesan,'title'=>$title]);

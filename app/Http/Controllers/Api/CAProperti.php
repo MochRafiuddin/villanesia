@@ -26,6 +26,7 @@ use App\Models\TKonfirmasiBayar;
 use App\Models\MKupon;
 use App\Models\HPesan;
 use App\Models\HPesanDetail;
+use App\Models\User;
 use DateInterval;
 use DatePeriod;
 use DateTime;
@@ -1096,6 +1097,10 @@ class CAProperti extends Controller
     public function post_property_booking(Request $request)
     {
         $user = MApiKey::where('token',$request->header('auth-key'))->first();
+        $customer = User::join('m_customer','m_customer.id','m_users.id_ref')
+                    ->select('m_customer.nama_depan')
+                    ->where('m_users.id_user',$user->id_user)
+                    ->first();
         $id_properti = $request->id_properti;
         $id_tipe_booking = $request->id_tipe_booking;
         $tanggal_mulai = $request->tanggal_mulai;
@@ -1122,11 +1127,11 @@ class CAProperti extends Controller
 
             $tamu_tambahan = ((($tamu_dewasa+$tamu_anak) - $pro->jumlah_tamu) < 0 ? 0 : (($tamu_dewasa+$tamu_anak) - $pro->jumlah_tamu));
                     
-            $date_now = date('Y-m-d');
-            $squencedtoday = MBooking::where('deleted',1)->where('created_date','>=',$date_now)->get()->count();
-            $squence = $squencedtoday+1;
-            $squence = str_pad($squence,4,0,STR_PAD_LEFT);
-            $squence = date('Ymd').$squence;
+            // $date_now = date('Y-m-d');
+            $squencedtoday = MBooking::where('deleted',1)->get()->count();
+            $squence = 1000+$squencedtoday+1;
+            // $squence = str_pad($squence,4,0,STR_PAD_LEFT);
+            // $squence = date('Ymd').$squence;
             // dd($squence);
             $extra = 0;
             if ($id_tipe_booking == 1) {
@@ -1415,7 +1420,7 @@ class CAProperti extends Controller
                 MBooking::where('id_booking',$tipe->id_booking)->update($data_update);
 
             if ($tipe) {
-                $judul_p = 'Booking #'.$squence.' - '.$pro->judul;
+                $judul_p = '#'.$squence.' - '.$customer->nama_depan;
 			$id_user_pengirim = $user->id_user;
 			$id_user_penerima = 1;
 			$pesan_terakhir = ($catatan == null ? 'check availability for '.date('Y-m-d', strtotime($tanggal_mulai)).' to '.date('Y-m-d', strtotime($tanggal_selesai)) : $catatan);

@@ -127,7 +127,7 @@
 
     function pushJsonDetail(data){
         var mydate = new Date(data.created_date);
-        var date = moment(mydate).format('YYYY-MM-DD HH:mm:ss');
+        var date = moment(mydate).format('DD-MM-YYYY HH:mm:ss');
         data_list_detail.push({
             id_pesan:data.id_pesan,
             id_pesan_detail:data.id_pesan_detail,
@@ -192,7 +192,7 @@
                 success: function(res){
                     $('.chat_view').show();
                     var url = '{{url("booking/detail")}}/'+res.title.id_ref;
-                    var head_chat="<a href='"+url+"' class='text-white'> "+res.title.id_ref+'</a>'+' - '+res.title.nama_depan+' '+res.title.nama_belakang;
+                    var head_chat="<a href='"+url+"' class='text-white'> "+res.title.id_ref+'</a>'+' - '+res.title.nama_depan+' '+res.title.nama_belakang+' - '+res.title.judul;
                     $('.title_chat').html(head_chat);
                     nilai = res.data.length - 10;
                     awal = res.data.length;
@@ -202,7 +202,7 @@
                     // console.log(data_list_detail);
                     res.data.forEach(e => {
                         var mydate = new Date(e.created_date);                    
-                        var date = moment(mydate).format('YYYY-MM-DD HH:mm:ss');
+                        var date = moment(mydate).format('DD-MM-YYYY HH:mm:ss');
                         var foto ='';
                         if (e.nama_foto != null) {
                             var foto ='{{asset("upload/profile_img/")}}/'+e.nama_foto;
@@ -275,7 +275,7 @@
             },            
             success: function(e){
                 var mydate = new Date(e.data.created_date);                    
-                var date = moment(mydate).format('YYYY-MM-DD HH:mm:ss');
+                var date = moment(mydate).format('DD-MM-YYYY HH:mm:ss');
                     if (e.data.nama_foto != null) {
                         var foto ='{{asset("upload/profile_img")}}/'+e.data.nama_foto;
                     }else{
@@ -431,12 +431,14 @@
     function update_chat_detail(data){
 
         var tampung_id_user = data.id_user;
-        var waktu = data.created_date;
+        // var waktu = data.created_date;
         var pesan = data.pesan;
         var id_pesan_detail = data.id_pesan_detail;
         var nama_depan = '';
         var nama_belakang = '';
         var foto = '';
+        var mydate = new Date(data.created_date);                    
+        var waktu = moment(mydate).format('DD-MM-YYYY HH:mm:ss');
         console.log(data.pesan);
 
         $.each(data_list_detail, function(i, v) {
