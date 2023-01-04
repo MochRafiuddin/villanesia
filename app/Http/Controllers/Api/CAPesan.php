@@ -81,6 +81,7 @@ class CAPesan extends Controller
 			$hpesan = HPesan::find($id_pesan);
 			$hpesan->pesan_terakhir = $pesan;
 			$hpesan->waktu_pesan_terakhir = date('Y-m-d H:i:s');
+			$hpesan->penerima_lihat = 0;
 			$hpesan->update();
 
 			$firestore = Firestore::get();

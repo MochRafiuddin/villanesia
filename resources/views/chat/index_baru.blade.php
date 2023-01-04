@@ -152,13 +152,15 @@
         });
 
     }
-    function pindah(id_pesan,pesan,waktu_pesan_terakhir){          
+    function pindah(id_pesanP,pesan,waktu_pesan_terakhir){          
         var mydate = new Date(waktu_pesan_terakhir);                    
         var date = moment(mydate).format('HH:mm');    
-        $("#div_list #div_"+id_pesan).parents('.mail-list').hide().prependTo("#div_list").slideDown();
-        $("#message_text_"+id_pesan).text(pesan);
-        $("#div_list #div_"+id_pesan).append("<div class='badge-cus'></div>");
-        $("#div_list #div_"+id_pesan+" .waktu").text(date);
+        $("#div_list #div_"+id_pesanP).parents('.mail-list').hide().prependTo("#div_list").slideDown();
+        $("#message_text_"+id_pesanP).text(pesan);
+        if (id_pesanP != id_pesan) {
+            $("#div_list #div_"+id_pesanP).append("<div class='badge-cus'></div>");
+        }
+        $("#div_list #div_"+id_pesanP+" .waktu").text(date);
     }
 
     function fungsi_div_klik(){
@@ -461,7 +463,7 @@
                     </small>\
                 </li>';
                 $('.chat').append(html);
-                pindah(tampung_id_user,pesan,data.created_date)
+                pindah(data.id_pesan,pesan,data.created_date)
             }else{
                 var html = '<li class="clearfix" style="width: 50%;border-radius: 10px 10px 10px 0px;background: #fbfbfc; padding:10px">\
                     <div class="chat-body clearfix">\
