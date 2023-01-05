@@ -33,7 +33,7 @@ use App\Traits\Helper;
                         <tr>
                             <td style="padding-bottom: 15px;padding-right: 15px;"><b>Date: </b><br>{{date('F d, Y', strtotime($data->created_date))}}<br> {{date('H:i', strtotime($data->created_date))}}</td>
                             <td style="padding-bottom: 15px;">
-                                <p><b>From: </b>{{$data->username}}</p>
+                                <p><b>From: </b>{{$data->nama_depan}} {{$data->nama_belakang}}</p>
                                 <p><b>Renter Detail: </b></p>
                                 <p><b>Listing Name: </b> {{$data->judul}}</p>
                             </td>

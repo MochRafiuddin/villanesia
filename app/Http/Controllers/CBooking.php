@@ -30,10 +30,11 @@ class CBooking extends Controller
     }
     public function detail($id)
     {        
-        $data = MBooking::selectRaw('t_booking.*, m_properti.judul as judul, m_users.username as username, m_properti.id_tipe_booking as tipe_booking, m_status_booking.nama_status_booking as nama_status_booking')
+        $data = MBooking::selectRaw('t_booking.*, m_properti.judul as judul, m_users.username as username, m_properti.id_tipe_booking as tipe_booking, m_status_booking.nama_status_booking as nama_status_booking, m_customer.nama_depan, m_customer.nama_belakang')
             ->join('m_properti','t_booking.id_ref','m_properti.id_properti','left')
             ->join('m_status_booking','t_booking.id_status_booking','m_status_booking.id_status_booking','left')
             ->join('m_users','t_booking.id_user','m_users.id_user','left')
+            ->join('m_customer','m_customer.id','m_users.id_ref','left')
             ->where('t_booking.id_booking',$id)
             ->orWhere('t_booking.kode_booking',$id)
             ->first();
@@ -214,7 +215,7 @@ class CBooking extends Controller
                 return $date;
             })
             ->addColumn('alamat', function ($row) {                                
-                $date = '<p>'.$row->judul.'</p><p style="white-space: nowrap">'.$row->alamat.'</p>';
+                $date = '<div style="width:600px"><p>'.$row->judul.'</p><p>'.$row->alamat.'</p></div>';
                 return $date;
             })
             ->addColumn('in', function ($row) {
