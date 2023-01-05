@@ -1,13 +1,13 @@
-var firebaseConfig = {
-    apiKey: "AIzaSyB-PX175HnPTIZrRi9mc3JZKXeVppmx93I",
-    authDomain: "coba-baru-38348.firebaseapp.com",
-    databaseURL: "https://coba-baru-38348-default-rtdb.firebaseio.com",
-    projectId: "coba-baru-38348",
-    storageBucket: "coba-baru-38348.appspot.com",
-    messagingSenderId: "937390030210",
-    appId: "1:937390030210:web:100d35521581cd2013239b",
-    measurementId: "G-7PGG092Q9N"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyAeVQgtpSjDS3024llPWjJit5IN0cR9dig",
+  authDomain: "jetwing-b221e.firebaseapp.com",
+  databaseURL: "https://jetwing-b221e-default-rtdb.firebaseio.com",
+  projectId: "jetwing-b221e",
+  storageBucket: "jetwing-b221e.appspot.com",
+  messagingSenderId: "634264656122",
+  appId: "1:634264656122:web:b64d366dcabda024809143",
+  measurementId: "G-Z5QH2X5YNY"
+};
   // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();

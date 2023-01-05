@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use App\Mail\KirimEmail;
+use App\Models\TokenFcm;
 use Mail;
 use Auth;
 use DateInterval;
@@ -438,6 +439,39 @@ trait Helper
     public function kirim_email($email,$nama_depan,$nama_belakang,$username,$password,$nama_properti,$tanggal_check_in,$view,$judul,$id_booking,$no_telfon)
     {
         Mail::to($email)->send(new KirimEmail($nama_depan,$nama_belakang,$username,$password,$nama_properti,$tanggal_check_in,$view,$judul,$id_booking,$email,$no_telfon));
+        return TRUE;
+    }
+
+    public function send_fcm($title,$body)
+    {
+        $firebaseToken = TokenFcm::pluck('fcm_token')->all();
+        $SERVER_API_KEY = env('FCM_SERVER_KEY');
+		// dd($SERVER_API_KEY);
+        $data = [
+            "registration_ids" => $firebaseToken,
+            "notification" => [
+                "title" => $request->title,
+                "body" => $request->body,  
+            ]
+        ];
+
+        $dataString = json_encode($data);
+
+        $headers = [
+            'Authorization: key=' . $SERVER_API_KEY,
+            'Content-Type: application/json',
+        ];
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+
+        $response = curl_exec($ch);        
         return TRUE;
     }
 

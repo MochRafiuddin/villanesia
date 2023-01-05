@@ -11,6 +11,7 @@ $name[] = 'kode_pos';
 $name[] = 'tentang';
 $name[] = 'jenis_kelamin';
 $name[] = 'no_telfon_lain';
+$name[] = 'nama_foto';
 ?>
 <div class="main-panel">
     <div class="content-wrapper">
@@ -79,6 +80,12 @@ $name[] = 'no_telfon_lain';
                                 <option value="1" {{(old($name[7]) == 1) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[7],1)}}>Laki-laki</option>
                                 <option value="2" {{(old($name[7]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[7],2)}}>Perempuan</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            <label for="exampleInputEmail1">Foto Profile</label>
+                            <input type="file" class="form-control" name="{{$name[9]}}" />
                         </div>
                     </div>
                     <div class="row">

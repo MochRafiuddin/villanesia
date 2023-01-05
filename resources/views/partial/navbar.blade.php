@@ -71,7 +71,17 @@ use App\Traits\Helper;
             </li> -->
             <li class="nav-item nav-profile dropdown">
                 <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
-                    <img src="https://via.placeholder.com/30x30" alt="profile" />                    
+                    <?php
+                        $foto = DB::table('m_customer')										
+                            ->where('id',Auth::user()->id_ref)
+                            ->first();
+                        if ($foto->nama_foto == null) {
+                            $img = 'https://via.placeholder.com/30x30';
+                        }else {
+                            $img = asset('upload/profile_img/'.$foto->nama_foto);
+                        }
+                    ?>
+                    <img src="{{$img}}" alt="profile" />                    
                     <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{Auth::user()->username}}</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">

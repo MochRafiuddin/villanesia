@@ -101,6 +101,8 @@ Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
     Route::post('/insert-chat-detail', [CAPesan::class, 'insert_chat_detail']);
     Route::post('/update-pengirim-lihat', [CAPesan::class, 'update_pengirim_lihat']);
 
+    Route::post('/update-token-fcm', [CAPesan::class, 'update_token_fcm']);
+
     Route::get('/download-invoice', [CADownload::class, 'download_invoice']);
     Route::get('/download-trip-detail', [CADownload::class, 'download_trip_detail']);
 });

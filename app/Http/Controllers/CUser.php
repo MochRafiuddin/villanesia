@@ -127,7 +127,15 @@ class CUser extends Controller
             return redirect()->back()
                         ->withInput($request->all())
                         ->withErrors($validator->errors());
-        }                
+        }
+        
+        if ($request->file('nama_foto')) {
+            $gambar = round(microtime(true) * 1000).'.'.$request->file('nama_foto')->extension();
+            $request->file('nama_foto')->move(public_path('upload/profile_img'), $gambar);
+        }else{
+            $gambar = null;
+        }
+
         // dd(json_encode($request->notelpon));
         $tipe = MCustomer::find($request->id);
         $tipe->nama_depan = $request->nama_depan;
@@ -139,6 +147,7 @@ class CUser extends Controller
         $tipe->tentang = $request->tentang;
         $tipe->jenis_kelamin = $request->jenis_kelamin;
         $tipe->no_telfon_lain = json_encode($request->notelpon);
+        $tipe->nama_foto = $gambar;
         $tipe->update();        
 
         return redirect()->route('profile-index')->with('msg','Sukses Mengubah Data');

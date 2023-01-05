@@ -8,6 +8,7 @@ use App\Models\HPesan;
 use App\Models\HPesanDetail;
 use App\Models\MApiKey;
 use App\Models\User;
+use App\Models\TokenFcm;
 use App\Services\Firestore;
 use Google\Cloud\Firestore\DocumentReference;
 
@@ -215,6 +216,33 @@ class CAPesan extends Controller
             'success' => true,
             'message' => 'Success Update Pengirim lihat',
             'code' => 1,            
+        ], 200);        
+    }
+
+	public function update_token_fcm(Request $request)
+    {                
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
+        $token_fcm = $request->token_fcm;
+        $token = $request->token;
+
+		$fcm = TokenFcm::where('id_user',$user->id_user)->first();
+		if ($fcm) {
+			$tFcm = TokenFcm::find($fcm->id);
+			$tFcm->fcm_token = $token_fcm;
+			$tFcm->token = $token;
+			$tFcm->update();
+		}else{
+			$tFcm = new TokenFcm();
+			$tFcm->id_user = $user->id_user;
+			$tFcm->fcm_token = $token_fcm;
+			$tFcm->token = $token;
+			$tFcm->save();
+		}
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Success update fcm',
+            'code' => 1,
         ], 200);        
     }
 }
