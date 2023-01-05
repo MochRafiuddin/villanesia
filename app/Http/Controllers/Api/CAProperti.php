@@ -27,6 +27,7 @@ use App\Models\MKupon;
 use App\Models\HPesan;
 use App\Models\HPesanDetail;
 use App\Models\User;
+use App\Models\HReviewRatingLike;
 use DateInterval;
 use DatePeriod;
 use DateTime;
@@ -1589,6 +1590,7 @@ class CAProperti extends Controller
         $rating = $request->rating;
         
         $result = HReviewRating::selectRaw('h_review_rating.*, CONCAT(m_customer.nama_depan," ",m_customer.nama_belakang) as nama_lengkap, m_customer.nama_foto')
+                ->addSelect(DB::raw("( SELECT count(*) FROM h_review_rating_like WHERE id_user = h_review_rating.id_user AND id_review_rating = h_review_rating.id) as user_like"))
                 ->join('m_users','m_users.id_user','h_review_rating.id_user')
                 ->join('m_customer','m_customer.id','m_users.id_ref')
                 ->where('m_users.deleted',1)
@@ -1940,5 +1942,80 @@ class CAProperti extends Controller
                 'detail_booking_discount' => $detail_booking_discount,
             ]
         ], 200);        
+    }
+
+    public function post_like_review_rating(Request $request)
+    {
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
+        $id_review_rating = $request->id_review_rating;
+
+        $cek = HReviewRatingLike::where('id_user',$user->id_user)->where('id_review_rating',$id_review_rating)->first();
+        if ($cek == null) {
+            $like = new HReviewRatingLike();
+            $like->id_review_rating = $id_review_rating;
+            $like->id_user = $user->id_user;
+            $like->save();
+
+            $rate = HReviewRating::find($id_review_rating);
+            $rate->total_like = $rate->total_like + 1;
+            $rate->update();
+
+            return response()->json([                
+                'code' => 1,
+                'message' => 'Like review rating',
+            ], 200);
+        }else {
+            if ($cek->deleted == 0) {
+                $lik = HReviewRatingLike::find($cek->id);
+                $lik->deleted = 1;
+                $lik->updated_date = date('Y-m-d H:i:s');
+                $lik->update();
+
+                $rate = HReviewRating::find($id_review_rating);
+                $rate->total_like = $rate->total_like + 1;
+                $rate->update();
+
+                return response()->json([                    
+                    'code' => 1,
+                    'message' => 'Like review rating',
+                ], 200);
+            }else {
+                return response()->json([                    
+                    'code' => 0,
+                    'message' => 'Cannot like review rating',
+                ], 400);
+            }
+        }
+        
+    }
+
+    public function post_unlike_review_rating(Request $request)
+    {
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
+        $id_review_rating = $request->id_review_rating;
+
+        $cek = HReviewRatingLike::where('id_user',$user->id_user)->where('id_review_rating',$id_review_rating)->first();
+
+        if ($cek == null) {
+            return response()->json([                    
+                'code' => 0,
+                'message' => 'Cannot unlike review rating',
+            ], 400);
+        }else {
+            $lik = HReviewRatingLike::find($cek->id);
+            $lik->deleted = 0;
+            $lik->updated_date = date('Y-m-d H:i:s');
+            $lik->update();
+
+            $rate = HReviewRating::find($id_review_rating);
+            $rate->total_like = $rate->total_like - 1;
+            $rate->update();
+
+            return response()->json([                    
+                'code' => 1,
+                'message' => 'Unlike review rating',
+            ], 200);
+        }
+        
     }
 }
