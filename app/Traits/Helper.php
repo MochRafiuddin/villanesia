@@ -442,17 +442,22 @@ trait Helper
         return TRUE;
     }
 
-    public function send_fcm($title,$body)
+    public function send_fcm($title,$body,$route,$param,$id_user)
     {
-        $firebaseToken = TokenFcm::pluck('fcm_token')->all();
+        $firebaseToken = TokenFcm::where('id_user',$id_user)->get()->pluck('fcm_token');
         $SERVER_API_KEY = env('FCM_SERVER_KEY');
-		// dd($SERVER_API_KEY);
+        // dd($firebaseToken);
+        // $param = json_encode(array("id_ref" => "107"));
         $data = [
             "registration_ids" => $firebaseToken,
             "notification" => [
-                "title" => $request->title,
-                "body" => $request->body,  
-            ]
+                "title" => $title,
+                "body" => $body, 
+            ],
+            "data" => array(
+                "route" => $route,
+                "param" => json_decode($param)
+            ) 
         ];
 
         $dataString = json_encode($data);
@@ -471,8 +476,12 @@ trait Helper
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
 
-        $response = curl_exec($ch);        
-        return TRUE;
+        $response = curl_exec($ch);
+
+        curl_close($ch);
+
+        return $response;
+        // return true;
     }
 
    public function can_akses($kode = null) {

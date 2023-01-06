@@ -7,6 +7,7 @@ use App\Models\MBookingHargaSatuan;
 use App\Models\MBookingPropertiExtra;
 use App\Models\MBookingExtra;
 use App\Models\MBookingDiscount;
+use App\Models\MNotif;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\Helper;
@@ -59,7 +60,7 @@ class CBooking extends Controller
     public function confirm($id)
     {
         MBooking::where('id_booking',$id)->update(['id_status_booking' => 2]);
-        $booking = MBooking::selectRaw('m_customer.nama_depan,m_customer.nama_belakang, m_users.id_user, m_users.id_ref, m_users.email, m_properti.nama_properti, t_booking.tanggal_mulai, t_booking.kode_booking, m_properti.judul')
+        $booking = MBooking::selectRaw('m_customer.nama_depan,m_customer.nama_belakang, m_users.id_user, m_users.id_ref, m_users.email, m_properti.nama_properti, t_booking.tanggal_mulai, t_booking.tanggal_selesai, t_booking.jam_mulai, t_booking.jam_selesai, t_booking.kode_booking, m_properti.judul, m_properti.id_tipe_booking')
         ->join('m_properti','t_booking.id_ref','m_properti.id_properti','left')
         ->leftJoin('m_users','m_users.id_user','=','t_booking.id_user')
         ->leftJoin('m_customer','m_customer.id','=','m_users.id_ref')
@@ -124,11 +125,51 @@ class CBooking extends Controller
 						'waktu_pesan_terakhir' => date('Y-m-d H:i:s')
 					]);
 			}
+        if ($booking->id_tipe_booking == 5) {
+            $isi = 'Order #'.$booking->kode_booking.' - '.$booking->judul.' for '.date('d-m-Y',strtotime($booking->tanggal_mulai)).' at '.$booking->jam_mulai.' to '.date('d-m-Y',strtotime($booking->tanggal_mulai)).' at '.$booking->jam_selesai.', has been confirmed';
+        }else {
+            $isi = 'Order #'.$booking->kode_booking.' - '.$booking->judul.' for '.date('d-m-Y',strtotime($booking->tanggal_mulai)).' to '.date('d-m-Y',strtotime($booking->tanggal_selesai)).', has been confirmed';
+        }
+        
+        $judul = 'Admin has confirmed the availability of the villa';
+        $route = 'detailJurney';
+        $user = $booking->id_user;
+        $param = '{"id_booking":'.$id.'}';
+        // dd($user);
+        $notif = new MNotif();
+        $notif->id_user = $user;
+        $notif->judul = $judul;
+        $notif->isi = $isi;
+        $notif->route = $route;
+        $notif->param = $param;
+        $notif->save();
+
+        $ceks = $this->send_fcm($judul,$isi,$route,$param,$user);
+        // dd($ceks);
 
         return response()->json(['status'=>true,'msg'=>'Sukses Mengubah Data']);
     }
     public function decline($id,Request $request)
     {
+        $book = MBooking::where('id_booking',$id)->first();
+
+        $judul = 'Admin has declined your order';
+        $isi = "Sorry, we can't confirm your order #".$book->kode_booking;
+        $route = 'detailJurney';
+        $user = $book->id_user;
+        $param = '{"id_booking":'.$id.'}';
+        // dd($user);
+        $notif = new MNotif();
+        $notif->id_user = $user;
+        $notif->judul = $judul;
+        $notif->isi = $isi;
+        $notif->route = $route;
+        $notif->param = $param;
+        $notif->save();
+
+        $ceks = $this->send_fcm($judul,$isi,$route,$param,$user);
+        // dd($ceks);
+
         MBooking::where('id_booking',$id)->update(['id_status_booking' => 3, 'alasan_reject' => $request->decline]);
         return redirect()->to('/booking/detail/'.$id)->with('msg','Sukses Menambahkan Data');
     }

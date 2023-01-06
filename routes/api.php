@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\CASetting;
 use App\Http\Controllers\Api\CANegara;
 use App\Http\Controllers\Api\CAPesan;
 use App\Http\Controllers\Api\CADownload;
+use App\Http\Controllers\Api\CANotif;
 
 /*
 |--------------------------------------------------------------------------
@@ -109,4 +110,6 @@ Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
     Route::post('/post-like-review-rating', [CAProperti::class, 'post_like_review_rating']);
     Route::post('/post-unlike-review-rating', [CAProperti::class, 'post_unlike_review_rating']);
 
+    Route::get('/get-notif', [CANotif::class, 'get_notif']);
+    Route::post('/update-read-notif', [CANotif::class, 'update_read_notif']);
 });
