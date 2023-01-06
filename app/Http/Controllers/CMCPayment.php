@@ -59,7 +59,7 @@ class CMCPayment extends Controller
 			$isi = "Now you can enjoy all the services from us according to your order #".$kode_booking;
 			$route = 'detailJurney';
 			$user = $tBooking->id_user;
-			$param = '{"id_booking":'.$tBooking->id_booking.'}';
+			$param = '{"id_ref":'.$tBooking->id_booking.'}';
 			// dd($user);
 			$notif = new MNotif();
 			$notif->id_user = $user;
@@ -109,7 +109,7 @@ class CMCPayment extends Controller
         $isi = "Now you can enjoy all the services from us according to your order #".$kode_booking;
         $route = 'detailJurney';
         $user = $id_user;
-        $param = '{"id_booking":'.$tBooking->id_booking.'}';
+        $param = '{"id_ref":'.$tBooking->id_booking.'}';
         // dd($user);
         $notif = new MNotif();
         $notif->id_user = $user;

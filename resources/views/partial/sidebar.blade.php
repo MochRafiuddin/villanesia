@@ -35,6 +35,7 @@
                     <li class="nav-item"> <a class="nav-link" href="{{url('/faq')}}">Faq</a></li>
                     <li class="nav-item"> <a class="nav-link" href="{{url('/term-condition')}}">Term Condition</a></li>
                     <li class="nav-item"> <a class="nav-link" href="{{url('/privacy-policy')}}">Privacy Policy</a></li>
+                    <li class="nav-item"> <a class="nav-link" href="{{url('/banner')}}">Banner</a></li>
                 </ul>
             </div>
         </li>

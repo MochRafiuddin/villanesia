@@ -28,6 +28,7 @@ use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\CMCPayment;
 use App\Http\Controllers\CChat;
 use App\Http\Controllers\CUser;
+use App\Http\Controllers\CBanner;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -338,4 +339,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/chat/tambah-chat-detail', [CChat::class,'tambah_chat_detail']);
 
     // Route::get('/trip-detail', [CMCPayment::class,'pdf_email']);
+
+    //banner
+    Route::get('/banner', [CBanner::class,'index'])->name('master-banner-index');
+    Route::get('/banner/data', [CBanner::class,'data']);
+    Route::get('/banner/create', [CBanner::class,'create']);
+    Route::post('/banner/create-save', [CBanner::class,'create_save']);
+    Route::get('/banner/show/{id}', [CBanner::class,'show']);
+    Route::get('/banner/detail/{id}', [CBanner::class,'detail']);
+    Route::post('/banner/show-save/{id}', [CBanner::class,'show_save']);
+    Route::get('/banner/delete/{id}', [CBanner::class,'delete']);
 });

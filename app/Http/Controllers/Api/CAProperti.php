@@ -1583,6 +1583,12 @@ class CAProperti extends Controller
 
     public function get_property_detail_review(Request $request)
     {
+        if ($request->header('auth-key') != null) {
+            $user = MApiKey::where('token',$request->header('auth-key'))->first();
+            $id_user = $user->id_user;
+        }else {
+            $id_user = 0;
+        }
         $id_properti = $request->id_properti;
         $id_bahasa = $request->id_bahasa;
         $limit = 6;
@@ -1590,7 +1596,7 @@ class CAProperti extends Controller
         $rating = $request->rating;
         
         $result = HReviewRating::selectRaw('h_review_rating.*, CONCAT(m_customer.nama_depan," ",m_customer.nama_belakang) as nama_lengkap, m_customer.nama_foto')
-                ->addSelect(DB::raw("( SELECT count(*) FROM h_review_rating_like WHERE id_user = h_review_rating.id_user AND id_review_rating = h_review_rating.id) as user_like"))
+                ->addSelect(DB::raw("( SELECT count(*) FROM h_review_rating_like WHERE id_user = $id_user AND id_review_rating = h_review_rating.id and deleted = 1) as user_like"))
                 ->join('m_users','m_users.id_user','h_review_rating.id_user')
                 ->join('m_customer','m_customer.id','m_users.id_ref')
                 ->where('m_users.deleted',1)

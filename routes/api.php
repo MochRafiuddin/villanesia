@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\CANegara;
 use App\Http\Controllers\Api\CAPesan;
 use App\Http\Controllers\Api\CADownload;
 use App\Http\Controllers\Api\CANotif;
+use App\Http\Controllers\Api\CABanner;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,6 +72,7 @@ Route::group(['middleware' => 'logapi'], function () {
     Route::get('/get-property-by-facilities', [CAProperti::class, 'get_property_by_facilities']);
     Route::get('/get-country', [CANegara::class, 'get_country']);
     Route::post('/post-forget-password', [CAAuth::class, 'post_forget_password']);
+    Route::get('/get-banner', [CABanner::class, 'get_banner']);
 });
 
 Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {

@@ -134,7 +134,7 @@ class CBooking extends Controller
         $judul = 'Admin has confirmed the availability of the villa';
         $route = 'detailJurney';
         $user = $booking->id_user;
-        $param = '{"id_booking":'.$id.'}';
+        $param = '{"id_ref":'.$id.'}';
         // dd($user);
         $notif = new MNotif();
         $notif->id_user = $user;
@@ -157,7 +157,7 @@ class CBooking extends Controller
         $isi = "Sorry, we can't confirm your order #".$book->kode_booking;
         $route = 'detailJurney';
         $user = $book->id_user;
-        $param = '{"id_booking":'.$id.'}';
+        $param = '{"id_ref":'.$id.'}';
         // dd($user);
         $notif = new MNotif();
         $notif->id_user = $user;
