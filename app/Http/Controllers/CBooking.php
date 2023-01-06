@@ -65,6 +65,7 @@ class CBooking extends Controller
         ->leftJoin('m_users','m_users.id_user','=','t_booking.id_user')
         ->leftJoin('m_customer','m_customer.id','=','m_users.id_ref')
         ->where('id_booking',$id)->first();
+        $id_booking=$id;
         // dd($booking);
         $pdf = PDF::loadview('pdf.invoice',['kode_booking'=>$booking->kode_booking]);
         // $this->kirim_email($booking->email,$booking->nama_depan,$booking->nama_belakang,null,null,$booking->nama_properti,$booking->tanggal_mulai,'email.mailBooking','Availability Confirmation - ORDER ID #'.$booking->kode_booking.' - Villanesia',$id,null);
@@ -134,7 +135,7 @@ class CBooking extends Controller
         $judul = 'Admin has confirmed the availability of the villa';
         $route = 'detailJurney';
         $user = $booking->id_user;
-        $param = '{"id_ref":'.$id.'}';
+        $param = '{"id_ref":'.$id_booking.'}';
         // dd($user);
         $notif = new MNotif();
         $notif->id_user = $user;
