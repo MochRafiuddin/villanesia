@@ -12,6 +12,7 @@ use Auth;
 use DateInterval;
 use DatePeriod;
 use DateTime;
+use Config;
 
 trait Helper
 {
@@ -445,7 +446,8 @@ trait Helper
     public function send_fcm($title,$body,$route,$param,$id_user,$id_notif)
     {
         $firebaseToken = TokenFcm::where('id_user',$id_user)->get()->pluck('fcm_token');
-        $SERVER_API_KEY = env('FCM_SERVER_KEY');
+        $SERVER_API_KEY = Config::get('app.fcm_server_key.key');
+        //env('FCM_SERVER_KEY');
         // dd($firebaseToken);
         // $param = json_encode(array("id_ref" => "107"));
         $data = [

@@ -124,6 +124,8 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'fcm_server_key' => ['key' => env('FCM_SERVER_KEY')],
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers
