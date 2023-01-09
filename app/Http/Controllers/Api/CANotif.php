@@ -13,7 +13,9 @@ class CANotif extends Controller
     {                
         $user = MApiKey::where('token',$request->header('auth-key'))->first();
 
-        $notif = MNotif::where('id_user',$user->id_user)->get();
+        $notif = MNotif::where('id_user',$user->id_user)
+            ->orderBy('created_date','desc')
+            ->get();
         
         return response()->json([
             'success' => true,
