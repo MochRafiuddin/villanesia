@@ -145,7 +145,7 @@ class CBooking extends Controller
         $notif->param = $param;
         $notif->save();
 
-        $ceks = $this->send_fcm($judul,$isi,$route,$param,$user);
+        $ceks = $this->send_fcm($judul,$isi,$route,$param,$user,$notif->id_notif);
         // dd($ceks);
 
         return response()->json(['status'=>true,'msg'=>'Sukses Mengubah Data']);
@@ -168,7 +168,7 @@ class CBooking extends Controller
         $notif->param = $param;
         $notif->save();
 
-        $ceks = $this->send_fcm($judul,$isi,$route,$param,$user);
+        $ceks = $this->send_fcm($judul,$isi,$route,$param,$user,$notif->id_notif);
         // dd($ceks);
 
         MBooking::where('id_booking',$id)->update(['id_status_booking' => 3, 'alasan_reject' => $request->decline]);

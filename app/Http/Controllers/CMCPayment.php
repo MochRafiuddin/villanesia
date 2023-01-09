@@ -69,7 +69,7 @@ class CMCPayment extends Controller
 			$notif->param = $param;
 			$notif->save();
 
-			$ceks = $this->send_fcm($judul,$isi,$route,$param,$user);
+			$ceks = $this->send_fcm($judul,$isi,$route,$param,$user,$notif->id_notif);
 		} else {
 			$mHMCPaymentCallback->status = 2;
 			$tBooking->payment_status = 3;
@@ -119,7 +119,7 @@ class CMCPayment extends Controller
         $notif->param = $param;
         $notif->save();
 
-        $ceks = $this->send_fcm($judul,$isi,$route,$param,$user);
+        $ceks = $this->send_fcm($judul,$isi,$route,$param,$user,$notif->id_notif);
         // dd($ceks);
 		
 		return response()->json(['status'=>true,'msg'=>'Sukses']);

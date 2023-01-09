@@ -442,7 +442,7 @@ trait Helper
         return TRUE;
     }
 
-    public function send_fcm($title,$body,$route,$param,$id_user)
+    public function send_fcm($title,$body,$route,$param,$id_user,$id_notif)
     {
         $firebaseToken = TokenFcm::where('id_user',$id_user)->get()->pluck('fcm_token');
         $SERVER_API_KEY = env('FCM_SERVER_KEY');
@@ -456,7 +456,8 @@ trait Helper
             ],
             "data" => array(
                 "route" => $route,
-                "param" => json_decode($param)
+                "param" => json_decode($param),
+                "id_notif" =>$id_notif
             ) 
         ];
 
