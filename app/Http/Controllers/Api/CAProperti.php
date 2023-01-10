@@ -1424,8 +1424,9 @@ class CAProperti extends Controller
                 $judul_p = '#'.$squence.' - '.$customer->nama_depan;
 			$id_user_pengirim = $user->id_user;
 			$id_user_penerima = 1;
-			$pesan_terakhir = ($catatan == null ? 'check availability for '.date('Y-m-d', strtotime($tanggal_mulai)).' to '.date('Y-m-d', strtotime($tanggal_selesai)) : $catatan);
+			$pesan_terakhir = ($catatan == null ? 'check availability for '.date('d-m-Y', strtotime($tanggal_mulai)).' to '.date('d-m-Y', strtotime($tanggal_selesai)) : $catatan);
 			$id_ref_p = $squence;
+			$judul_mobile = '#'.$squence.' - '.$pro->judul;
 
 			$hpesan = new HPesan;
 			$hpesan->judul = $judul_p;
@@ -1434,6 +1435,8 @@ class CAProperti extends Controller
 			$hpesan->pesan_terakhir = $pesan_terakhir;
 			$hpesan->waktu_pesan_terakhir = date('Y-m-d H:i:s');
 			$hpesan->id_ref = $id_ref_p;
+			$hpesan->id_booking = $tipe->id_booking;
+			$hpesan->judul_mobile = $judul_mobile;
 			// $hpesan->updated_date = date('Y-m-d H:i:s');
 			$hpesan->save();
 
@@ -1456,6 +1459,8 @@ class CAProperti extends Controller
 				'id_user_penerima' => $id_user_penerima,
 				'id_user_pengirim' => $id_user_pengirim,
 				'judul' => $judul_p,
+                'id_booking' => $tipe->id_booking,
+                'judul_mobile' => $judul_mobile,
 				'penerima_lihat' => 0,
 				'pengirim_lihat' => 0,
 				'pesan_terakhir' => '',//$pesan_terakhir,
@@ -1492,6 +1497,8 @@ class CAProperti extends Controller
 						'id_user_penerima' => $document['id_user_penerima'],
 						'id_user_pengirim' => $document['id_user_pengirim'],
 						'judul' => $document['judul'],
+                        'id_booking' => $document['id_booking'],
+                        'judul_mobile' => $document['judul_mobile'],
 						'penerima_lihat' => $document['penerima_lihat'],
 						'pengirim_lihat' => $document['pengirim_lihat'],
 						'pesan_terakhir' => $pesan_terakhir,

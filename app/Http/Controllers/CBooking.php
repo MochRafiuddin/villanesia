@@ -119,6 +119,8 @@ class CBooking extends Controller
 						'id_user_penerima' => $document['id_user_penerima'],
 						'id_user_pengirim' => $document['id_user_pengirim'],
 						'judul' => $document['judul'],
+                        'id_booking' => $document['id_booking'],
+                        'judul_mobile' => $document['judul_mobile'],
 						'penerima_lihat' => $document['penerima_lihat'],
 						'pengirim_lihat' => $document['pengirim_lihat'],
 						'pesan_terakhir' => $pesan_terakhir,
