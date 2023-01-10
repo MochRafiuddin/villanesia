@@ -56,7 +56,7 @@ class CMCPayment extends Controller
 			$this->pdf_email($input->customer_details->email,$input->order_id,$tKonfirmasiBayar->nama_depan,$tKonfirmasiBayar->nama_belakang,$input->customer_details->phone);
 
 			$judul = 'Thank you! Your payment was successful';
-			$isi = "Now you can enjoy all the services from us according to your order #".$kode_booking;
+			$isi = "Now you can enjoy all the services from us according to your order #".$input->order_id;
 			$route = 'detailJurney';
 			$user = $tBooking->id_user;
 			$param = '{"id_ref":'.$tBooking->id_booking.'}';
