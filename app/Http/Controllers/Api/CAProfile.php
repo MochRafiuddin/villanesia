@@ -64,18 +64,20 @@ class CAProfile extends Controller
 
         $tentang = $request->tentang;
         $id_negara = $request->id_negara;
-        // $nama_provinsi = $request->nama_provinsi;
-        // $nama_kota = $request->nama_kota;
+        $nama_provinsi = $request->nama_provinsi;
+        $nama_kota = $request->nama_kota;
 
         if ($muser->id_ref == 0) {
             $custom = new MCustomer();
             $custom->tentang = $tentang;
             $custom->id_negara = $id_negara;
+            $custom->nama_provinsi = $nama_provinsi;
+            $custom->nama_kota = $nama_kota;
             $custom->save();
 
             $muser = User::where('id_user',$user->id_user)->update(['id_ref' => $custom->id]);
         }else {
-            $muser = MCustomer::where('id',$muser->id_ref)->update(['tentang' => $tentang, 'id_negara' => $id_negara]);
+            $muser = MCustomer::where('id',$muser->id_ref)->update(['tentang' => $tentang, 'id_negara' => $id_negara, 'nama_provinsi' => $nama_provinsi, 'nama_kota' => $nama_kota]);
         }
 
         return response()->json([

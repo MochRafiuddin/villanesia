@@ -60,6 +60,7 @@ class CChat extends Controller
         $p->waktu_pesan_terakhir = Carbon::now();
         $pengirim_lihat = $p->pengirim_lihat +1;
         $p->pengirim_lihat = $pengirim_lihat;
+        $p->penerima_lihat = 0;
         $p->update();
 
         $firestore = Firestore::get();
@@ -76,6 +77,8 @@ class CChat extends Controller
             'updated_date' => new \Google\Cloud\Core\Timestamp(new \DateTime(date('Y-m-d H:i:s'))),
             'id_user' => Auth::user()->id_user,
         ]);
+        
+        // dd($fireDetail->id());
 
         $query = $firestore->collection('h_pesan')
             ->where('id_pesan', '=', intval($pesan->id_pesan));
@@ -93,6 +96,8 @@ class CChat extends Controller
                     'id_user_penerima' => $document['id_user_penerima'],
                     'id_user_pengirim' => $document['id_user_pengirim'],
                     'judul' => $document['judul'],
+                    'id_booking' => $document['id_booking'],
+                    'judul_mobile' => $document['judul_mobile'],
                     'penerima_lihat' => $document['penerima_lihat'],
                     'pengirim_lihat' => $pengirim_lihat,
                     'pesan_terakhir' => $pesan->pesan,
@@ -107,6 +112,6 @@ class CChat extends Controller
             ->where('h_pesan_detail.id_pesan_detail',$pesan->id_pesan_detail)->first();
         // dd($data);
 
-        return response()->json(['status'=>true,'data'=>$data]);
+        return response()->json(['status'=>true,'data'=>$data,'id'=>$fireDetail->id()]);
     }
 }

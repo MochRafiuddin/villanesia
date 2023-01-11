@@ -157,7 +157,7 @@ class CBooking extends Controller
         $book = MBooking::where('id_booking',$id)->first();
 
         $judul = 'Admin has declined your order';
-        $isi = "Sorry, we can't confirm your order #".$book->kode_booking;
+        $isi = "Sorry, inquiry #".$book->kode_booking." can't be accepted due to availability";
         $route = 'detailJurney';
         $user = $book->id_user;
         $param = '{"id_ref":'.$id.'}';

@@ -294,7 +294,8 @@
                 pushJsonDetail(e.data);
                 $('.chat').append(html);
                 $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 100);
-                $('#btn-input').val('');                
+                $('#btn-input').val('');
+                // delete_chat_detail(e.id);
             }
         });
     }
@@ -382,10 +383,11 @@
               console.log(change.type);
               if(change.type == 'added'){
                 update_chat_detail(change.doc.data());
-                console.log(change.doc.id+" --- h_pesan_detail "+change.doc.data().waktu_pesan_terakhir);
+                // delete_chat_detail(change.doc.id);
+                console.log(change.doc.id+" --- h_pesan_detail "+change.doc.data().pesan);
                 // update_chat(change.doc.data());
               } else if(change.type == 'modified'){
-                console.log(change.doc.id+" --- h_pesan_detail "+change.doc.data().waktu_pesan_terakhir);
+                console.log(change.doc.id+" --- h_pesan_detail "+change.doc.data().pesan);
               }
               
             })
@@ -485,6 +487,20 @@
         }        
 
     }    
+
+    function delete_chat_detail(id){
+        // console.log('akan deleleta');
+        const docRef = db.collection("h_pesan_detail").doc(id);
+        docRef.delete()
+        .then(() => {
+            console.log('Document '+id+' successfully deleted!');
+        })
+        .catch((error) => {
+            console.error('Error deleting document:', error);
+        });        
+
+    }
+
     function onError(QuerySnapshot){
         if(QuerySnapshot !== null){
             console.log("Error "+QuerySnapshot);
