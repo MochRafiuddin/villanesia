@@ -402,4 +402,18 @@ class CAProfile extends Controller
             'code' => 1,            
         ], 200);
     }
+
+    public function update_bahasa_mobile(Request $request)
+    {        
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
+        $id_bahasa = $request->id_bahasa;        
+
+        $muser = User::where('id_user',$user->id_user)->update(['id_bahasa' => $id_bahasa]);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Update Bahasa Success',
+            'code' => 1,            
+        ], 200);
+    }
 }

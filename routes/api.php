@@ -114,4 +114,6 @@ Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
 
     Route::get('/get-notif', [CANotif::class, 'get_notif']);
     Route::post('/update-read-notif', [CANotif::class, 'update_read_notif']);
+
+    Route::post('/update-bahasa-mobile', [CAProfile::class, 'update_bahasa_mobile']);
 });
