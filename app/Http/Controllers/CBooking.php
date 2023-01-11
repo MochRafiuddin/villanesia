@@ -129,9 +129,9 @@ class CBooking extends Controller
 					]);
 			}
         if ($booking->id_tipe_booking == 5) {
-            $isi = 'Order #'.$booking->kode_booking.' - '.$booking->judul.' for '.date('d-m-Y',strtotime($booking->tanggal_mulai)).' at '.$booking->jam_mulai.' to '.date('d-m-Y',strtotime($booking->tanggal_mulai)).' at '.$booking->jam_selesai.', has been confirmed';
+            $isi = 'Inquiry #'.$booking->kode_booking.' - '.$booking->judul.' for '.date('d-m-Y',strtotime($booking->tanggal_mulai)).' at '.$booking->jam_mulai.' to '.date('d-m-Y',strtotime($booking->tanggal_mulai)).' at '.$booking->jam_selesai.', has been confirmed';
         }else {
-            $isi = 'Order #'.$booking->kode_booking.' - '.$booking->judul.' for '.date('d-m-Y',strtotime($booking->tanggal_mulai)).' to '.date('d-m-Y',strtotime($booking->tanggal_selesai)).', has been confirmed';
+            $isi = 'Inquiry #'.$booking->kode_booking.' - '.$booking->judul.' for '.date('d-m-Y',strtotime($booking->tanggal_mulai)).' to '.date('d-m-Y',strtotime($booking->tanggal_selesai)).', has been confirmed';
         }
         
         $judul = 'Admin has confirmed the availability of the villa';
