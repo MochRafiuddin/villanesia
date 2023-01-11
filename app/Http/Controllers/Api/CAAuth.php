@@ -168,6 +168,74 @@ class CAAuth extends Controller
         ]);
     }
 
+    public function login_google(Request $request)
+    {
+        
+        $email = $request->email;
+        $g_id = $request->g_id;
+        $g_photo = $request->g_photo;
+        // dd($providerUser->getAvatar());
+        $cek_email = User::where("email",$email)->first();
+        if ($cek_email) {
+            if ($cek_email->g_id == null) {
+                User::where("email",$email)->update(['g_id'=>$g_id, 'g_photo'=>$g_photo]);
+                $gid = $g_id;
+            }else {
+                $gid = $cek_email->g_id;
+            }
+
+            if ($gid !== $g_id) {
+                return response()->json([
+                    'message' => 'Email address for this accounts already registered, please use another account',
+                    'code' => 0,
+                ]);
+            }
+            $id_user = $cek_email->id_user;
+        }else {
+            $cus = new MCustomer();
+            $cus->nama_depan = substr($email,0,6);
+            $cus->save();
+
+            $token = new User();
+            $token->g_id = $g_id;
+            $token->g_photo = $g_photo;
+            $token->email = $email;
+            $token->username = substr($email,0,6);
+            $token->password = Hash::make("password");
+            $token->id_ref = $cus->id;
+            $token->tipe_user = 2;
+            $token->save();
+
+            $id_user = $token->id_user;
+        }
+
+
+        $cek_token = MApiKey::where('id_user',$id_user)->first();
+        if ($cek_token) {
+            MApiKey::where('id_user',$id_user)->delete();    
+        }
+        $key = Str::random(30);
+        $token = new MApiKey();
+        $token->id_user = $id_user;
+        $token->token = $key;
+        $token->save();
+
+        $get_user = User::selectRaw('m_customer.*, m_users.id_user, m_users.username, m_users.password, m_users.id_ref, m_users.email, m_users.no_telfon, m_users.g_id, m_users.g_photo, m_users.tipe_user')
+                ->join('m_customer','m_customer.id','m_users.id_ref')
+                ->where('m_users.id_user',$id_user)
+                ->where('m_users.deleted',1)
+                ->where('m_customer.deleted',1)
+                ->get();
+                                
+        // $request->session()->regenerate();            
+        return response()->json([
+            'message' => 'Login Success',
+            'key' => $key,
+            'code' => 1,
+            'user_data' => $get_user,
+        ]);
+    }
+
     protected function validateProvider($provider)
     {
         if (!in_array($provider, ['google'])) {

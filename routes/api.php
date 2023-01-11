@@ -73,6 +73,8 @@ Route::group(['middleware' => 'logapi'], function () {
     Route::get('/get-country', [CANegara::class, 'get_country']);
     Route::post('/post-forget-password', [CAAuth::class, 'post_forget_password']);
     Route::get('/get-banner', [CABanner::class, 'get_banner']);
+
+    Route::post('/auth-google', [CAAuth::class, 'login_google']);    
 });
 
 Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
