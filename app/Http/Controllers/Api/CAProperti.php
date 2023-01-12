@@ -518,6 +518,11 @@ class CAProperti extends Controller
                 $from = Carbon::parse($mulai);
                 $to = Carbon::parse($selesai);
                 $diff_in_hours = $to->diffInDays($from);
+
+                $date1 = $this->get_date_by_input($tanggal_mulai,$tanggal_selesai);
+                $date2 = $this->get_date_custom_harga($cus,$tanggal_mulai,$tanggal_selesai);
+                $date_week = array_values(array_diff($date1,$date2));
+                $date_cus = array_values(array_intersect($date1,$date2));
                 
                 $min = ($pro->min_durasi_inap != null ? $pro->min_durasi_inap : 1);
                 $max = ($pro->max_durasi_inap != null ? $pro->max_durasi_inap : 1);
@@ -558,91 +563,41 @@ class CAProperti extends Controller
                 $result['tamu_maksimal'] = $pro->jumlah_tamu;
                 $result['tamu_tambahan'] = $tamu_tambahan;
                 $result['harga_tampil'] = $pro->harga_tampil;
-                if ($pro->harga_weekend == null && count($cus)==0) {
-                    $result['harga_final_properti'] = $pro->harga_tampil * $diff_in_hours;
-                }elseif ($pro->harga_weekend != null && count($cus)==0) {
-                    $period = new DatePeriod(
-                        new DateTime($tanggal_mulai),
-                        new DateInterval('P1D'),
-                        new DateTime(date('Y-m-d', strtotime($tanggal_selesai.' -1 day')).' +1 days')
-                    );
-                    $final = $this->get_harga_by_input($period,$pro);
-                    $result['harga_final_properti'] = $final['harga'];
-                }elseif ($pro->harga_weekend == null && count($cus) > 0) {
-                    $period = new DatePeriod(
-                        new DateTime($tanggal_mulai),
-                        new DateInterval('P1D'),
-                        new DateTime(date('Y-m-d', strtotime($tanggal_selesai.' -1 day')).' +1 days')
-                    );
-                    $final=0;
-                    foreach ($cus as $c) {
-                        # code...
-                        $period1 = new DatePeriod(
-                            new DateTime($c->start_date),
-                            new DateInterval('P1D'),
-                            new DateTime(date('Y-m-d', strtotime($c->end_date)).' +1 days')
-                        );                        
-                        foreach ($period as $key) {
-                            foreach ($period1 as $key1) {                                
-                                if ($key->format('Y-m-d') == $key1->format('Y-m-d')) {
-                                    if ($key->format('D')=='Sat') {
-                                        $final = $final + $c->harga_weekend;
-                                    }elseif ($key->format('D')=='Sun') {
-                                        $final = $final + $c->harga_weekend;
-                                    }else {
-                                        $final = $final + $c->harga;
-                                    }
-                                }
-                            }
-                        }
-                    }                    
-                    $result['harga_final_properti'] = $final;
-                }else{
-                    $date1 = $this->get_date_by_input($tanggal_mulai,$tanggal_selesai);
-                    $date2 = $this->get_date_custom_harga($cus,$tanggal_mulai,$tanggal_selesai);
-                    $date_week = array_diff($date1,$date2);
-                    $date_cus = array_intersect($date1,$date2);
-                    $har_week = $this->get_harga_by_input(array_values($date_week),$pro);
-                    $har_cus = $this->get_harga_cus_by_input(array_values($date_cus),$cus);
-                    // dd($har_cus['harga']);
-                    $result['harga_final_properti'] = $har_week['harga'] + $har_cus['harga'];
-                }
-                if ($result['tamu_tambahan'] > 0) {
-                    if ($pro->harga_weekend != null && count($cus) != 0) {
-                        $date1 = $this->get_date_by_input($tanggal_mulai,$tanggal_selesai);
-                        $date2 = $this->get_date_custom_harga($cus,$tanggal_mulai,$tanggal_selesai);
-                        $date_week = array_diff($date1,$date2);
-                        $date_cus = array_intersect($date1,$date2);
-                        $har_week = $this->get_harga_by_input(array_values($date_week),$pro);
-                        $har_cus = $this->get_harga_cus_by_input(array_values($date_cus),$cus);
-                        // dd($har_week);
-                        if (count($date_week) == 0) {
-                            $tamu_add = $tamu_tambahan * $diff_in_hours * $har_cus['tamu'];
-                            $result['harga_tamu_tambahan'] = $tamu_add;
-                        }else {
-                            $tamu_add = ($tamu_tambahan * count($date_week) * $har_week['tamu']) + ($tamu_tambahan * count($date_cus) * $har_cus['tamu']);
-                            $result['harga_tamu_tambahan'] = $tamu_add;
-                        }
-                    }elseif ($pro->harga_weekend == null && count($cus) > 0) {
-                        $date1 = $this->get_date_by_input($tanggal_mulai,$tanggal_selesai);
-                        $date2 = $this->get_date_custom_harga($cus,$tanggal_mulai,$tanggal_selesai);                    
-                        $date_cus = array_intersect($date1,$date2);                    
-                        $har_cus = $this->get_harga_cus_by_input(array_values($date_cus),$cus);
-                        
-                        $tamu_add = $tamu_tambahan * $diff_in_hours * $har_cus['tamu'];
-                        $result['harga_tamu_tambahan'] = $tamu_add;
-                    }else {
-                        $date1 = $this->get_date_by_input($tanggal_mulai,$tanggal_selesai);
-                        $date2 = $this->get_date_custom_harga($cus,$tanggal_mulai,$tanggal_selesai);                    
-                        $date_week = array_diff($date1,$date2);
-                        $har_week = $this->get_harga_by_input(array_values($date_week),$pro);
-                        
-                        $tamu_add = $tamu_tambahan * $diff_in_hours * $har_week['tamu'];
-                        $result['harga_tamu_tambahan'] = $tamu_add;
-                    }
-                }else {
+
+                    $result['harga_final_properti'] = 0;
+                    $result['harga_tamu_tambahan'] = 0;
+                                    
+                if ($result['tamu_tambahan'] == 0) {
                     $result['harga_tamu_tambahan'] = 0;
                 }
+
+                if (count($date_cus) > 0) {
+                    $har_cus = $this->get_harga_cus_by_input($date_cus,$cus);
+                    $result['harga_final_properti'] = $result['harga_final_properti'] + $har_cus['harga'];                    
+
+                    if ($tamu_tambahan > 0) {
+                        $tamu_add = $tamu_tambahan * $durasi_inap * $har_cus['tamu'];
+                        $result['harga_tamu_tambahan'] = $result['harga_tamu_tambahan'] + $tamu_add;
+                    }
+                }
+
+                if (count($date_week) > 0) {
+                    if ($pro->harga_weekend == null) {                        
+                        $fin = $pro->harga_tampil * count($date_week);
+                        $result['harga_final_properti'] = $result['harga_final_properti'] + $fin;
+                    }elseif ($pro->harga_weekend != null) {
+                        $final = $this->get_harga_by_input($date_week,$pro);
+                        $fin = $final['harga'];
+                        $result['harga_final_properti'] = $result['harga_final_properti'] + $fin;
+                    }
+
+                    if ($tamu_tambahan > 0) {
+                        $har_week = $this->get_harga_by_input($date_week,$pro);
+                        $tamu_add = $tamu_tambahan * $durasi_inap * $har_week['tamu'];                
+                        $result['harga_tamu_tambahan'] = $result['harga_tamu_tambahan'] + $tamu_add;
+                    }
+                }
+
                 if ($pro->biaya_kebersihan_tipe==2) {                    
                     $result['cleaning_fee'] = $pro->biaya_kebersihan;
                 }else {
