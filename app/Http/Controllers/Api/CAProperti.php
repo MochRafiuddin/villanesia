@@ -402,14 +402,14 @@ class CAProperti extends Controller
                 ], 400);
             }
 
-            if ($diff_in_hours > $max) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Maximum days of a booking are '.$max,
-                    'code' => 0,
-                    'result' => []
-                ], 400);
-            }
+            // if ($diff_in_hours > $max) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'Maximum days of a booking are '.$max,
+            //         'code' => 0,
+            //         'result' => []
+            //     ], 400);
+            // }
 
             $data = MBooking::selectRaw('count(id_ref) as total')
                     ->where('tanggal_selesai','>',date('Y-m-d', strtotime($tanggal_mulai)))
@@ -531,14 +531,14 @@ class CAProperti extends Controller
                     ], 400);
                 }
 
-                if ($diff_in_hours > $max) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Maximum days of a booking are '.$max,
-                        'code' => 0,
-                        'result' => []
-                    ], 400);
-                }
+                // if ($diff_in_hours > $max) {
+                //     return response()->json([
+                //         'success' => false,
+                //         'message' => 'Maximum days of a booking are '.$max,
+                //         'code' => 0,
+                //         'result' => []
+                //     ], 400);
+                // }
 
                 $data = MBooking::selectRaw('count(id_ref) as total')
                     ->where('tanggal_selesai','>',date('Y-m-d', strtotime($tanggal_mulai)))
