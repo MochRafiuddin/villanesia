@@ -500,7 +500,7 @@ class CAProperti extends Controller
                     'message' => 'Your dates are available!',
                     'code' => 1,
                     'result' => $result
-                ], 400);
+                ], 200);
             }
 
         }elseif ($id_tipe_booking == 2 || $id_tipe_booking == 3 || $id_tipe_booking == 4) {
@@ -651,7 +651,7 @@ class CAProperti extends Controller
                         'message' => 'Your dates are available!',
                         'code' => 1,
                         'result' => $result
-                    ], 400);
+                    ], 200);
                 }
             }
 
@@ -778,7 +778,7 @@ class CAProperti extends Controller
                         'message' => 'Your dates are available!',
                         'code' => 1,
                         'result' => $result,
-                    ], 400);
+                    ], 200);
                 }
             }
 
@@ -905,7 +905,7 @@ class CAProperti extends Controller
                         'message' => 'Your dates are available!',
                         'code' => 1,
                         'result' => $result,
-                    ], 400);
+                    ], 200);
                 }
             }
 
@@ -1045,7 +1045,7 @@ class CAProperti extends Controller
                         'message' => 'Your dates are available!',
                         'code' => 1,
                         'result' => $result,
-                    ], 400);
+                    ], 200);
                 }            
         }
 
