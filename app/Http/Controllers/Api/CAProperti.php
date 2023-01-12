@@ -443,7 +443,8 @@ class CAProperti extends Controller
             }
             // dd($pro->harga_tamu_tambahan);
             if ($tamu_tambahan > 0) {
-                $result['harga_tamu_tambahan'] = $tamu_tambahan * $diff_in_hours * $pro->harga_tamu_tambahan;
+                // $result['harga_tamu_tambahan'] = $tamu_tambahan * $diff_in_hours * $pro->harga_tamu_tambahan;
+                $result['harga_tamu_tambahan'] = $tamu_tambahan * $diff_in_hours * $pro->harga_tampil;
             }else {
                 $result['harga_tamu_tambahan'] = 0;
             }
@@ -1409,7 +1410,7 @@ class CAProperti extends Controller
                 $harga_final_properti = MBookingHargaSatuan::where('id_booking',$tipe->id_booking)->get()->sum('harga_final');
                 $total_extra_service = MBookingPropertiExtra::where('id_booking',$tipe->id_booking)->get()->sum('harga_final');
                 $total_booking_extra = MBookingExtra::where('id_booking',$tipe->id_booking)->get()->sum('harga');
-                $nominal_pajak = $pro->pajak / 100 * ($harga_final_properti + $pro->biaya_kebersihan + $total_extra_service);
+                $nominal_pajak = $pro->pajak / 100 * ($harga_final_properti + $biaya_kebersihan + $total_extra_service);
 
                 $data_update = [
                     'harga_final_properti' => $harga_final_properti,
