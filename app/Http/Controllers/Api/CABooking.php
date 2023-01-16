@@ -130,7 +130,9 @@ class CABooking extends Controller
         $total_rating = HReviewRating::where('id_properti',$id_properti)->where('id_booking',$id_booking)->get()->sum('rating');
         $rata = $total_rating / $jumlah_rating;
     
-        $prop = MProperti::where('id_ref_bahasa',$id_properti)->update(['nilai_rating' => $rata, 'total_rating' => $jumlah_rating, 'total_review' => $jumlah_rating, 'review'=>1]);
+        $prop = MProperti::where('id_ref_bahasa',$id_properti)->update(['nilai_rating' => $rata, 'total_rating' => $jumlah_rating, 'total_review' => $jumlah_rating]);
+
+        $prop = MBooking::where('id_ref',$id_properti)->update(['review'=>1]);
 
         return response()->json([
             'success' => true,

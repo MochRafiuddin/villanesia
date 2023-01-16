@@ -192,7 +192,7 @@
                 success: function(res){
                     $('.chat_view').show();
                     var url = '{{url("booking/detail")}}/'+res.title.id_ref;
-                    var head_chat="<a href='"+url+"' class='text-white'> "+res.title.id_ref+'</a>'+' - '+res.title.nama_depan+' '+res.title.nama_belakang+' - '+res.title.judul;
+                    var head_chat="<a href='"+url+"' class='text-white'> #"+res.title.id_ref+'</a>'+' - '+res.title.nama_depan+' '+res.title.nama_belakang+' - '+res.title.judul;
                     $('.title_chat').html(head_chat);
                     nilai = res.data.length - 10;
                     awal = res.data.length;
