@@ -33,6 +33,7 @@ class CABooking extends Controller
                 ->where('t_booking.id_user',$user->id_user)
                 ->where('m_properti.deleted',1)
                 ->where('m_properti.id_bahasa',$id_bahasa)
+                ->where('m_status_booking.id_bahasa',$id_bahasa)
                 ->orderBy('t_booking.created_date','desc')
                 ->limit($limit)
                 ->offset($page)
@@ -86,6 +87,7 @@ class CABooking extends Controller
             ->where('a.id_user',$user->id_user)
             ->where('b.deleted',1)
             ->where('b.id_bahasa',$id_bahasa)
+            ->where('c.id_bahasa',$id_bahasa)
             ->where('a.id_booking',$id_booking)
             ->where('d.deleted',1)
             ->where('f.deleted',1)->get();

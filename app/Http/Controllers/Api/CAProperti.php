@@ -164,8 +164,9 @@ class CAProperti extends Controller
 
         $date_now = date('Y-m-d');
         $availability = MBooking::selectRaw('t_booking.tanggal_mulai, t_booking.tanggal_selesai, t_booking.id_status_booking, m_status_booking.nama_status_booking')
-                ->join('m_status_booking','m_status_booking.id_status_booking','t_booking.id_status_booking')                
-                ->where('t_booking.id_tipe',1)                
+                ->join('m_status_booking','m_status_booking.id_ref_bahasa','t_booking.id_status_booking')                
+                ->where('t_booking.id_tipe',1)
+                ->where('m_status_booking.id_bahasa',$id_bahasa)
                 ->where('t_booking.id_ref',$id_properti)
                 ->whereRaw('(t_booking.tanggal_mulai >= "'.$date_now.'" or t_booking.tanggal_selesai >= "'.$date_now.'") and t_booking.id_status_booking IN (1,2,5)')
                 ->orderBy('t_booking.tanggal_mulai','asc')
@@ -244,7 +245,7 @@ class CAProperti extends Controller
         $nama_properti = $request->nama_properti;
         // dd($amenities);
 
-        $tipe = MProperti::selectRaw('id_properti, id_bahasa, id_ref_bahasa, judul, alamat, harga_tampil, jumlah_kamar_tidur, jumlah_kamar_mandi, (jumlah_tamu+COALESCE(jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, sarapan, latitude, longitude')
+        $tipe = MProperti::selectRaw('id_properti, id_bahasa, id_ref_bahasa, judul, alamat, harga_tampil, jumlah_kamar_tidur, jumlah_kamar_mandi, (jumlah_tamu+COALESCE(jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, sarapan, latitude, longitude, nama_file')
                 ->where('deleted',1)
                 ->where('id_bahasa',$id_bahasa);        
         if ($nama_properti != null) {
@@ -1747,6 +1748,7 @@ class CAProperti extends Controller
             ->where('b.id_bahasa',$id_bahasa)
             ->where('a.id_booking',$id_booking)
             ->where('d.deleted',1)
+            ->where('c.id_bahasa',$id_bahasa)
             ->where('f.deleted',1)->first();
         
         $detail_booking_harga_satuan = MBookingHargaSatuan::where('id_booking',$id_booking)->get();
@@ -1891,6 +1893,7 @@ class CAProperti extends Controller
             ->where('b.deleted',1)
             ->where('b.id_bahasa',$id_bahasa)
             ->where('a.id_booking',$id_booking)
+            ->where('c.id_bahasa',$id_bahasa)
             ->where('d.deleted',1)
             ->where('f.deleted',1)->get();
         

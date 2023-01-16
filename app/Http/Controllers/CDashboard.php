@@ -27,9 +27,10 @@ class CDashboard extends Controller
     public function data_booking()
     {        
         $model = MBooking::join('m_properti','t_booking.id_ref','m_properti.id_properti','left')
-            ->join('m_status_booking','t_booking.id_status_booking','m_status_booking.id_status_booking','left')
+            ->join('m_status_booking','t_booking.id_status_booking','m_status_booking.id_ref_bahasa','left')
             ->selectRaw('t_booking.*, m_properti.judul as judul, m_properti.alamat as alamat, m_properti.id_tipe_booking as tipe_booking, m_properti.binatang as binatang, m_status_booking.nama_status_booking as nama_status_booking , m_status_booking.id_status_booking as id_status_booking')
             ->where('t_booking.deleted',1)
+            ->where('m_status_booking.id_bahasa',1)
             ->where('t_booking.id_status_booking',1);
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
