@@ -132,7 +132,7 @@ class CABooking extends Controller
     
         $prop = MProperti::where('id_ref_bahasa',$id_properti)->update(['nilai_rating' => $rata, 'total_rating' => $jumlah_rating, 'total_review' => $jumlah_rating]);
 
-        $prop = MBooking::where('id_ref',$id_properti)->update(['review'=>1]);
+        $prop = MBooking::where('id_booking',$id_booking)->update(['review'=>1]);
 
         return response()->json([
             'success' => true,
