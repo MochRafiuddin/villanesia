@@ -79,7 +79,7 @@ class CABooking extends Controller
             ->leftJoin('m_customer as e','d.id_ref', '=','e.id')
             ->leftJoin('m_users as f','f.id_user', '=','a.id_user')
             ->leftJoin('m_customer as g','f.id_ref', '=','g.id')
-            ->leftJoin('m_tipe_properti as h','h.id_ref_bahasa', '=','b.id_tipe_booking')
+            ->leftJoin('m_tipe_properti as h','h.id_ref_bahasa', '=','b.id_tipe_properti')
             ->leftJoin('m_jenis_tempat as i','i.id_ref_bahasa', '=','b.id_jenis_tempat')
             ->where('h.id_bahasa',$id_bahasa)
             ->where('i.id_bahasa',$id_bahasa)
