@@ -93,7 +93,8 @@ class CABooking extends Controller
             ->where('f.deleted',1)->get();
         
         $detail_booking_harga_satuan = MBookingHargaSatuan::where('id_booking',$id_booking)->get();
-        $detail_booking_properti_extra = MBookingPropertiExtra::where('id_booking',$id_booking)->get();
+        // $detail_booking_properti_extra = MBookingPropertiExtra::where('id_booking',$id_booking)->get();
+        $detail_booking_properti_extra = MBookingPropertiExtra::selectRaw('t_booking_properti_extra.*, m_properti_extra.nama_service as nama_properti_extra, m_properti_extra.tipe as tipe_properti_extra')->leftJoin('m_properti_extra','t_booking_properti_extra.id_properti_extra', '=','m_properti_extra.id_properti_extra')->where('t_booking_properti_extra.id_booking',$id_booking)->get();
         $detail_booking_extra = MBookingExtra::where('id_booking',$id_booking)->get();
         $detail_booking_discount = MBookingDiscount::where('id_booking',$id_booking)->get();
 

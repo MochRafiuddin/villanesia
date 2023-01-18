@@ -359,6 +359,8 @@ use App\Traits\Helper;
                         </div>\
                     </div>';
           $('.list-extra').append(html); 
+        $(".exname").val('');
+        $(".valex").val('');
       });
 
       $('.list-extra').on('click', 'button.delete-extra', function(events){
@@ -382,6 +384,8 @@ use App\Traits\Helper;
                         </div>\
                     </div>';
           $('.list-discount').append(html); 
+        $(".disname").val('');
+        $(".valdis").val('');
       });
 
       $('.list-discount').on('click', 'button.delete-discount', function(events){
