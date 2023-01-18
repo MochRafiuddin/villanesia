@@ -34,7 +34,9 @@
 												->where('id_booking',$id_booking)
 												->get();
 											$extra_service = DB::table('t_booking_properti_extra')
-												->where('id_booking',$id_booking)
+												->join('m_properti_extra','m_properti_extra.id_properti_extra','t_booking_properti_extra.id_properti_extra')
+												->select('t_booking_properti_extra.*','m_properti_extra.nama_service')
+												->where('t_booking_properti_extra.id_booking',$id_booking)
 												->get();
 											$extra = DB::table('t_booking_extra')
 												->where('id_booking',$id_booking)
