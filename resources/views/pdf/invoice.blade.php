@@ -132,7 +132,8 @@ table td{
 		}elseif($booking->id_tipe_booking == 2){
 			$label = 'Night';
 			$inap = $booking->durasi_inap;
-			if ($harga_satuan->count() > 2) {
+			$cek_cus = DB::table('t_booking_harga_satuan')->where('id_booking',$id_booking)->where('custom_periode',1)->get()->count();
+            if ($cek_cus > 0) {
 				$txt = $booking->durasi_inap." Nights (with custom period)";
 			}else {
 				$txt = $booking->durasi_inap." Nights";

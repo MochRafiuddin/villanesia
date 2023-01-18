@@ -83,7 +83,8 @@ use App\Traits\Helper;
                             if ($data->tipe_booking == 1) {
                                 $txt = $data->durasi_inap." Day";
                             }elseif ($data->tipe_booking == 2) {
-                                if ($harga_satuan->count() > 2) {
+                                $cek_cus = DB::table('t_booking_harga_satuan')->where('id_booking',$data->id_booking)->where('custom_periode',1)->get()->count();
+                                if ($cek_cus > 0) {
                                     $txt = $data->durasi_inap." Nights (with custom period)";
                                 }else {
                                     $txt = $data->durasi_inap." Nights";
