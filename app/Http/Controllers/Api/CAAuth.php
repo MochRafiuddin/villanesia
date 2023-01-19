@@ -196,11 +196,103 @@ class CAAuth extends Controller
             $cus->nama_depan = substr($email,0,6);
             $cus->save();
 
+            $cek_username = User::where('username', 'like', '%' .substr($email,0,6). '%')->orderBy('id_user','desc')->first();
+            if ($cek_username == null) {
+                $user_name = substr($email,0,6);
+            }else {
+                $names = str_split($cek_username->username,6);
+                if (count($names) > 1) {
+                    $angka = $names[1]+1;
+                    $user_name = $names[0].''.$angka;
+                }else {
+                    $user_name = $names[0].'1';
+                }
+            }
+
             $token = new User();
             $token->g_id = $g_id;
             $token->g_photo = $g_photo;
             $token->email = $email;
-            $token->username = substr($email,0,6);
+            $token->username = $user_name;
+            $token->password = Hash::make("password");
+            $token->id_ref = $cus->id;
+            $token->tipe_user = 2;
+            $token->save();
+
+            $id_user = $token->id_user;
+        }
+
+
+        $cek_token = MApiKey::where('id_user',$id_user)->first();
+        if ($cek_token) {
+            MApiKey::where('id_user',$id_user)->delete();    
+        }
+        $key = Str::random(30);
+        $token = new MApiKey();
+        $token->id_user = $id_user;
+        $token->token = $key;
+        $token->save();
+
+        $get_user = User::selectRaw('m_customer.*, m_users.id_user, m_users.username, m_users.password, m_users.id_ref, m_users.email, m_users.no_telfon, m_users.g_id, m_users.g_photo, m_users.tipe_user')
+                ->join('m_customer','m_customer.id','m_users.id_ref')
+                ->where('m_users.id_user',$id_user)
+                ->where('m_users.deleted',1)
+                ->where('m_customer.deleted',1)
+                ->get();
+                                
+        // $request->session()->regenerate();            
+        return response()->json([
+            'message' => 'Login Success',
+            'key' => $key,
+            'code' => 1,
+            'user_data' => $get_user,
+        ]);
+    }
+
+    public function login_apple(Request $request)
+    {
+        
+        $email = $request->email;
+        $apple_id = $request->apple_id;        
+        // dd($providerUser->getAvatar());
+        $cek_email = User::where("email",$email)->first();
+        if ($cek_email) {
+            if ($cek_email->apple_id == null) {
+                User::where("email",$email)->update(['apple_id'=>$apple_id]);
+                $apple_id = $apple_id;
+            }else {
+                $apple_id = $cek_email->apple_id;
+            }
+
+            if ($apple_id !== $apple_id) {
+                return response()->json([
+                    'message' => 'Email address for this accounts already registered, please use another account',
+                    'code' => 0,
+                ]);
+            }
+            $id_user = $cek_email->id_user;
+        }else {
+            $cus = new MCustomer();
+            $cus->nama_depan = substr($email,0,6);
+            $cus->save();
+
+            $cek_username = User::where('username', 'like', '%' .substr($email,0,6). '%')->orderBy('id_user','desc')->first();
+            if ($cek_username == null) {
+                $user_name = substr($email,0,6);
+            }else {
+                $names = str_split($cek_username->username,6);
+                if (count($names) > 1) {
+                    $angka = $names[1]+1;
+                    $user_name = $names[0].''.$angka;
+                }else {
+                    $user_name = $names[0].'1';
+                }
+            }
+
+            $token = new User();
+            $token->apple_id = $apple_id;
+            $token->email = $email;
+            $token->username = $user_name;
             $token->password = Hash::make("password");
             $token->id_ref = $cus->id;
             $token->tipe_user = 2;

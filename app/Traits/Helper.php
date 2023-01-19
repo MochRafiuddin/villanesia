@@ -450,6 +450,10 @@ trait Helper
         //env('FCM_SERVER_KEY');
         // dd($firebaseToken);
         // $param = json_encode(array("id_ref" => "107"));
+        // dd($firebaseToken);
+        if (count($firebaseToken) == 0) {
+            return false;
+        }
         $data = [
             "registration_ids" => $firebaseToken,
             "notification" => [

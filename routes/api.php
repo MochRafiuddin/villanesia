@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\CAPesan;
 use App\Http\Controllers\Api\CADownload;
 use App\Http\Controllers\Api\CANotif;
 use App\Http\Controllers\Api\CABanner;
+use App\Http\Controllers\Api\CAIntegrasi;
 
 /*
 |--------------------------------------------------------------------------
@@ -74,7 +75,15 @@ Route::group(['middleware' => 'logapi'], function () {
     Route::post('/post-forget-password', [CAAuth::class, 'post_forget_password']);
     Route::get('/get-banner', [CABanner::class, 'get_banner']);
 
-    Route::post('/auth-google', [CAAuth::class, 'login_google']);    
+    Route::post('/auth-google', [CAAuth::class, 'login_google']);
+    Route::post('/auth-apple', [CAAuth::class, 'login_apple']);
+    
+    Route::post('/post-property-booking-integrasi', [CAIntegrasi::class, 'post_property_booking']);   
+    Route::post('/post-property-booking-extra-expenses', [CAIntegrasi::class, 'post_property_booking_extra_expenses']);
+    Route::post('/post-property-booking-discount', [CAIntegrasi::class, 'post_property_booking_discount']);
+    Route::post('/post-property-booking-confirm', [CAIntegrasi::class, 'post_property_booking_confirm']);
+    Route::post('/post-property-booking-decline', [CAIntegrasi::class, 'post_property_booking_decline']);
+    Route::post('/post-property-booking-cancel', [CAIntegrasi::class, 'post_property_booking_cancel']);
 });
 
 Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
