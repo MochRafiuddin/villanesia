@@ -63,7 +63,7 @@
                     },
                     {
                         data: 'nama_provinsi',
-                        name: 'nama_provinsi',
+                        name: 'm_provinsi.nama_provinsi',
                     },
                     {
                         data: 'nama_kota',

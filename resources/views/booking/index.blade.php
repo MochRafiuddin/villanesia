@@ -70,7 +70,7 @@
                     },
                     {
                         data: 'alamat',
-                        name: 'alamat',                        
+                        name: 'm_properti.judul',                        
                     },
                     {
                         data: 'in',

@@ -30,7 +30,7 @@ class CProperti extends Controller
     public function index()
     {        
         $bahasa = MBahasa::all();
-        return view('Properti.index')    
+        return view('properti.index')    
             ->with('bahasa',$bahasa)
             ->with('title','Properti');
     }
@@ -51,8 +51,8 @@ class CProperti extends Controller
         $pekan = MAkhirPekan::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
         $jenis = MJenisTempat::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
         $tipeId = MTipeBooking::where('id_tipe_booking',$id_tipe_booking)->first();
-        $amenities = MAmenities::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
-        $fasilitas = MFasilitas::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
+        $amenities = MAmenities::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->orderBy('nama_amenities','asc')->get();
+		$fasilitas = MFasilitas::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->orderBy('nama_fasilitas','asc')->get();
         $kota = MKota::withDeleted()->get();
         $provinsi = MProvinsi::withDeleted()->get();
         $negara = MNegara::withDeleted()->where('id_negara',1)->get();
@@ -196,9 +196,9 @@ class CProperti extends Controller
         $tipe = MTipeProperti::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
         $pekan = MAkhirPekan::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
         $jenis = MJenisTempat::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
-        $amenities = MAmenities::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
+        $amenities = MAmenities::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->orderBy('nama_amenities','asc')->get();
+		$fasilitas = MFasilitas::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->orderBy('nama_fasilitas','asc')->get();
         $map_a = MapAmenities::where('id_properti',$data->id_ref_bahasa)->get();
-        $fasilitas = MFasilitas::withDeleted()->where('id_bahasa',$bahasa->id_bahasa)->get();
         $map_f = MapFasilitas::where('id_properti',$data->id_ref_bahasa)->get();
         $tipeId = MTipeBooking::where('id_ref_bahasa',$data->id_tipe_booking)->where('id_bahasa',$data->id_bahasa)->first();
         $kota = MKota::withDeleted()->where('id_provinsi',$data->id_provinsi)->get();
@@ -483,7 +483,10 @@ class CProperti extends Controller
     public function data()
     {
         $bahasa = (!empty($_GET["bahasa"])) ? ($_GET["bahasa"]) : (0);
-        $model = MProperti::where('deleted','!=',0)->where('id_bahasa',$bahasa)->orderBy('created_date','desc');
+        $model = MProperti::join('m_tipe_properti','m_tipe_properti.id_tipe_properti','m_properti.id_tipe_properti')
+                ->select('m_tipe_properti.nama_tipe_properti','m_properti.*')
+                ->where('m_properti.deleted','!=',0)
+                ->where('m_properti.id_bahasa',$bahasa)->orderBy('m_properti.created_date','desc');
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';      
@@ -497,12 +500,7 @@ class CProperti extends Controller
                 $bahasa = MBahasa::where('id_bahasa',$row->id_bahasa)->first();
                 $btn = '<div style="white-space:nowrap;"> <i class="flag-icon '.$bahasa->logo.'"></i> '.$bahasa->nama_bahasa.'</div>';                
                 return $btn;
-            })
-            ->editColumn('tipe_properti', function ($row) {                                
-                $tipe = MTipeProperti::where('id_tipe_properti',$row->id_tipe_properti)->first();
-                $btn = $tipe->nama_tipe_properti;                
-                return $btn;
-            })  
+            })              
             ->rawColumns(['action','bahasa'])
             ->addIndexColumn()
             ->toJson();

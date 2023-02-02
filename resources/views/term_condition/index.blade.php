@@ -103,7 +103,7 @@
                     },
                     {
                         data: 'tipe',
-                        name: 'tipe',                        
+                        name: 'id_tipe',                        
                     },
                     {
                         data: 'judul',

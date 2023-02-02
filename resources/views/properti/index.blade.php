@@ -112,8 +112,8 @@
                         name: 'harga_tampil',                        
                     },
                     {
-                        data: 'tipe_properti',
-                        name: 'tipe_properti',                        
+                        data: 'nama_tipe_properti',
+                        name: 'm_tipe_properti.nama_tipe_properti',                        
                     },
                     {
                         data: 'action',
