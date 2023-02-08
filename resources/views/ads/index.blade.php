@@ -20,7 +20,7 @@
                                         <th>Nama</th>
                                         <!-- <th>Konten</th> -->
                                         <th>Tipe Konten</th>
-                                        <th>Redirect Url</th>
+                                        <!-- <th>Redirect Url</th> -->
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -118,10 +118,6 @@
                     {
                         data: 'tipe_konten_ads',
                         name: 'tipe_konten_ads',                        
-                    },
-                    {
-                        data: 'redirect_url_ads',
-                        name: 'redirect_url_ads',                        
                     },
                     {
                         data: 'status',

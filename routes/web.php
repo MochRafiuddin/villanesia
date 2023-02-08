@@ -225,6 +225,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/ads/delete/{id}', [CAds::class,'delete']);
     Route::get('/ads/setting', [CAds::class,'setting']);
     Route::post('/ads/setting-save', [CAds::class,'setting_save']);
+    Route::get('/ads/list-properti', [CAds::class,'list_properti']);
 
     //kupon
     Route::get('/kupon', [CKupon::class,'index'])->name('kupon-index');

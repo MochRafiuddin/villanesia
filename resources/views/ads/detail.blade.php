@@ -32,17 +32,27 @@ $name[] = 'konten_ads';
                                 <option value="1" {{(old($name[1]) == 1) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[1],1)}}>
                                         image / gif
                                 </option>                                
-                                <option value="2" {{(old($name[1]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[1],2)}}>
+                                <!-- <option value="2" {{(old($name[1]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[1],2)}}>
                                         video
-                                </option>
+                                </option> -->
                              </select>                
                         </div>
                     </div>                   
-                    <div class="row">
+                    <!-- <div class="row">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">Redirect Url</label>
                             <input type="text" class="form-control @error($name[2]) is-invalid @enderror"
                             value="{{Helper::showData($data,$name[2])}}" name="{{$name[2]}}" readonly/>
+                        </div>
+                    </div> -->
+                    <div class="row">
+                        <div class="form-group col">
+                            <label for="exampleInputEmail1">List Properti</label>                            
+                            <select class="js-example-basic-multiple list_properti" multiple="multiple" style="width:100%" name="list_properti" readonly>
+                                    @foreach($list_properti as $list)
+                                        <option value="{{$list->id_properti}}" selected>{{$list->judul}}</option>
+                                    @endforeach
+                            </select>                            
                         </div>
                     </div>
                     <div class="row">
@@ -57,12 +67,12 @@ $name[] = 'konten_ads';
                                 <option value="1" {{(old($name[3]) == 1) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[3],1)}}>
                                         show(running)
                                 </option>
-                                <option value="2" {{(old($name[3]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[3],2)}}>
+                                <!-- <option value="2" {{(old($name[3]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[3],2)}}>
                                         complete
                                 </option>
                                 <option value="3" {{(old($name[3]) == 3) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[3],3)}}>
                                         banned
-                                </option>
+                                </option> -->
                              </select>
                         </div>
                     </div>                    
@@ -94,3 +104,13 @@ $name[] = 'konten_ads';
     </div>
 </div>
 @endsection
+@push('js')
+<script src="{{asset('/')}}assets/js/select2.js"></script>
+<script>
+    $( document ).ready(function() {        
+        $(".js-example-basic-multiple").select2({
+            disabled: true
+        }); 
+    });
+</script>
+@endpush

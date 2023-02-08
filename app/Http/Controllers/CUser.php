@@ -73,7 +73,31 @@ class CUser extends Controller
             return redirect()->back()
                         ->withInput($request->all())
                         ->withErrors($validator->errors());
-        }                
+        }
+
+        $cek_user_username = User::where('deleted',1)
+                ->where('username',$request->username)                
+                ->get();
+        $cek_user_email = User::where('deleted',1)
+                ->where('email',$request->email)
+                ->get();
+        if (count($cek_user_username)>0 && count($cek_user_email)>0) {
+           return redirect()->back()
+                ->withInput($request->all())
+                ->withErrors(['username' => 'username and email is already used, please enter new username and email','email' => 'username and email is already used, please enter new username and email']); 
+        }elseif (count($cek_user_username)>0) {
+            return redirect()->back()
+                ->withInput($request->all())
+                ->withErrors(['username' => 'username is already used, please enter new username']);
+        }elseif (count($cek_user_email)>0) {
+            return redirect()->back()
+                ->withInput($request->all())
+                ->withErrors(['email' => 'email is already used, please enter new email']);
+        }
+
+        $cus = new MCustomer();
+        $cus->nama_depan = substr($request->email,0,6);;
+        $cus->save();
         
         $tipe = new User();
         $tipe->username = $request->username;
@@ -81,6 +105,7 @@ class CUser extends Controller
         $tipe->email = $request->email;
         $tipe->no_telfon = $request->no_telfon;
         $tipe->tipe_user = 1;
+        $tipe->id_ref = $cus->id;
         $tipe->save();        
 
         return redirect()->route('user-index')->with('msg','Sukses Menambahkan Data');

@@ -94,7 +94,8 @@ class CAProperti extends Controller
                 'message' => 'Success',
                 'code' => 1,
                 'data' => $data,
-                'total_page' => $total_page
+                'total_page' => $total_page,
+                'total_all_data' => $get_total_all_data
             ], 200);
         } else {
             return response()->json([
@@ -1663,9 +1664,11 @@ class CAProperti extends Controller
         $limit = 6;
         $page = ($request->page-1)*$limit;
         $order_by = $request->order_by;
-        $id_fasilitas = $request->id_fasilitas;
+        $id_fasilitas = $request->id_properti;
 
-        $list_id_properti_fas = MapFasilitas::select('id_properti')->whereIn('id_fasilitas',$id_fasilitas)->get()->toArray();
+        // $list_id_properti_fas = MapFasilitas::select('id_properti')->whereIn('id_fasilitas',$id_fasilitas)->get()->toArray();
+        // dd($id_fasilitas);
+        $list_id_properti_fas = explode(",",$id_fasilitas);
 
         $tipe = MProperti::selectRaw('id_properti, id_bahasa, id_ref_bahasa, judul, alamat, harga_tampil, jumlah_kamar_tidur, jumlah_kamar_mandi, (jumlah_tamu+COALESCE(jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, sarapan, nama_file')
                 ->whereIn('id_properti',$list_id_properti_fas)

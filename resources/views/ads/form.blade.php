@@ -8,6 +8,7 @@ $name[] = 'redirect_url_ads';
 $name[] = 'status';
 $name[] = 'posisi';
 $name[] = 'konten_ads';
+$name[] = 'list_properti';
 ?>
 <div class="main-panel">
     <div class="content-wrapper">
@@ -32,37 +33,37 @@ $name[] = 'konten_ads';
                                 <option value="1" {{(old($name[1]) == 1) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[1],1)}}>
                                         image / gif
                                 </option>                                
-                                <option value="2" {{(old($name[1]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[1],2)}}>
+                                <!-- <option value="2" {{(old($name[1]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[1],2)}}>
                                         video
-                                </option>
+                                </option> -->
                              </select>                
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">List Fasilitas</label>
-                            <select class="form-control" name="fas" id="fas" style="width:100%">
-                            <option value="" selected disabled>Pilih Fasiitas</option>
-                            @foreach($fasilitas as $fas)
-                                <option value="{{$fas->id_fasilitas}}">
-                                        {{$fas->nama_fasilitas}}
-                                </option>
-                            @endforeach
-                             </select>                
+                            <label for="exampleInputEmail1">List Properti</label>                            
+                            <select class="js-example-basic-multiple list_properti" multiple="multiple" style="width:100%" name="list_properti">
+                                @if($data)
+                                    @foreach($list_properti as $list)
+                                        <option value="{{$list->id_properti}}" selected>{{$list->judul}}</option>
+                                    @endforeach
+                                @endif
+                            </select>
+                            <input type="hidden" name="list_pro" class="list_pro" value="{{Helper::showData($data,$name[6])}}">
+                            <input type="hidden" value="{{Helper::showData($data,$name[2])}}" name="{{$name[2]}}" id="{{$name[2]}}"/>
                         </div>
                     </div>
-                    <div class="row">
+                    <!-- <div class="row">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">Redirect Url</label>
                             <input type="text" class="form-control @error($name[2]) is-invalid @enderror"
                             value="{{Helper::showData($data,$name[2])}}" name="{{$name[2]}}" id="{{$name[2]}}" readonly/>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="row">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">Status</label>
-                            <select class="form-control @error($name[3]) is-invalid @enderror" name="{{$name[3]}}" id="{{$name[3]}}"
-                                     style="width:100%">
+                            <select class="form-control @error($name[3]) is-invalid @enderror" name="{{$name[3]}}" id="{{$name[3]}}" style="width:100%">
                                 <option value="" selected disabled>Pilih Status</option>                                
                                 <option value="0" {{(old($name[3]) == 0) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[3],0)}}>
                                         pending
@@ -70,12 +71,12 @@ $name[] = 'konten_ads';
                                 <option value="1" {{(old($name[3]) == 1) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[3],1)}}>
                                         show(running)
                                 </option>
-                                <option value="2" {{(old($name[3]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[3],2)}}>
+                                <!-- <option value="2" {{(old($name[3]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[3],2)}}>
                                         complete
                                 </option>
                                 <option value="3" {{(old($name[3]) == 3) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[3],3)}}>
                                         banned
-                                </option>
+                                </option> -->
                              </select>
                         </div>
                     </div>
@@ -110,9 +111,38 @@ $name[] = 'konten_ads';
 @endsection
 @push('js')
 <script src="{{asset('/')}}assets/js/dropify.js"></script>
+<script src="{{asset('/')}}assets/js/select2.js"></script>
 <script>
-    $('#fas').change(function() {
-        $('#redirect_url_ads').val("aptikmamid.ngrok.io/villanesia/public/api/get-property-by-facilities?id_fasilitas[]="+$(this).val()+"&page=1&order_by=1&id_bahasa=");
+    $( document ).ready(function() {
+        $('.list_properti').select2({
+            placeholder: "-Pilih-",
+            minimumInputLength: 2,
+            multiple: true,
+            ajax: {
+                url: '{{url("ads/list-properti")}}',
+                dataType: 'json',
+                data: function (params) {
+                    return {
+                        q: $.trim(params.term)
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                },
+                cache: true
+            }
+        });
+        
+        $($(".js-example-basic-single").select2("container")).addClass("is-invalid"); 
+    });    
+
+    $('.list_properti').change(function() {
+        var hasil = $(this).val();
+        $(".list_pro").val(hasil);
+        $('#redirect_url_ads').val("aptikmamid.ngrok.io/villanesia/public/api/get-property-by-facilities?id_properti="+$(this).val()+"&page=1&order_by=1&id_bahasa=1");
     });
+    
 </script>
 @endpush

@@ -72,7 +72,7 @@ class CABooking extends Controller
         $user = MApiKey::where('token',$request->header('auth-key'))->first();
 
         $detail_booking = MBooking::from( 't_booking as a' )
-            ->selectRaw('a.*, b.id_bahasa, b.id_ref_bahasa, b.judul, b.alamat, b.harga_tampil, b.total_rating, b.nilai_rating, b.nama_file, b.kode_pos, b.kebijakan_pembatalan, b.merokok, b.binatang, b.acara, b.anak, b.aturan_tambahan, c.nama_status_booking, CONCAT(e.nama_depan," ",e.nama_belakang) as nama_pemilik_properti, e.nama_foto as foto_pemilik_properti, d.email as email_pemilik_properti, d.no_telfon as no_telfon_pemilik_properti, CONCAT(g.nama_depan," ",g.nama_belakang) as nama_pemesan, h.nama_tipe_properti, i.nama_jenis_tempat')
+            ->selectRaw('a.*, b.id_bahasa, b.id_ref_bahasa, b.judul, b.alamat, b.harga_tampil, b.total_rating, b.nilai_rating, b.nama_file, b.kode_pos, b.kebijakan_pembatalan, b.merokok, b.binatang, b.acara, b.anak, b.aturan_tambahan, b.id_tipe_booking, c.nama_status_booking, CONCAT(e.nama_depan," ",e.nama_belakang) as nama_pemilik_properti, e.nama_foto as foto_pemilik_properti, d.email as email_pemilik_properti, d.no_telfon as no_telfon_pemilik_properti, CONCAT(g.nama_depan," ",g.nama_belakang) as nama_pemesan, h.nama_tipe_properti, i.nama_jenis_tempat')
             ->leftJoin('m_properti as b','a.id_ref', '=','b.id_ref_bahasa')
             ->leftJoin('m_status_booking as c','a.id_status_booking', '=','c.id_ref_bahasa')
             ->leftJoin('m_users as d','d.id_user', '=','b.created_by')

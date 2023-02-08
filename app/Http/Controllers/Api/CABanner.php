@@ -15,7 +15,6 @@ class CABanner extends Controller
         $tipe = MBanner::where('status',1)
                 ->where('deleted',1)
                 ->orderBy('updated_date','desc')                
-                ->limit(1)
                 ->get();
         
         return response()->json([
