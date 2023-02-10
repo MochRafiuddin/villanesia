@@ -44,10 +44,23 @@ class CSetting extends Controller
     }
     public function data()
     {        
-        $model = Setting::select('*');
+        $model = Setting::whereNotIn('id', [5,6]);
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '<a href="'.url('setting/show/'.$row->id).'" class="text-danger" data-toggle="tooltip" data-placement="Top" title="Edit Data"><span class="mdi mdi-pen"></span></a>';
+                return $btn;
+            })
+            ->editColumn('nilai', function ($row) {
+                if ($row->id == 4) {
+                    if ($row->nilai == 0) {
+                        $btn = 'Tidak Tampil';
+                    }else{
+                        $btn = 'Tampil';
+                    }
+                }else {
+                    $btn = $row->nilai;
+                }
+
                 return $btn;
             })            
             ->rawColumns(['action'])

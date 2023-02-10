@@ -12,7 +12,7 @@ class CAPropertiTipe extends Controller
     {
         $id_bahasa = $request->id_bahasa;
 
-        $tipe = MTipeProperti::withDeleted()->where('id_bahasa',$id_bahasa)->get();
+        $tipe = MTipeProperti::withDeleted()->where('id_bahasa',$id_bahasa)->orderBy('urutan','asc')->get();
 
         if (count($tipe)>0) {
             return response()->json([

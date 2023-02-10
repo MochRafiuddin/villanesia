@@ -132,18 +132,25 @@ class CAds extends Controller
                 $image_resize->resize(300, 600);
             }
             $image_resize->save(public_path('upload/ads/' .$gambar));
+            $data = [
+                'nama_ads' => $request->nama_ads,
+                'konten_ads' => $gambar,
+                'tipe_konten_ads' => $request->tipe_konten_ads,
+                'redirect_url_ads' => $request->redirect_url_ads,
+                'status' => $request->status,
+                'posisi' => $request->posisi,
+                'list_properti' => $request->list_pro,
+            ];
         }else{
-            $gambar ="";
-        }
-        $data = [
-            'nama_ads' => $request->nama_ads,
-            'konten_ads' => $gambar,
-            'tipe_konten_ads' => $request->tipe_konten_ads,
-            'redirect_url_ads' => $request->redirect_url_ads,
-            'status' => $request->status,
-            'posisi' => $request->posisi,
-            'list_properti' => $request->list_pro,
-        ];
+            $data = [
+                'nama_ads' => $request->nama_ads,
+                'tipe_konten_ads' => $request->tipe_konten_ads,
+                'redirect_url_ads' => $request->redirect_url_ads,
+                'status' => $request->status,
+                'posisi' => $request->posisi,
+                'list_properti' => $request->list_pro,
+            ];
+        }        
         MAds::where('id_ads',$request->id)->update($data);
 
         return redirect()->route('ads-index')->with('msg','Sukses Menambahkan Data');

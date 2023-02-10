@@ -24,11 +24,26 @@ $name[] = 'nilai';
                             <input type="text" class="form-control @error($name[1]) is-invalid @enderror"
                                 value="{{Helper::showData($data,$name[1])}}" name="{{$name[1]}}" readonly/>
                         </div>
+                        @if($data->id == 4)
+                            <div class="form-group col-12">
+                                <label for="exampleInputEmail1">Nilai</label>
+                                <select class="form-control js-example-basic-single" name="{{$name[2]}}" id="{{$name[2]}}"
+                                        style="width:100%">                                      
+                                    <option value="0" {{(old($name[2]) == 0) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[1],0)}}>
+                                            Tidak Tampil
+                                    </option>                                
+                                    <option value="1" {{(old($name[2]) == 1) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[1],1)}}>
+                                            Tampil
+                                    </option>
+                                </select>                
+                            </div>                        
+                        @else
                         <div class="form-group col-12">
                             <label for="exampleInputEmail1">Nilai</label>
                             <input type="text" class="form-control @error($name[2]) is-invalid @enderror"
                                 value="{{Helper::showData($data,$name[2])}}" name="{{$name[2]}}"/>
                         </div>
+                        @endif
                     </div>
                     <input type="submit" class="btn btn-success" value="Simpan" />
                 </form>

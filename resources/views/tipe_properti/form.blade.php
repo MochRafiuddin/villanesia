@@ -4,6 +4,7 @@
 use App\Traits\Helper;  
 $name[] = 'nama_tipe_properti';
 $name[] = 'gambar';
+$name[] = 'urutan';
 ?>
 <div class="main-panel">
     <div class="content-wrapper">
@@ -25,6 +26,13 @@ $name[] = 'gambar';
                             <label for="exampleInputEmail1">Nama</label>
                             <input type="text" class="form-control @error($name[0]) is-invalid @enderror"
                                 value="{{Helper::showData($data,$name[0])}}" name="{{$name[0]}}" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            <label for="exampleInputEmail1">Urutan</label>
+                            <input type="text" class="form-control @error($name[2]) is-invalid @enderror"
+                                value="{{Helper::showData($data,$name[2])}}" name="{{$name[2]}}" />
                         </div>
                     </div>
                     <div class="row">

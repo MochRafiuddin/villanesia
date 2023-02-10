@@ -69,7 +69,8 @@ class CTipeProperti extends Controller
     {
         $validator = Validator::make($request->all(),[
             'nama_tipe_properti' => 'required', 
-            'gambar'             => 'mimes:jpeg,jpg,png,gif|required|max:10000' 
+            'gambar'             => 'mimes:jpeg,jpg,png,gif|required|max:10000',
+            'urutan'             => 'required' 
         ]);
         
         if ($validator->fails()) {
@@ -87,11 +88,14 @@ class CTipeProperti extends Controller
             $tipe->id_bahasa = $request->id_bahasa;
             $tipe->id_ref_bahasa = $request->id;
             $tipe->save();
+
+            MTipeProperti::where('id_ref_bahasa',$request->id)->update(['urutan'=>$request->urutan]);            
         }else{
             $tipe = new MTipeProperti();
             $tipe->nama_tipe_properti = $request->nama_tipe_properti;
             $tipe->gambar = $gambar;
             $tipe->id_bahasa = $request->id_bahasa;
+            $tipe->urutan = $request->urutan;
             $tipe->save();
     
             MTipeProperti::where('id_tipe_properti',$tipe->id_tipe_properti)->update(['id_ref_bahasa' => $tipe->id_tipe_properti]);
@@ -103,7 +107,8 @@ class CTipeProperti extends Controller
     {
         $validator = Validator::make($request->all(),[
             'nama_tipe_properti' => 'required', 
-            'gambar'             => 'mimes:jpeg,jpg,png,gif|max:10000' 
+            'gambar'             => 'mimes:jpeg,jpg,png,gif|max:10000',
+            'urutan'             => 'required'
         ]);
         
         if ($validator->fails()) {
@@ -119,6 +124,9 @@ class CTipeProperti extends Controller
         }else{
             MTipeProperti::where('id_tipe_properti',$request->id)->update(['nama_tipe_properti'=>$request->nama_tipe_properti]);            
         }
+
+        $tipe = MTipeProperti::where('id_tipe_properti',$request->id)->first();
+        MTipeProperti::where('id_ref_bahasa',$tipe->id_ref_bahasa)->update(['urutan'=>$request->urutan]);            
 
         return redirect()->route('tipe-properti-index')->with('msg','Sukses Menambahkan Data');
     }
