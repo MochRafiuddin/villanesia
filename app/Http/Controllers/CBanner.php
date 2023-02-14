@@ -46,6 +46,7 @@ class CBanner extends Controller
         $validator = Validator::make($request->all(),[
             'nama_banner' => 'required', 
             'status' => 'required',
+            'redirect_url' => 'required',
             'image_banner'    => 'mimes:jpeg,jpg,png,gif|required|max:10000' 
         ]);
         
@@ -61,6 +62,7 @@ class CBanner extends Controller
         $tipe = new MBanner();
         $tipe->nama_banner = $request->nama_banner;            
         $tipe->status = $request->status;
+        $tipe->redirect_url = $request->redirect_url;
         $tipe->image_banner = $gambar;
         $tipe->save();        
 
@@ -71,6 +73,7 @@ class CBanner extends Controller
         $validator = Validator::make($request->all(),[
             'nama_banner' => 'required', 
             'status' => 'required',
+            'redirect_url' => 'required',
             'image_banner'    => 'mimes:jpeg,jpg,png,gif|max:10000' 
         ]);
         
@@ -83,9 +86,9 @@ class CBanner extends Controller
         if ($request->file('image_banner')) {
             $gambar = round(microtime(true) * 1000).'.'.$request->file('image_banner')->extension();
             $request->file('image_banner')->move(public_path('upload/banner'), $gambar);
-            MBanner::where('id',$request->id)->update(['nama_banner'=>$request->nama_banner,'status'=>$request->status,'image_banner'=>$gambar]);
+            MBanner::where('id',$request->id)->update(['nama_banner'=>$request->nama_banner,'status'=>$request->status,'image_banner'=>$gambar, 'redirect_url'=>$request->redirect_url]);
         }else {
-            MBanner::where('id',$request->id)->update(['nama_banner'=>$request->nama_banner,'status'=>$request->status]);
+            MBanner::where('id',$request->id)->update(['nama_banner'=>$request->nama_banner,'status'=>$request->status, 'redirect_url'=>$request->redirect_url]);
         }
         
 

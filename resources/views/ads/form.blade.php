@@ -9,6 +9,7 @@ $name[] = 'status';
 $name[] = 'posisi';
 $name[] = 'konten_ads';
 $name[] = 'list_properti';
+$name[] = 'tipe_redirect_url';
 ?>
 <div class="main-panel">
     <div class="content-wrapper">
@@ -41,6 +42,20 @@ $name[] = 'list_properti';
                     </div>
                     <div class="row">
                         <div class="form-group col">
+                            <label for="exampleInputEmail1">Tipe Redirect Url</label>
+                            <select class="form-control @error($name[7]) is-invalid @enderror" name="{{$name[7]}}" id="{{$name[7]}}" style="width:100%" onchange="gantiTipe()">
+                                <option value="0" selected disabled>Pilih Tipe</option>
+                                <option value="1" {{(old($name[7]) == 1) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[7],1)}}>
+                                        Dalam Aplikasi
+                                </option>                                
+                                <option value="2" {{(old($name[7]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[7],2)}}>
+                                        Luar Aplikasi
+                                </option>
+                             </select>                
+                        </div>
+                    </div>
+                    <div class="row dalam">
+                        <div class="form-group col">
                             <label for="exampleInputEmail1">List Properti</label>                            
                             <select class="js-example-basic-multiple list_properti" multiple="multiple" style="width:100%" name="list_properti">
                                 @if($data)
@@ -50,16 +65,15 @@ $name[] = 'list_properti';
                                 @endif
                             </select>
                             <input type="hidden" name="list_pro" class="list_pro" value="{{Helper::showData($data,$name[6])}}">
-                            <input type="hidden" value="{{Helper::showData($data,$name[2])}}" name="{{$name[2]}}" id="{{$name[2]}}"/>
                         </div>
                     </div>
-                    <!-- <div class="row">
+                    <div class="row luar">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">Redirect Url</label>
                             <input type="text" class="form-control @error($name[2]) is-invalid @enderror"
-                            value="{{Helper::showData($data,$name[2])}}" name="{{$name[2]}}" id="{{$name[2]}}" readonly/>
+                            value="{{Helper::showData($data,$name[2])}}" name="{{$name[2]}}" id="{{$name[2]}}" />
                         </div>
-                    </div> -->
+                    </div>
                     <div class="row">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">Status</label>
@@ -136,13 +150,50 @@ $name[] = 'list_properti';
         });
         
         $($(".js-example-basic-single").select2("container")).addClass("is-invalid"); 
+
+        var tipe1 = $('#tipe_redirect_url').val();
+        if (tipe1 == 1) {
+            $('.dalam').show();
+            $('.luar').hide();
+        }else if (tipe1 == 2) {
+            $('.dalam').hide();
+            $('.luar').show();
+        }else{
+            $('.dalam').hide();
+            $('.luar').hide();
+        }
     });    
 
     $('.list_properti').change(function() {
         var hasil = $(this).val();
         $(".list_pro").val(hasil);
         $('#redirect_url_ads').val("aptikmamid.ngrok.io/villanesia/public/api/get-property-by-facilities?id_properti="+$(this).val()+"&page=1&order_by=1&id_bahasa=1");
+        $('#redirect_url_ads').val("https://mobile.villanesia.com/api/get-property-by-facilities?id_properti="+$(this).val()+"&page=1&order_by=1&id_bahasa=1");
+
     });
-    
+
+    function gantiTipe() {
+        var tipe = $('#tipe_redirect_url').val();
+
+        if (tipe == 1) {
+            $('.dalam').show();
+            $('.luar').hide();
+            $('#redirect_url_ads').val('');
+        }else if(tipe == 2){
+            $('.dalam').hide();
+            $('.luar').show();
+            $('.list_pro').val('');            
+            $(".list_properti").val("");
+            $(".list_properti").trigger("change");
+            $('#redirect_url_ads').val('');
+        }else{
+            $('.dalam').hide();
+            $('.luar').hide();
+            $('#redirect_url_ads').val('');
+            $('.list_pro').val('');                        
+            $(".list_properti").val("");
+            $(".list_properti").trigger("change");
+        }
+    }
 </script>
 @endpush

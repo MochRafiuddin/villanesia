@@ -64,7 +64,8 @@ class CAds extends Controller
         $validator = Validator::make($request->all(),[
             'nama_ads' => 'required',            
             'tipe_konten_ads' => 'required',
-            // 'redirect_url_ads' => 'required',
+            'redirect_url_ads' => 'required',
+            'tipe_redirect_url' => 'required',
             'status' => 'required'
         ]);
         
@@ -100,6 +101,7 @@ class CAds extends Controller
         $tipe->status = $request->status;
         $tipe->posisi = $request->posisi;
         $tipe->list_properti = $request->list_pro;
+        $tipe->tipe_redirect_url = $request->tipe_redirect_url;
         $tipe->save();        
 
         return redirect()->route('ads-index')->with('msg','Sukses Menambahkan Data');
@@ -109,7 +111,8 @@ class CAds extends Controller
         $validator = Validator::make($request->all(),[
             'nama_ads' => 'required',            
             'tipe_konten_ads' => 'required',
-            // 'redirect_url_ads' => 'required',
+            'redirect_url_ads' => 'required',
+            'tipe_redirect_url' => 'required',
             'status' => 'required'
         ]);
         
@@ -140,6 +143,7 @@ class CAds extends Controller
                 'status' => $request->status,
                 'posisi' => $request->posisi,
                 'list_properti' => $request->list_pro,
+                'tipe_redirect_url' => $request->tipe_redirect_url,
             ];
         }else{
             $data = [
@@ -149,6 +153,7 @@ class CAds extends Controller
                 'status' => $request->status,
                 'posisi' => $request->posisi,
                 'list_properti' => $request->list_pro,
+                'tipe_redirect_url' => $request->tipe_redirect_url,
             ];
         }        
         MAds::where('id_ads',$request->id)->update($data);

@@ -2002,4 +2002,30 @@ class CAProperti extends Controller
         }
         
     }
+
+    public function get_property_by_name(Request $request)
+    {                
+        $id_bahasa = $request->id_bahasa;        
+        $nama_properti = $request->nama_properti;        
+
+        $data = MProperti::where('judul', 'like', '%'.$nama_properti.'%')
+                ->where('id_bahasa',$id_bahasa)                
+                ->where('deleted',1)
+                ->get();
+
+        if (count($data) > 0) {            
+            return response()->json([
+                'success' => true,
+                'message' => 'Success',
+                'code' => 1,
+                'data' => $data
+            ], 200);        
+        }else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data Tidak ditemukan',
+                'code' => 0
+            ], 400);
+        }
+    }
 }

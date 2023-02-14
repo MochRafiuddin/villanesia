@@ -84,6 +84,8 @@ Route::group(['middleware' => 'logapi'], function () {
     Route::post('/post-property-booking-confirm', [CAIntegrasi::class, 'post_property_booking_confirm']);
     Route::post('/post-property-booking-decline', [CAIntegrasi::class, 'post_property_booking_decline']);
     Route::post('/post-property-booking-cancel', [CAIntegrasi::class, 'post_property_booking_cancel']);
+
+    Route::get('/get-property-by-name', [CAProperti::class, 'get_property_by_name']);
 });
 
 Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {

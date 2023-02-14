@@ -8,6 +8,8 @@ $name[] = 'redirect_url_ads';
 $name[] = 'status';
 $name[] = 'posisi';
 $name[] = 'konten_ads';
+$name[] = 'list_properti';
+$name[] = 'tipe_redirect_url';
 ?>
 <div class="main-panel">
     <div class="content-wrapper">
@@ -37,14 +39,30 @@ $name[] = 'konten_ads';
                                 </option> -->
                              </select>                
                         </div>
-                    </div>                   
-                    <!-- <div class="row">
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            <label for="exampleInputEmail1">Tipe Redirect Url</label>
+                            <select class="form-control @error($name[7]) is-invalid @enderror" name="{{$name[7]}}" id="{{$name[7]}}" style="width:100%" disabled="">
+                                <option value="0" selected disabled>Pilih Tipe</option>
+                                <option value="1" {{(old($name[7]) == 1) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[7],1)}}>
+                                        Dalam Aplikasi
+                                </option>                                
+                                <option value="2" {{(old($name[7]) == 2) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[7],2)}}>
+                                        Luar Aplikasi
+                                </option>
+                             </select>                
+                        </div>
+                    </div>
+                    @if($data->tipe_redirect_url == 2)
+                    <div class="row">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">Redirect Url</label>
                             <input type="text" class="form-control @error($name[2]) is-invalid @enderror"
                             value="{{Helper::showData($data,$name[2])}}" name="{{$name[2]}}" readonly/>
                         </div>
-                    </div> -->
+                    </div>
+                    @else
                     <div class="row">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">List Properti</label>                            
@@ -55,6 +73,7 @@ $name[] = 'konten_ads';
                             </select>                            
                         </div>
                     </div>
+                    @endif
                     <div class="row">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">Status</label>
