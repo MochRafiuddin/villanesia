@@ -30,13 +30,13 @@ $name[] = 'icon';
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Ads</label>
+                            <label for="exampleInputEmail1">Tampil pada filter</label>
                             <select class="form-control js-example-basic-single" name="{{$name[1]}}" id="{{$name[1]}}" style="width:100%">
-                                <option value="1" {{(old($name[1]) == 1) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[1],1)}}>
-                                        Ya
-                                </option>
                                 <option value="0" {{(old($name[1]) == 0) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[1],0)}}>
                                         Tidak
+                                </option>
+                                <option value="1" {{(old($name[1]) == 1) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[1],1)}}>
+                                        Ya
                                 </option>
                              </select>
                         </div>

@@ -48,7 +48,15 @@ class CAProperti extends Controller
         $page = ($request->page-1)*$limit;
         $order_by = $request->order_by;
 
+        if ($request->header('auth-key') != "undefined" && $request->header('auth-key') != null) {
+            $user = MApiKey::where('token',$request->header('auth-key'))->first();
+            $id_user = $user->id_user;
+        }else {
+            $id_user = 0;
+        }
+
         $tipe = MProperti::selectRaw('id_properti, id_bahasa, id_ref_bahasa, judul, alamat, harga_tampil, jumlah_kamar_tidur, jumlah_kamar_mandi, (jumlah_tamu+COALESCE(jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, sarapan, nama_file')
+                ->addSelect(DB::raw("( SELECT count(*) FROM h_favorit WHERE id_user = $id_user AND id_properti = m_properti.id_properti and deleted = 1) as user_favorit"))
                 ->where('deleted',1)
                 ->where('id_bahasa',$id_bahasa)
                 ->where('id_tipe_properti',$id_tipe)
@@ -107,9 +115,18 @@ class CAProperti extends Controller
     }
     public function get_property_detail(Request $request)
     {
+
+        if ($request->header('auth-key') != "undefined" && $request->header('auth-key') != null) {
+            $user = MApiKey::where('token',$request->header('auth-key'))->first();
+            $id_user = $user->id_user;
+        }else {
+            $id_user = 0;
+        }
+
         $id_properti = $request->id_properti;
         $id_bahasa = $request->id_bahasa;
         $tipe = MProperti::selectRaw('m_properti.*, m_jenis_tempat.nama_jenis_tempat, m_tipe_properti.nama_tipe_properti')
+                ->addSelect(DB::raw("( SELECT count(*) FROM h_favorit WHERE id_user = $id_user AND id_properti = m_properti.id_properti and deleted = 1) as user_favorit"))
                 ->join('m_jenis_tempat','m_properti.id_jenis_tempat','m_jenis_tempat.id_ref_bahasa')
                 ->join('m_tipe_properti','m_properti.id_tipe_properti','m_tipe_properti.id_ref_bahasa')
                 ->where('m_properti.id_ref_bahasa',$id_properti)
@@ -1551,7 +1568,7 @@ class CAProperti extends Controller
 
     public function get_property_detail_review(Request $request)
     {
-        if ($request->header('auth-key') != null) {
+        if ($request->header('auth-key') != "undefined" && $request->header('auth-key') != null) {
             $user = MApiKey::where('token',$request->header('auth-key'))->first();
             $id_user = $user->id_user;
         }else {
@@ -2008,10 +2025,33 @@ class CAProperti extends Controller
         $id_bahasa = $request->id_bahasa;        
         $nama_properti = $request->nama_properti;        
 
-        $data = MProperti::where('judul', 'like', '%'.$nama_properti.'%')
+        $data = MProperti::selectRaw('id_properti, id_bahasa, id_ref_bahasa, judul, alamat, harga_tampil, jumlah_kamar_tidur, jumlah_kamar_mandi, (jumlah_tamu+COALESCE(jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, sarapan, nama_file')
+                ->where('judul', 'like', '%'.$nama_properti.'%')
                 ->where('id_bahasa',$id_bahasa)                
                 ->where('deleted',1)
                 ->get();
+
+        if (count($data) > 0) {            
+            return response()->json([
+                'success' => true,
+                'message' => 'Success',
+                'code' => 1,
+                'data' => $data
+            ], 200);        
+        }else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data Tidak ditemukan',
+                'code' => 0
+            ], 400);
+        }
+    }
+
+    public function get_property_facilities_for_filter(Request $request)
+    {                
+        $id_bahasa = $request->id_bahasa; 
+
+        $data = MFasilitas::withDeleted()->where('id_bahasa',$id_bahasa)->where('tampil_depan',1)->get();
 
         if (count($data) > 0) {            
             return response()->json([

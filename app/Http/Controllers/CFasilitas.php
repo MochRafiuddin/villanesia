@@ -146,7 +146,7 @@ class CFasilitas extends Controller
     public function data()
     {
         $bahasa = (!empty($_GET["bahasa"])) ? ($_GET["bahasa"]) : (0);
-        $model = MFasilitas::withDeleted()->where('id_bahasa',$bahasa)->orderBy('id_ref_bahasa');
+        $model = MFasilitas::withDeleted()->where('id_bahasa',$bahasa)->orderBy('id_ref_bahasa')->orderBy('tampil_depan','desc');
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 $btn = '';                
@@ -159,6 +159,14 @@ class CFasilitas extends Controller
             ->addColumn('bahasa', function ($row) {                                
                 $bahasa = MBahasa::where('id_bahasa',$row->id_bahasa)->first();
                 $btn = '<i class="flag-icon '.$bahasa->logo.'"></i> '.$bahasa->nama_bahasa;                
+                return $btn;
+            })
+            ->editColumn('tampil_depan', function ($row) {                                
+                if ($row->tampil_depan==1) {
+                    $btn ="Ya";
+                }else {
+                    $btn ="Tidak";
+                }
                 return $btn;
             })            
             ->rawColumns(['action','bahasa','icon'])

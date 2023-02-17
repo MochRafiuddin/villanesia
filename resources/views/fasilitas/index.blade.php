@@ -29,6 +29,7 @@
                                         <th>No</th>
                                         <th>Bahasa</th>
                                         <th>Nama</th>
+                                        <th>Tampil pada filter</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -103,6 +104,10 @@
                     {
                         data: 'nama_fasilitas',
                         name: 'nama_fasilitas',                        
+                    },                    
+                    {
+                        data: 'tampil_depan',
+                        name: 'tampil_depan',
                     },                    
                     {
                         data: 'action',

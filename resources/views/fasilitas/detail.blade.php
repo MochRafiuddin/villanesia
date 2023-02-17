@@ -31,7 +31,7 @@ $name[] = 'gambar';
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Ads</label>
+                            <label for="exampleInputEmail1">Tampil pada filter</label>
                             <?php 
                                 if($data->tampil_depan == 1){
                                     $ads = "Ya";
