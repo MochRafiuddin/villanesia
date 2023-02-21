@@ -311,6 +311,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/booking/decline/{id}', [CBooking::class,'decline']);
     Route::post('/booking/extra/{id}', [CBooking::class,'extra']);
     Route::post('/booking/discount/{id}', [CBooking::class,'discount']);
+    Route::post('/booking/cek-tanggal/', [CBooking::class,'cek_tanggal']);
 
     //setting
     Route::get('/setting', [CSetting::class,'index'])->name('setting-index');

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\MBooking;
+use App\Models\MProperti;
+use App\Models\MPropertiHargaPeriode;
+use App\Models\MStatusBooking;
 use App\Models\MBookingHargaSatuan;
 use App\Models\MBookingPropertiExtra;
 use App\Models\MBookingExtra;
@@ -19,6 +22,7 @@ use App\Models\HPesan;
 use App\Models\HPesanDetail;
 use App\Services\Firestore;
 use Google\Cloud\Firestore\DocumentReference;
+use Carbon\Carbon;
 
 class CBooking extends Controller
 {
@@ -26,7 +30,9 @@ class CBooking extends Controller
 
     public function index()
     {
-        return view('booking.index')            
+        $status = MStatusBooking::where('id_bahasa',1)->get();
+        return view('booking.index')
+            ->with('status',$status)            
             ->with('title','Booking');
     }
     public function detail($id)
@@ -229,13 +235,24 @@ class CBooking extends Controller
 
         return redirect()->to('/booking/detail/'.$id)->with('msg','Sukses Menambahkan Data');
     }
-    public function data()
+    public function data(Request $request)
     {        
-        $model = MBooking::join('m_properti','t_booking.id_ref','m_properti.id_properti','left')
-            ->join('m_status_booking','t_booking.id_status_booking','m_status_booking.id_ref_bahasa','left')
-            ->selectRaw('t_booking.*, m_properti.judul as judul, m_properti.alamat as alamat, m_properti.id_tipe_booking as tipe_booking, m_properti.binatang as binatang, m_status_booking.nama_status_booking as nama_status_booking , m_status_booking.id_status_booking as id_status_booking')
-            ->where('m_status_booking.id_bahasa',1)
-            ->where('t_booking.deleted',1);
+        if ($request->status == 0) {
+            $model = MBooking::join('m_properti','t_booking.id_ref','m_properti.id_properti','left')
+                ->join('m_status_booking','t_booking.id_status_booking','m_status_booking.id_ref_bahasa','left')
+                ->selectRaw('t_booking.*, m_properti.judul as judul, m_properti.alamat as alamat, m_properti.id_tipe_booking as tipe_booking, m_properti.binatang as binatang, m_status_booking.nama_status_booking as nama_status_booking')
+                ->where('m_status_booking.id_bahasa',1)
+                ->where('t_booking.deleted',1)
+                ->orderBy('t_booking.created_date','desc');
+        }else {
+            $model = MBooking::join('m_properti','t_booking.id_ref','m_properti.id_properti','left')
+                ->join('m_status_booking','t_booking.id_status_booking','m_status_booking.id_ref_bahasa','left')
+                ->selectRaw('t_booking.*, m_properti.judul as judul, m_properti.alamat as alamat, m_properti.id_tipe_booking as tipe_booking, m_properti.binatang as binatang, m_status_booking.nama_status_booking as nama_status_booking')
+                ->where('m_status_booking.id_bahasa',1)
+                ->where('m_status_booking.id_status_booking',$request->status)
+                ->where('t_booking.deleted',1)
+                ->orderBy('t_booking.created_date','desc');
+        }
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
                 if ($row->id_status_booking == 1) {
@@ -303,6 +320,340 @@ class CBooking extends Controller
             ->rawColumns(['action','alamat','in','out','harga_total','status'])
             ->addIndexColumn()
             ->toJson();
-    }    
+    }
+    public function cek_tanggal(Request $request)
+    {   
+        $tanggal_mulai = $request->date_in;
+        $tanggal_selesai = $request->date_out;
 
+        if ($request->date_out < $request->date_in) {                
+            return response()->json([
+                'status' => false,
+                'msg' => 'Check out date must be greater then check in date',                    
+            ]);
+        }
+        $book = MBooking::find($request->id);
+        $pro = MProperti::find($book->id_ref);
+        $cus = MPropertiHargaPeriode::where('id_properti',$book->id_ref)->get();
+        $data = MBooking::selectRaw('count(id_ref) as total')
+                    ->where('tanggal_selesai','>',date('Y-m-d', strtotime($request->date_in)))
+                    ->where('tanggal_mulai','<=',date('Y-m-d', strtotime($request->date_out)))
+                    ->where('id_status_booking','!=',4)
+                    ->where('id_tipe',$book->id_tipe)
+                    ->where('id_ref',$book->id_ref)
+                    ->first();
+        // dd($data->total);
+        if ($data->total != 0) {
+            return response()->json([
+                    'status' => false,
+                    'msg' => 'Your dates are not available',                    
+                ]);
+        }else {
+            MBookingHargaSatuan::where('id_booking',$request->id)->delete();
+            $this->harga_booking_satuan($book,$pro,$tanggal_mulai,$tanggal_selesai,$cus);
+            $extra_service = MBookingPropertiExtra::where('id_booking',$request->id)->get();
+
+            $durasi = $this->durasi_inap($pro,$tanggal_mulai,$tanggal_selesai);
+            $durasi_inap = $durasi['durasi_inap'];
+            $durasi_inap_jam = $durasi['durasi_inap_jam'];
+
+                $harga_final_properti = MBookingHargaSatuan::where('id_booking',$book->id_booking)->get()->sum('harga_final');
+                $total_extra_service = MBookingPropertiExtra::where('id_booking',$book->id_booking)->get()->sum('harga_final');
+
+                $data_update = [
+                    'tanggal_mulai' => date('Y-m-d', strtotime($request->date_in)),
+                    'tanggal_selesai' => date('Y-m-d', strtotime($request->date_out)),
+                    'durasi_inap' => $durasi_inap,
+                    'durasi_inap_jam' => $durasi_inap_jam,
+                    'harga_final_properti' => $harga_final_properti,
+                    'total_extra_service' => $total_extra_service,
+                    'harga_total' => $harga_final_properti + $book->biaya_kebersihan + $book->total_extra_service + $pro->uang_jaminan + $book->nominal_pajak,
+                ];
+                MBooking::where('id_booking',$book->id_booking)->update($data_update);
+
+                return response()->json([
+                    'status' => true,
+                    'msg' => 'Your dates available',                    
+                ]);        
+        }
+    }
+
+    function harga_booking_satuan($book,$pro,$tanggal_mulai,$tanggal_selesai,$cus)
+    {
+        
+        $tamu_tambahan = ((($book->tamu_dewasa+$book->tamu_anak) - $pro->jumlah_tamu) < 0 ? 0 : (($book->tamu_dewasa+$book->tamu_anak) - $pro->jumlah_tamu));
+
+        $durasi = $this->durasi_inap($pro,$tanggal_mulai,$tanggal_selesai);
+        $durasi_inap = $durasi['durasi_inap'];
+        $durasi_inap_jam = $durasi['durasi_inap_jam'];
+
+            if ($pro->id_tipe_booking == 1) {            
+                if ($pro->harga_weekly != null && $pro->harga_monthly != null) {                
+                    if ($durasi_inap > 30) {
+                        $harga_final_properti = $pro->harga_monthly * $durasi_inap;
+                    }elseif ($durasi_inap > 7 && $durasi_inap <= 30) {
+                        $harga_final_properti = $pro->harga_weekly * $durasi_inap;
+                    }else {
+                        $harga_final_properti = $pro->harga_tampil * $durasi_inap;
+                    }
+                }else {
+                    $harga_final_properti = $pro->harga_tampil * $durasi_inap;
+                }
+
+                if($tamu_tambahan > 0){
+                    $harga_final_properti_tamu = $pro->harga_tampil * $durasi_inap * $tamu_tambahan;
+                    $this->booking_harga($book->id_booking, 2, $tamu_tambahan, null, null, $tanggal_mulai, $tanggal_selesai, $pro->harga_tampil, $harga_final_properti_tamu, $durasi_inap, 0);
+                }
+
+                $this->booking_harga($book->id_booking, 1, 1, null, null, $tanggal_mulai, $tanggal_selesai, $pro->harga_tampil, $harga_final_properti, $durasi_inap, 0);
+            }elseif ($pro->id_tipe_booking == 2) {            
+                $date1 = $this->get_date_by_input($tanggal_mulai,$tanggal_selesai);
+                $date2 = $this->get_date_custom_harga($cus,$tanggal_mulai,$tanggal_selesai);
+                $date_week = array_values(array_diff($date1,$date2));
+                $date_cus = array_values(array_intersect($date1,$date2));
+                // dd('first :'.$date_week[0].' last :'.end($date_week));
+                // dd(date('Y-m-d', strtotime(end($date_cus).' +1 day')));
+                // dd($date2);
+                if (count($date_cus) > 0) {
+                    $har_cus = $this->get_harga_cus_by_input($date_cus,$cus);                
+                    $this->booking_harga($book->id_booking, 1, 1, null, null, $date_cus[0], date('Y-m-d', strtotime(end($date_cus).' +1 day')), $har_cus['harga_tampil'], $har_cus['harga'], count($date_cus), 1);
+
+                    if ($tamu_tambahan > 0) {
+                        $tamu_add = $tamu_tambahan * $durasi_inap * $har_cus['tamu'];
+                        $this->booking_harga($book->id_booking, 2, $tamu_tambahan, null, null, $date_cus[0], date('Y-m-d', strtotime(end($date_cus).' +1 day')), $har_cus['tamu'], $tamu_add, count($date_cus), 1);
+                    }
+                }
+
+                if (count($date_week) > 0) {
+                    if ($pro->harga_weekend == null) {
+                        //$fin = $pro->harga_tampil * $durasi_inap;
+                        $fin = $pro->harga_tampil * count($date_week);
+                        $this->booking_harga($book->id_booking, 1, 1, null, null, $date_week[0], date('Y-m-d', strtotime(end($date_week).' +1 day')), $pro->harga_tampil, $fin, count($date_week), 0);
+                    }elseif ($pro->harga_weekend != null) {
+                        $final = $this->get_harga_by_input($date_week,$pro);
+                        $fin = $final['harga'];
+                        $this->booking_harga($book->id_booking, 1, 1, null, null, $date_week[0], date('Y-m-d', strtotime(end($date_week).' +1 day')), $pro->harga_tampil, $fin, count($date_week), 0);
+                    }
+
+                    if ($tamu_tambahan > 0) {
+                        $har_week = $this->get_harga_by_input($date_week,$pro);
+                        $tamu_add = $tamu_tambahan * $durasi_inap * $har_week['tamu'];                
+
+                        $this->booking_harga($book->id_booking, 2, $tamu_tambahan, null, null, $date_week[0], date('Y-m-d', strtotime(end($date_week).' +1 day')), $har_week['tamu'], $tamu_add, count($date_week), 0);
+                    }
+                }
+                            
+            }elseif ($pro->id_tipe_booking == 3) {
+                $harga_final_properti = $pro->harga_tampil * $durasi_inap;
+                $this->booking_harga($book->id_booking, 1, 1, null, null, $tanggal_mulai, date('Y-m-d', strtotime($tanggal_mulai.' +'.($durasi_inap * 7).' day')), $pro->harga_tampil, $harga_final_properti, $durasi_inap, 0);
+
+                if($book->extra_hari > 0){
+                    $harga_final_properti_extra = ($pro->harga_tampil * $durasi_inap) + floor($pro->harga_tampil / 7 * $book->extra_hari);
+
+                    $this->booking_harga($book->id_booking, 1, $book->extra_hari, null, null, date('Y-m-d', strtotime($tanggal_mulai.' +'.($durasi_inap * 7).' day')), $tanggal_selesai, floor($pro->harga_tampil / 7), $harga_final_properti_extra, $durasi_inap, 0);
+                }
+
+                if($tamu_tambahan > 0){
+                    if ($pro->harga_tamu_tambahan != null) {                    
+                        $harga_final_properti_tamu = $pro->harga_tamu_tambahan * $durasi_inap * $tamu_tambahan;                    
+                    }else {
+                        $harga_final_properti_tamu = 0;
+                    }
+
+                    $this->booking_harga($book->id_booking, 2, $tamu_tambahan, null, null, $tanggal_mulai, date('Y-m-d', strtotime($tanggal_mulai.' +'.($durasi_inap * 7).' day')), $pro->harga_tamu_tambahan, $harga_final_properti_tamu, $durasi_inap, 0);
+                    
+                    if($book->extra_hari > 0){
+                        $harga_final_properti_tamu_extra = ($pro->harga_tamu_tambahan * $durasi_inap * $tamu_tambahan) + floor($pro->harga_tamu_tambahan / 7 * $tamu_tambahan * $book->extra_hari);
+
+                        $this->booking_harga($book->id_booking, 2, ($tamu_tambahan * $book->extra_hari), null, null, date('Y-m-d', strtotime($tanggal_mulai.' +'.($durasi_inap * 7).' day')), $tanggal_selesai, floor($pro->harga_tamu_tambahan / 7), $harga_final_properti_tamu_extra, $durasi_inap, 0);
+                    }
+                }
+            }elseif ($pro->id_tipe_booking == 4) {            
+                $harga_final_properti = $pro->harga_tampil * $durasi_inap;
+                $this->booking_harga($book->id_booking, 1, 1, null, null, $tanggal_mulai, $tanggal_selesai, $pro->harga_tampil, $harga_final_properti, $durasi_inap, 0);
+                
+                if($book->extra_hari > 0){
+                    $harga_final_properti_extra = ($pro->harga_tampil * $durasi_inap) + floor($pro->harga_tampil / 30 * $book->extra_hari);
+                    
+                    $this->booking_harga($book->id_booking, 1, $book->extra_hari, null, null, date('Y-m-d', strtotime($tanggal_mulai.' +'.($durasi_inap * 30).' day')), $tanggal_selesai, floor($pro->harga_tampil / 30), $harga_final_properti_extra, $durasi_inap, 0);
+                }
+
+                if($tamu_tambahan > 0){
+                    if ($pro->harga_tamu_tambahan != null) {                    
+                        $harga_final_properti_tamu = $pro->harga_tamu_tambahan * $durasi_inap * $tamu_tambahan;                    
+                    }else {
+                        $harga_final_properti_tamu = 0;
+                    }
+
+                    $this->booking_harga($book->id_booking, 2, $tamu_tambahan, null, null, $tanggal_mulai, $tanggal_selesai, $pro->harga_tampil, $harga_final_properti_tamu, $durasi_inap, 0);
+                    
+                    if($book->extra_hari > 0){
+                        $harga_final_properti_tamu_extra = ($pro->harga_tamu_tambahan * $durasi_inap * $tamu_tambahan) + floor($pro->harga_tamu_tambahan / 30 * $tamu_tambahan * $book->extra_hari);
+                        
+                        $this->booking_harga($book->id_booking, 2, $tamu_tambahan, null, null, date('Y-m-d', strtotime($tanggal_mulai.' +'.($durasi_inap * 30).' day')), $tanggal_selesai, floor($pro->harga_tampil / 30), $harga_final_properti_tamu, $durasi_inap, 0);
+                    }
+                }
+            }else{
+                if ($pro->harga_weekend != null) {
+                    $hari = date('D', strtotime($tanggal_mulai));
+                    if ($pro->penerapan_harga_weekend==1) {
+                        if ($hari == 'Sat') {
+                            $final = $durasi_inap_jam * $pro->harga_weekend;
+                        }elseif ($hari == 'Sun') {
+                            $final = $durasi_inap_jam * $pro->harga_weekend;
+                        }else {
+                            $final = $durasi_inap_jam * $pro->harga_tampil;
+                        }
+                    }
+                    if ($pro->penerapan_harga_weekend==2) {
+                        if ($hari == 'Fri') {
+                            $final = $durasi_inap_jam * $pro->harga_weekend;
+                        }elseif ($hari == 'Sat') {
+                            $final = $durasi_inap_jam * $pro->harga_weekend;
+                        }else {
+                            $final = $durasi_inap_jam * $pro->harga_tampil;
+                        }
+                    }
+                    if ($pro->penerapan_harga_weekend==3) {
+                        if ($hari == 'Fri') {
+                            $final = $durasi_inap_jam * $pro->harga_weekend;
+                        }elseif ($hari == 'Sat') {
+                            $final = $durasi_inap_jam * $pro->harga_weekend;
+                        }elseif ($hari == 'Sun') {
+                            $final = $durasi_inap_jam * $pro->harga_weekend;
+                        }else {
+                            $final = $durasi_inap_jam * $pro->harga_tampil;
+                        }
+                    }                
+                }else {
+                    $final = $pro->harga_tampil * $durasi_inap_jam;
+                }
+                $this->booking_harga($book->id_booking, 1, 1, $jam_mulai, $jam_selesai, null, null, $pro->harga_tampil, $final, $durasi_inap_jam, 0);
+
+                if ($tamu_tambahan > 0) {
+                    $harga_final_properti_tamu = $pro->harga_tamu_tambahan * $tamu_tambahan;
+                    
+                    $this->booking_harga($book->id_booking, 2, $tamu_tambahan, $jam_mulai, $jam_selesai, null, null, $pro->harga_tampil, $harga_final_properti_tamu, $durasi_inap_jam, 0);
+                }
+            }
+    }
+
+    public function booking_harga($id, $tipe, $jumlah, $jam_mulai, $jam_selesai, $tanggal_mulai, $tanggal_selesai, $satuan, $final, $durasi, $custom)
+    {
+        // dd($jumlah);
+        $booking = new MBookingHargaSatuan();
+        $booking->id_booking = $id;
+        $booking->id_tipe = $tipe;
+        $booking->jumlah_paket = $jumlah;
+        if ($tanggal_mulai == null) {                    
+            $booking->jam_mulai = $jam_mulai;
+            $booking->jam_selesai = $jam_selesai;
+            $booking->durasi_inap_jam = $durasi;
+        }else {
+            $booking->tanggal_mulai = date('Y-m-d', strtotime($tanggal_mulai));
+            $booking->tanggal_selesai = date('Y-m-d', strtotime($tanggal_selesai));
+            $booking->durasi_inap = $durasi;
+        }
+        $booking->custom_periode = $custom;
+        $booking->harga_satuan = $satuan;
+        $booking->harga_final = $final;
+        $booking->save();
+    }
+
+    function durasi_inap($pro,$tanggal_mulai,$tanggal_selesai)
+    {
+        $extra = 0;
+            if ($pro->id_tipe_booking == 1) {
+                $mulai = date('Y-m-d', strtotime($tanggal_mulai.' -1 day'));
+                $selesai = date('Y-m-d', strtotime($tanggal_selesai));
+                $from = Carbon::parse($mulai);
+                $to = Carbon::parse($selesai);
+                $durasi_inap = $to->diffInDays($from);
+                $extra = 0;
+                $durasi_inap_jam = 0;
+            }elseif ($pro->id_tipe_booking == 2) {
+                $mulai = date('Y-m-d', strtotime($tanggal_mulai));
+                $selesai = date('Y-m-d', strtotime($tanggal_selesai));
+                $from = Carbon::parse($mulai);
+                $to = Carbon::parse($selesai);
+                $durasi_inap = $to->diffInDays($from);
+                $durasi_inap_jam = 0;
+                $extra = 0;
+            }elseif ($pro->id_tipe_booking == 3) {
+                $mulai = date('Y-m-d', strtotime($tanggal_mulai));
+                $selesai = date('Y-m-d', strtotime($tanggal_selesai));
+                $from = Carbon::parse($mulai);
+                $to = Carbon::parse($selesai);
+                $diff_in_hours = $to->diffInDays($from);
+                // dd($diff_in_hours);
+                $durasi_inap = floor($diff_in_hours / 7);
+                $durasi_inap_jam = 0;
+                $extra = $diff_in_hours % 7;
+            }elseif ($pro->id_tipe_booking == 4) {
+                $mulai = date('Y-m-d', strtotime($tanggal_mulai));
+                $selesai = date('Y-m-d', strtotime($tanggal_selesai));
+                $from = Carbon::parse($mulai);
+                $to = Carbon::parse($selesai);
+                $diff_in_hours = $to->diffInDays($from);
+                $durasi_inap = floor($diff_in_hours / 30);
+                $durasi_inap_jam = 0;
+                $extra = $diff_in_hours % 30;
+            }else{
+                $mulia = date('Y-m-d H:s:i', strtotime($tanggal_mulai.' '.$jam_mulai));
+                $selesai = date('Y-m-d H:s:i', strtotime($tanggal_mulai.' '.$jam_selesai));
+                $from = Carbon::parse($mulia);
+                $to = Carbon::parse($selesai);
+                $durasi_inap_jam = $to->diffInHours($from);
+                $extra = 0;
+                $durasi_inap = 0;
+            }
+        $data['extra'] = $extra;
+        $data['durasi_inap'] = $durasi_inap;
+        $data['durasi_inap_jam'] = $durasi_inap_jam;
+        return $data;
+    }
+
+    function properti_extra($pro,$book,$extra_service)
+    {
+        if ($extra_service != null) {                            
+            $id_extra = [];
+            foreach ($extra_service as $key) {                
+                $ser = MPropertiExtra::find($key->id_properti_extra);
+                if ($ser->tipe == 1) {
+                    $sevice = $ser->harga;
+                }elseif ($ser->tipe == 2) {
+                    if ($pro->id_tipe_booking == 3) {
+                        $sevice = ($ser->harga * $durasi_inap)+($extra * floor($ser->harga/7));
+                    }elseif ($pro->id_tipe_booking == 4) {
+                        $sevice = ($ser->harga * $durasi_inap)+($extra * floor($ser->harga/30));
+                    }elseif ($pro->id_tipe_booking == 5) {
+                        $sevice = ($ser->harga * $durasi_inap_jam);
+                    }else {
+                        $sevice = ($ser->harga * $durasi_inap);
+                    }
+                }elseif ($ser->tipe == 3) {
+                    $sevice = ($ser->harga * ($tamu_dewasa + $tamu_anak));
+                }else {
+                    if ($pro->id_tipe_booking == 3) {
+                        $sevice = ($ser->harga * $durasi_inap * ($tamu_dewasa + $tamu_anak)) + ($extra * floor($ser->harga/7) * ($tamu_dewasa + $tamu_anak));
+                    }elseif ($pro->id_tipe_booking == 4) {
+                        $sevice = ($ser->harga * $durasi_inap * ($tamu_dewasa + $tamu_anak)) + ($extra * floor($ser->harga/30) * ($tamu_dewasa + $tamu_anak));
+                    }elseif ($pro->id_tipe_booking == 5) {
+                        $sevice = ($ser->harga * $durasi_inap_jam * ($tamu_dewasa + $tamu_anak));
+                    }else {                                
+                        $sevice = ($ser->harga * $durasi_inap * ($tamu_dewasa + $tamu_anak));
+                    }
+                }
+                $book = new MBookingPropertiExtra();
+                $book->id_booking = $book->id_booking;
+                $book->id_properti_extra = $ser->id_properti_extra;
+                $book->harga_satuan = $ser->harga;
+                $book->harga_final = $sevice;
+                $book->save();
+
+                $id_extra[]=$key->id;
+            }
+            MBookingPropertiExtra::whereIn('id',$id_extra)->delete();
+        }
+    }
 }

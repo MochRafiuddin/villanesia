@@ -6,6 +6,23 @@
             <div class="card-body">
                 <h4>Data Booking</h4><br>
                 <div class="row">
+                    <div class="form-group col-md-3">
+                        <label for="">Status</label>
+                        <select class="form-control js-example-basic-single" name="status" id="status" style="width:100%">
+                                <option value="0">All</option>
+                            @foreach($status as $data)
+                                <option value="{{$data->id_status_booking}}">
+                                    @if($data->id_status_booking == 1)
+                                        New
+                                    @else  
+                                        {{$data->nama_status_booking}}
+                                    @endif
+                                </option>
+                            @endforeach
+                        </select>                  
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-12">
                         <div class="table-responsive">
                             <table class="table w-100">
@@ -41,66 +58,6 @@
     $(document).ready(function () {
         read_data();
 
-        function read_data() {            
-            $('table').DataTable({
-                processing: true,
-                serverSide: true,
-
-                "scrollX": true,
-                ajax: {
-                    url: '{{ url("booking/data") }}',
-                    type: 'GET',                    
-                },
-                rowReorder: {
-                    selector: 'td:nth-child(1)'
-                },
-
-                responsive: true,
-                columns: [{
-                        data: 'kode_booking',
-                        name: 'kode_booking',                        
-                    },
-                    {
-                        data: 'status',
-                        name: 'status',                        
-                    },
-                    {
-                        data: 'date',
-                        name: 'date',                        
-                    },
-                    {
-                        data: 'alamat',
-                        name: 'm_properti.judul',                        
-                    },
-                    {
-                        data: 'in',
-                        name: 'in',                        
-                    },
-                    {
-                        data: 'out',
-                        name: 'out',                        
-                    },
-                    {
-                        data: 'tamu',
-                        name: 'tamu',                        
-                    },
-                    {
-                        data: 'pet',
-                        name: 'pet',                        
-                    },
-                    {
-                        data: 'harga_total',
-                        name: 'harga_total',                        
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false
-                    },
-                ]
-            });
-        }
          $(document).on('click','.delete',function(e){
             e.preventDefault();
             Swal.fire({
@@ -128,6 +85,76 @@
             
         });
                 
+    });
+
+    function read_data() {
+        let status = $('#status').val();
+        $('.table').DataTable({
+            processing: true,
+            serverSide: true,
+
+            "scrollX": true,
+            ajax: {
+                url: '{{ url("booking/data") }}',
+                type: 'GET',    
+                data: {
+                    status : status,
+                }                
+            },
+            rowReorder: {
+                selector: 'td:nth-child(1)'
+            },
+
+            responsive: true,
+            columns: [{
+                    data: 'kode_booking',
+                    name: 'kode_booking',                        
+                },
+                {
+                    data: 'status',
+                    name: 'status',                        
+                },
+                {
+                    data: 'date',
+                    name: 'date',                        
+                },
+                {
+                    data: 'alamat',
+                    name: 'm_properti.judul',                        
+                },
+                {
+                    data: 'in',
+                    name: 'in',                        
+                },
+                {
+                    data: 'out',
+                    name: 'out',                        
+                },
+                {
+                    data: 'tamu',
+                    name: 'tamu',                        
+                },
+                {
+                    data: 'pet',
+                    name: 'pet',                        
+                },
+                {
+                    data: 'harga_total',
+                    name: 'harga_total',                        
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
+                },
+            ]
+        });
+    }
+
+    $('#status').on('change',function(){            
+        $('.table').DataTable().destroy();            
+        read_data();            
     });
 </script>
 @endpush

@@ -210,6 +210,7 @@ use App\Traits\Helper;
                 <div class="col-12">
                     @if($data->id_status_booking == 1)
                     <button type="button" class="btn btn-success col-12 mb-3 confirm">Confirm Availability</button>                    
+                    <button type="button" class="btn btn-secondary col-12 mb-3" data-toggle="modal" data-target="#date">Edit Date</button>
                     <button type="button" class="btn btn-secondary col-12 mb-3" data-toggle="modal" data-target="#exampleModal">Decline</button>
                     <button class="btn btn-secondary col-12 mb-3" data-toggle="modal" data-target="#ModalExtra">Extra Expenses</button>
                     <button class="btn btn-secondary col-12 mb-3" data-toggle="modal" data-target="#ModalDiscount">Discount</button>
@@ -220,6 +221,33 @@ use App\Traits\Helper;
             </div>
         </div>
         </div>
+    </div>
+</div>
+
+<div class="modal fade" id="date" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">        
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div id="msg1"></div>
+                    </div>
+                    <div class="col-12 form-group">
+                        <label for="message-text" class="col-form-label">Check In</label>
+                        <input class="form-control pickerdate" type="text" name="checkin" id="checkin" value="{{$date_mulai}}">
+                        <input type="hidden" name="id_booking_date" value="{{$id}}" id="id_booking_date">
+                    </div>
+                    <div class="col-12 form-group">
+                        <label for="message-text" class="col-form-label">Check Out</label>
+                        <input class="form-control pickerdate" type="text" name="checkout" id="checkout" value="{{$date_selesai}}">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn_date">Submit</button>
+                <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>        
     </div>
 </div>
 
@@ -344,6 +372,11 @@ use App\Traits\Helper;
 @push('js')
 <script>
     $(document).ready(function () {
+        $(".pickerdate").datepicker( {
+            format: "dd-mm-yyyy",
+            orientation: "bottom"
+        });
+
         $("#add-extra").click(function(e){
             var nama = $(".exname").val();
             var val = $(".valex").val();
@@ -408,6 +441,28 @@ use App\Traits\Helper;
             }
         });
      });
+
+        $('.btn_date').click(function(e){
+            $('.btn_date').text('Loding....');
+            var date_in = $('#checkin').val();
+            var date_out = $('#checkout').val();
+            var id = $('#id_booking_date').val();
+            $.ajax({
+                url: "{{url('booking/cek-tanggal')}}",
+                type: "POST",            
+                data: { date_in:date_in, date_out:date_out, id:id},
+                success: function(res){
+                    if (res.status == false) {
+                        $('.btn_date').text('Submit');
+                        $("#msg1").html("<div class='alert alert-danger alert-block'>\
+                        <button type='button' class='close' data-dismiss='alert'>&times;</button>"+res.msg+"</div>");
+                    }else{
+                        $('.btn_date').text('Submit');
+                        window.location = "{{url('/booking/detail/'.$id)}}";
+                    }
+                }
+            });
+        });
 
     });
 </script>

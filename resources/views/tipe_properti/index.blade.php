@@ -29,6 +29,7 @@
                                         <th>No</th>
                                         <th>Bahasa</th>
                                         <th>Nama</th>
+                                        <th>List Urutan</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -103,6 +104,10 @@
                     {
                         data: 'nama_tipe_properti',
                         name: 'nama_tipe_properti',                        
+                    },
+                    {
+                        data: 'urutan',
+                        name: 'urutan',                        
                     },
                     {
                         data: 'action',
