@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MBooking;
 use App\Models\MProperti;
 use App\Models\MPropertiHargaPeriode;
+use App\Models\MPropertiExtra;
 use App\Models\MStatusBooking;
 use App\Models\MBookingHargaSatuan;
 use App\Models\MBookingPropertiExtra;
@@ -326,7 +327,7 @@ class CBooking extends Controller
         $tanggal_mulai = $request->date_in;
         $tanggal_selesai = $request->date_out;
 
-        if ($request->date_out < $request->date_in) {                
+        if (strtotime($request->date_out) <= strtotime($request->date_in)) {
             return response()->json([
                 'status' => false,
                 'msg' => 'Check out date must be greater then check in date',                    
@@ -341,6 +342,7 @@ class CBooking extends Controller
                     ->where('id_status_booking','!=',4)
                     ->where('id_tipe',$book->id_tipe)
                     ->where('id_ref',$book->id_ref)
+					->where('id_booking','!=',$request->id)
                     ->first();
         // dd($data->total);
         if ($data->total != 0) {
@@ -352,10 +354,12 @@ class CBooking extends Controller
             MBookingHargaSatuan::where('id_booking',$request->id)->delete();
             $this->harga_booking_satuan($book,$pro,$tanggal_mulai,$tanggal_selesai,$cus);
             $extra_service = MBookingPropertiExtra::where('id_booking',$request->id)->get();
-
+            
             $durasi = $this->durasi_inap($pro,$tanggal_mulai,$tanggal_selesai);
             $durasi_inap = $durasi['durasi_inap'];
             $durasi_inap_jam = $durasi['durasi_inap_jam'];
+
+            $this->properti_extra($pro,$book,$extra_service,$durasi);
 
                 $harga_final_properti = MBookingHargaSatuan::where('id_booking',$book->id_booking)->get()->sum('harga_final');
                 $total_extra_service = MBookingPropertiExtra::where('id_booking',$book->id_booking)->get()->sum('harga_final');
@@ -367,7 +371,7 @@ class CBooking extends Controller
                     'durasi_inap_jam' => $durasi_inap_jam,
                     'harga_final_properti' => $harga_final_properti,
                     'total_extra_service' => $total_extra_service,
-                    'harga_total' => $harga_final_properti + $book->biaya_kebersihan + $book->total_extra_service + $pro->uang_jaminan + $book->nominal_pajak,
+                    'harga_total' => $harga_final_properti + $book->cleaning_fee + $book->security_deposit + $book->nominal_pajak + $total_extra_service + $book->total_booking_extra - $book->total_booking_discount,
                 ];
                 MBooking::where('id_booking',$book->id_booking)->update($data_update);
 
@@ -613,8 +617,11 @@ class CBooking extends Controller
         return $data;
     }
 
-    function properti_extra($pro,$book,$extra_service)
+    function properti_extra($pro,$book,$extra_service,$durasi)
     {
+        $durasi_inap = $durasi['durasi_inap'];
+        $durasi_inap_jam = $durasi['durasi_inap_jam'];
+
         if ($extra_service != null) {                            
             $id_extra = [];
             foreach ($extra_service as $key) {                
@@ -644,12 +651,12 @@ class CBooking extends Controller
                         $sevice = ($ser->harga * $durasi_inap * ($tamu_dewasa + $tamu_anak));
                     }
                 }
-                $book = new MBookingPropertiExtra();
-                $book->id_booking = $book->id_booking;
-                $book->id_properti_extra = $ser->id_properti_extra;
-                $book->harga_satuan = $ser->harga;
-                $book->harga_final = $sevice;
-                $book->save();
+                $bok = new MBookingPropertiExtra();
+                $bok->id_booking = $book->id_booking;
+                $bok->id_properti_extra = $ser->id_properti_extra;
+                $bok->harga_satuan = $ser->harga;
+                $bok->harga_final = $sevice;
+                $bok->save();
 
                 $id_extra[]=$key->id;
             }
