@@ -6,6 +6,7 @@ $name[] = 'username';
 $name[] = 'password';
 $name[] = 'email';
 $name[] = 'no_telfon';
+$name[] = 'id_role';
 ?>
 <div class="main-panel">
     <div class="content-wrapper">
@@ -33,6 +34,17 @@ $name[] = 'no_telfon';
                             <label for="exampleInputEmail1">Phone</label>
                             <input type="text" class="form-control @error($name[3]) is-invalid @enderror"
                                 value="{{Helper::showData($data,$name[3])}}" name="{{$name[3]}}" readonly/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            <label for="exampleInputEmail1">Role</label>
+                            <select class="form-control js-example-basic-single @error($name[4]) invalid @enderror" name="{{$name[4]}}" id="{{$name[4]}}" style="width:100%">
+                                <option value="" selected disabled>Pilih</option>
+                                @foreach($role as $pro)
+                                    <option value="{{$pro->id_role}}" {{(old($name[4]) == $pro->id_role) ? 'selected' : ''}} {{Helper::showDataSelected($data,$name[4],$pro->id_role)}}>{{$pro->nama_role}}</option>
+                                @endforeach
+                            <select>
                         </div>
                     </div>
                     <a href="{{url('user')}}" class="btn btn-success">Kembali</a>

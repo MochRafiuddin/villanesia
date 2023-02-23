@@ -493,10 +493,10 @@ trait Helper
 
    public function can_akses($kode = null) {
 
-  $data_akses   =   DB::table('m_action as a')
-                    ->select('a.kode')
-                    ->join('map_role_action as b','a.id_action','=','b.id_action')
-                    ->where('b.id_role',Auth::user()->id_role)->get();
+  $data_akses   =   DB::table('map_role_menu as a')
+                    ->select('b.nama_menu')
+                    ->join('m_menu as b','a.id_menu','=','b.id_menu')
+                    ->where('a.id_role',Auth::user()->id_role)->get();
 
   // dd($data_akses);
 
@@ -504,7 +504,7 @@ trait Helper
 
   foreach ($data_akses as $key => $value) {
 
-    array_push($datah, $value->kode);
+    array_push($datah, $value->nama_menu);
 
   }
 

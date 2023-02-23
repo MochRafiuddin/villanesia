@@ -20,6 +20,7 @@
                                         <th>Username</th>
                                         <th>Email</th>
                                         <th>Phone</th>
+                                        <th>Role</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -100,6 +101,10 @@
                     {
                         data: 'no_telfon',
                         name: 'no_telfon',                        
+                    },
+                    {
+                        data: 'role',
+                        name: 'role',                        
                     },
                     {
                         data: 'action',

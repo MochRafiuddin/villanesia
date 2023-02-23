@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\MRole;
 use App\Models\MCustomer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -18,18 +19,22 @@ class CUser extends Controller
     }
     public function create()
     {                   
+        $role = MRole::where('deleted',1)->get();
         $url = url('user/create-save');
         return view('user.form')
             ->with('data',null)            
             ->with('title','User')
             ->with('titlePage','Tambah')
+            ->with('role',$role)
             ->with('url',$url);
     }
     public function show($id)
     {        
-        $data = User::find($id);        
+        $data = User::find($id);
+        $role = MRole::where('deleted',1)->get();        
         $url = url('user/show-save/'.$id);
         return view('user.form')
+            ->with('role',$role)
             ->with('data',$data)
             ->with('title','User')
             ->with('titlePage','Edit')
@@ -52,9 +57,11 @@ class CUser extends Controller
     }
     public function detail($id)
     {        
-        $data = User::find($id);        
+        $data = User::find($id);   
+        $role = MRole::where('deleted',1)->get();        
         $url = url('user/show-save/'.$id);
         return view('user.detail')
+            ->with('role',$role)
             ->with('data',$data)
             ->with('title','User')
             ->with('titlePage','Edit')
@@ -67,6 +74,7 @@ class CUser extends Controller
             'password' => 'required',
             'email' => 'required',
             'no_telfon' => 'required',
+            'id_role' => 'required',
         ]);
         
         if ($validator->fails()) {
@@ -106,6 +114,7 @@ class CUser extends Controller
         $tipe->no_telfon = $request->no_telfon;
         $tipe->tipe_user = 1;
         $tipe->id_ref = $cus->id;
+        $tipe->id_role = $request->id_role;
         $tipe->save();        
 
         return redirect()->route('user-index')->with('msg','Sukses Menambahkan Data');
@@ -116,6 +125,7 @@ class CUser extends Controller
             'username' => 'required',            
             'email' => 'required',
             'no_telfon' => 'required',
+            'id_role' => 'required',
         ]);
         
         if ($validator->fails()) {
@@ -128,6 +138,7 @@ class CUser extends Controller
         $tipe->username = $request->username;        
         $tipe->email = $request->email;
         $tipe->no_telfon = $request->no_telfon;
+        $tipe->id_role = $request->id_role;
         if ($request->password != null) {
             $tipe->password = Hash::make($request->password);
         }
@@ -187,6 +198,16 @@ class CUser extends Controller
                 $btn .= '<a href="'.url('user/detail/'.$row->id_user).'" class="text-warning mr-2"><span class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="Top" title="Detail Data"></span></a>';                
                 $btn .= '<a href="'.url('user/show/'.$row->id_user).'" class="text-danger mr-2"><span class="mdi mdi-pen" data-toggle="tooltip" data-placement="Top" title="Edit Data"></span></a>';                
                 $btn .= '<a href="'.url('user/delete/'.$row->id_user).'" class="text-primary delete"><span class="mdi mdi-delete" data-toggle="tooltip" data-placement="Top" title="Hapus Data"></span></a>';
+                return $btn;
+            })
+            ->editColumn('role', function ($row) {
+                $btn = '';
+                if ($row->id_role == 0) {
+                    $btn = "-";
+                }else {
+                    $role = MRole::where('id_role',$row->id_role)->first();
+                    $btn = $role->nama_role;
+                }
                 return $btn;
             })
             ->rawColumns(['action'])

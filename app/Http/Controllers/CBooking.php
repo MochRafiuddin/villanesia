@@ -267,7 +267,7 @@ class CBooking extends Controller
                 if ($row->id_status_booking == 1) {
                     $btn = '<p class="badge badge-primary text-white">New</p>';
                 }elseif ($row->id_status_booking == 5 || $row->id_status_booking == 2) {
-                    $btn = '<p class="badge badge-success text-white">Waiting Payment</p>';
+                    $btn = '<p class="badge badge-success text-white">'.$row->nama_status_booking.'</p>';
                 }else{
                     $btn = '<p class="badge badge-danger text-white">'.$row->nama_status_booking.'</p>';
                 }
@@ -621,7 +621,9 @@ class CBooking extends Controller
     {
         $durasi_inap = $durasi['durasi_inap'];
         $durasi_inap_jam = $durasi['durasi_inap_jam'];
-
+        $extra = $durasi['extra'];
+		$tamu_dewasa = $book->tamu_dewasa;
+		$tamu_anak = $book->tamu_anak;
         if ($extra_service != null) {                            
             $id_extra = [];
             foreach ($extra_service as $key) {                
