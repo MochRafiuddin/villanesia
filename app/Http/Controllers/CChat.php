@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\HPesan;
+use App\Models\User;
 use App\Models\HPesanDetail;
 use Auth;
 use App\Services\Firestore;
@@ -15,8 +16,13 @@ class CChat extends Controller
     public function index()
     {        
         $pesan = HPesan::orderBy('waktu_pesan_terakhir','desc')->get();
+        $user = User::select('m_customer.nama_depan','m_customer.nama_belakang','m_users.id_user')
+            ->join('m_customer','m_customer.id','m_users.id_ref')
+            ->where('m_users.deleted',1)->get();
+        // dd($user);
         return view('chat.index_baru')
             ->with('pesan',$pesan)
+            ->with('user',$user)
             ->with('title','Chat');
     }
 
@@ -40,6 +46,32 @@ class CChat extends Controller
             ->where('h_pesan.id_pesan',$id)
             ->first();
         // dd($pesan);
+        $firestore = Firestore::get();
+        $query = $firestore->collection('h_pesan')
+            ->where('id_pesan', '=', intval($id));
+        
+        $documents = $query->documents();        
+        $id = null;
+        foreach ($documents as $document) {
+            $id = $document->id();
+            $doc = $firestore->collection('h_pesan')->document($id)
+                ->set([
+                    'badge' => $document['badge'],
+                    'created_date' => $document['created_date'],
+                    'id_pesan' => $document['id_pesan'],
+                    'id_ref' => $document['id_ref'],
+                    'id_user_penerima' => $document['id_user_penerima'],
+                    'id_user_pengirim' => $document['id_user_pengirim'],
+                    'judul' => $document['judul'],
+                    'id_booking' => $document['id_booking'],
+                    'judul_mobile' => $document['judul_mobile'],
+                    'penerima_lihat' => 1,
+                    'pengirim_lihat' => $document['pengirim_lihat'],
+                    'pesan_terakhir' => $document['pesan_terakhir'],
+                    'updated_date' => new \Google\Cloud\Core\Timestamp(new \DateTime(date('Y-m-d H:i:s'))),
+                    'waktu_pesan_terakhir' => $document['waktu_pesan_terakhir'],
+                ]);
+        }
         return response()->json(['data'=>$pesan,'title'=>$title]);
     }
     public function tambah_chat_detail(Request $request)
@@ -60,7 +92,7 @@ class CChat extends Controller
         $p->waktu_pesan_terakhir = Carbon::now();
         $pengirim_lihat = $p->pengirim_lihat +1;
         $p->pengirim_lihat = $pengirim_lihat;
-        $p->penerima_lihat = 0;
+        $p->penerima_lihat = 1;
         $p->update();
 
         $firestore = Firestore::get();

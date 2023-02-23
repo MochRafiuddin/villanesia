@@ -89,7 +89,7 @@ function datachat(id_pesan) {
                             <div class="header">\
                                 <small class=" text-muted">\
                                     <span class="mdi mdi-clock"></span>'+date+'</small>\
-                                <strong class="pull-right primary-font">'+e.nama_depan+' '+e.nama_belakang+'</strong>\
+                                <small><strong class="pull-right primary-font">'+e.nama_depan+' '+e.nama_belakang+'</strong></small>\
                             </div>\
                             <p id="'+e.id_pesan_detail+'-message">\
                                 '+e.pesan+'\

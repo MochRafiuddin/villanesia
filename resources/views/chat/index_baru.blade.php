@@ -1,5 +1,5 @@
 @push('css-app')
-    <link rel="stylesheet" href="{{asset('/')}}assets/chat/style.css" />
+    <link rel="stylesheet" href="{{asset('/')}}assets/chat/style.css?version='9'" />
     <style>
 
         .waktu {
@@ -105,6 +105,10 @@
         Json_pesan.forEach(function(data){
             pushJson(data);
         });
+        var Json_user = <?php echo json_encode($user); ?>;
+        Json_user.forEach(function(data){
+            pushJsonUser(data);
+        });
         load_kiri();
         // load_kanan(0);
     });
@@ -112,8 +116,11 @@
     var awal = 0;
     var id_pesan = 0;
     let len = 0;
+    var id_user_login = <?php echo Auth::user()->id_user; ?>;
 
     const data_list_awal = [];
+
+    const data_user = [];
 
     var data_list_detail = [];
 
@@ -139,6 +146,19 @@
             nama_depan:data.nama_depan,
             nama_belakang:data.nama_belakang,
             foto:data.nama_foto,
+        });
+    }
+
+    function pushJsonUser(data){
+        if (data.nama_belakang == null) {
+            var belakang ='';
+        }else{
+            var belakang = data.nama_belakang;
+        }
+        data_user.push({
+            nama_depan:data.nama_depan,
+            nama_belakang:belakang,
+            id_user:data.id_user,            
         });
     }
 
@@ -201,6 +221,8 @@
                     });
                     // console.log(data_list_detail);
                     res.data.forEach(e => {
+                        var search_user = data_user.find(o => o.id_user === e.id_user); 
+                        // console.log(search_user.nama_depan);
                         var mydate = new Date(e.created_date);                    
                         var date = moment(mydate).format('DD-MM-YYYY HH:mm:ss');
                         var foto ='';
@@ -209,11 +231,12 @@
                         }else{                        
                             var foto ='{{asset("assets/images/avatar.png")}}';
                         }
-                        if (e.id_user ==1) {
+                        if (e.id_user == id_user_login) {
                                 var html = '<li class="left clearfix list_chat" style="width: 50%;border-radius: 10px 10px 0px 10px;background: #7fdbb4;margin-left: 49%;padding:10px">\
                                 <div class="chat-body clearfix text-right">\
                                     <div class="header">\
-                                        <small><span class="mdi mdi-clock"></span>'+date+'</small>\
+                                        <strong class="primary-font pull-left">'+search_user.nama_depan+' '+search_user.nama_belakang+'</strong> <small class="text-muted">\
+                                        <span class="mdi mdi-clock"></span>'+date+'</small>\
                                     </div>\
                                     <p id="'+e.id_pesan_detail+'">\
                                         '+e.pesan+'\
@@ -235,6 +258,7 @@
                                 <div class="header">\
                                     <small class=" text-muted">\
                                         <span class="mdi mdi-clock"></span>'+date+'</small>\
+                                        <strong class="pull-right primary-font" style="margin-right: 10px;">'+search_user.nama_depan+' '+search_user.nama_belakang+'</strong>\
                                 </div>\
                                 <p id="'+e.id_pesan_detail+'-message">\
                                     '+e.pesan+'\
@@ -274,6 +298,7 @@
                 pesan:pesan,
             },            
             success: function(e){
+                var search_user = data_user.find(o => o.id_user === id_user_login); 
                 var mydate = new Date(e.data.created_date);                    
                 var date = moment(mydate).format('DD-MM-YYYY HH:mm:ss');
                     if (e.data.nama_foto != null) {
@@ -284,7 +309,8 @@
                 var html = '<li class="left clearfix list_chat" style="width: 50%;border-radius: 10px 10px 0px 10px;background: #7fdbb4;margin-left: 49%;padding:10px">\
                 <div class="chat-body clearfix text-right">\
                     <div class="header">\
-                        <small><span class="mdi mdi-clock"></span>'+date+'</small>\
+                        <strong class="primary-font pull-left">'+search_user.nama_depan+' '+search_user.nama_belakang+'</strong> <small class="text-muted">\
+                            <span class="mdi mdi-clock"></span>'+date+'</small>\
                     </div>\
                     <p id="'+e.data.id_pesan_detail+'">\
                         '+e.data.pesan+'\
@@ -400,7 +426,11 @@
         // console.log(doc.doc.data().pesan_terakhir);
         var hasil_search = data_list_awal.find(o => o.id_pesan === tampung_id); 
         if(hasil_search){
-            pindah(data.id_pesan,data.pesan_terakhir,data.waktu_pesan_terakhir);
+            if (data.penerima_lihat == 1 && hasil_search.pesan_terakhir == data.pesan_terakhir) {
+                $("#div_list #div_"+data.id_pesan+" ").find('.badge-cus').remove();
+            }else{
+                pindah(data.id_pesan,data.pesan_terakhir,data.waktu_pesan_terakhir);
+            }
                 // var mydate1 = new Date(data.waktu_pesan_terakhir);
                 // var date1 = moment(mydate1).format('HH:mm');    
                 // $("#div_list #div_"+data.id_pesan).parents('.mail-list').hide().prependTo("#div_list").slideDown();
@@ -433,6 +463,7 @@
     function update_chat_detail(data){
 
         var tampung_id_user = data.id_user;
+        var search_user = data_user.find(o => o.id_user === tampung_id_user);
         // var waktu = data.created_date;
         var pesan = data.pesan;
         var id_pesan_detail = data.id_pesan_detail;
@@ -459,7 +490,7 @@
         }
         
         //diappend
-        if(tampung_id_user != 1){
+        if(tampung_id_user != id_user_login){
             if (data.id_tipe == 2) {
                 var html = '<li class="text-center clearfix list_chat" style="width: 32%;border-radius: 10px 10px 10px 10px;background: #c6cbdf;margin-left: 35%;padding:5px">\
                     <small class="">\
@@ -474,6 +505,7 @@
                         <div class="header">\
                             <small class=" text-muted">\
                                 <span class="mdi mdi-clock"></span>'+waktu+'</small>\
+                                <strong class="pull-right primary-font" style="margin-right: 10px;">'+search_user.nama_depan+' '+search_user.nama_belakang+'</strong>\
                         </div>\
                         <p id="'+id_pesan_detail+'-message">'+pesan+'</p>\
                     </div>\
