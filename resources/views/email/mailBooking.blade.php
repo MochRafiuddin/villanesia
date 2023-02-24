@@ -150,17 +150,7 @@
 										
 									</td>
 								</tr>
-								<tr>
-									<td style="border: 1px solid black; border-right-width: 0px !important; border-left-width: 0px !important; border-top-width: 0px !important; ">
-										Taxes {{$booking->persen_pajak}}%
-									</td>
-									<td style="border: 1px solid black; border-right-width: 0px !important; border-left-width: 0px !important; border-top-width: 0px !important; ">
-										Rp. {{number_format($booking->nominal_pajak)}}
-									</td>
-									<td style="border: 1px solid black; border-right-width: 0px !important; border-left-width: 0px !important; border-top-width: 0px !important; ">
-										
-									</td>
-								</tr>
+								
 								@if($extra_service->count() > 0)
 								@foreach($extra_service as $ex_se)
 									<tr>

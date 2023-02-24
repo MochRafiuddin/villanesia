@@ -26,7 +26,6 @@ class CAFavorit extends Controller
                 ->where('h_favorit.id_user',$user->id_user)                
                 ->where('m_properti.deleted',1)
                 ->where('m_properti.id_bahasa',$id_bahasa)
-                ->orderBy('h_favorit.created_date','desc')
                 ->limit($limit)
                 ->offset($page);
         $get_total_all_data = MFavorit::selectRaw('h_favorit.id')
@@ -34,8 +33,7 @@ class CAFavorit extends Controller
                 ->where('h_favorit.deleted',1)
                 ->where('h_favorit.id_user',$user->id_user)                
                 ->where('m_properti.deleted',1)
-                ->where('m_properti.id_bahasa',$id_bahasa)
-                ->orderBy('h_favorit.created_date','desc');    
+                ->where('m_properti.id_bahasa',$id_bahasa);
 
         if ($id_tipe != 0) {
             if ($id_tipe != null) {
