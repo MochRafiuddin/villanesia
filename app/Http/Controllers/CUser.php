@@ -172,7 +172,7 @@ class CUser extends Controller
             $gambar = null;
         }
 
-        // dd(json_encode($request->notelpon));
+        // dd($request->notelpon[0]);
         $tipe = MCustomer::find($request->id);
         $tipe->nama_depan = $request->nama_depan;
         $tipe->nama_belakang = $request->nama_belakang;
@@ -182,7 +182,9 @@ class CUser extends Controller
         $tipe->kode_pos = $request->kode_pos;
         $tipe->tentang = $request->tentang;
         $tipe->jenis_kelamin = $request->jenis_kelamin;
-        $tipe->no_telfon_lain = json_encode($request->notelpon);
+        if($request->notelpon[0] != null){
+            $tipe->no_telfon_lain = json_encode($request->notelpon);
+        }
         $tipe->nama_foto = $gambar;
         $tipe->update();        
 

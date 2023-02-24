@@ -93,11 +93,11 @@ $name[] = 'nama_foto';
                             <label style="font-size: 0.875rem;line-height: 1;vertical-align: top;margin-bottom: .5rem;">No Telfon Lain</label>
                         </div>
                         <div class="col-12 telfon_lain">
-                        @if($data == null)
+                        @if($data->no_telfon_lain == null)
                             <div class="input-group mb-3">
-                                <input id="btn-input" type="text" class="form-control"/>
+                                <input id="btn-input" type="text" class="form-control" name="notelpon[]" value=""/>
                                 <div class="input-group-append">
-                                    <button class="btn btn-warning btn-sm send-button" id="btn-chat">Tambah</button>
+                                    <button type="button" class="btn btn-warning btn-sm send-button tambah" id="btn-chat">Tambah</button>
                                 </div>
                             </div>
                         @else
@@ -145,12 +145,12 @@ $name[] = 'nama_foto';
       <div class="modal-body">
         <div class="form-group col">
             <label for="exampleInputEmail1">Password Lama</label>
-            <input type="text" class="form-control" name="password_lama" />
+            <input type="password" class="form-control" name="password_lama" />
             <input type="hidden" class="form-control" name="id_user" id="id_user"/>
         </div>
         <div class="form-group col">
             <label for="exampleInputEmail1">Password</label>
-            <input type="text" class="form-control" name="password_baru" />
+            <input type="password" class="form-control" name="password_baru" />
             <input type="hidden" class="form-control" name="id_user" id="id_user"/>
         </div>
       </div>
