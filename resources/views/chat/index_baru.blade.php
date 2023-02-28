@@ -434,7 +434,7 @@
         // console.log(doc.doc.data().pesan_terakhir);
         var hasil_search = data_list_awal.find(o => o.id_pesan === tampung_id); 
         if(hasil_search){
-            if (hasil_search.penerima_lihat != data.penerima_lihat && hasil_search.pesan_terakhir != data.pesan_terakhir) {
+            if (hasil_search.pesan_terakhir != data.pesan_terakhir) {
                 pindah(data.id_pesan,data.pesan_terakhir,data.waktu_pesan_terakhir);
                 data_list_awal.forEach(function (data_list_awal) {
                     if (data_list_awal.id_pesan == data.id_pesan) {
