@@ -110,6 +110,7 @@
             pushJsonUser(data);
         });
         load_kiri();
+        console.log(data_list_awal);
         // load_kanan(0);
     });
     var nilai = 0;
@@ -128,7 +129,8 @@
         data_list_awal.push({
             id_pesan:data.id_pesan,
             judul:data.judul,
-            pesan_terakhir:data.pesan_terakhir,            
+            pesan_terakhir:data.pesan_terakhir,
+            penerima_lihat:data.penerima_lihat,
         });
     }
 
@@ -432,10 +434,15 @@
         // console.log(doc.doc.data().pesan_terakhir);
         var hasil_search = data_list_awal.find(o => o.id_pesan === tampung_id); 
         if(hasil_search){
-            if (data.penerima_lihat == 1 && hasil_search.pesan_terakhir == data.pesan_terakhir) {
-                $("#div_list #div_"+data.id_pesan+" ").find('.badge-cus').remove();
-            }else{
+            if (hasil_search.penerima_lihat != data.penerima_lihat && hasil_search.pesan_terakhir != data.pesan_terakhir) {
                 pindah(data.id_pesan,data.pesan_terakhir,data.waktu_pesan_terakhir);
+            }else{
+                $("#div_list #div_"+data.id_pesan+" ").find('.badge-cus').remove();
+                data_list_awal.forEach(function (data_list_awal) {
+                    if (data_list_awal.id_pesan == data.id_pesan) {
+                        data_list_awal.penerima_lihat = 1;
+                    }
+                });
             }
                 // var mydate1 = new Date(data.waktu_pesan_terakhir);
                 // var date1 = moment(mydate1).format('HH:mm');    
@@ -496,7 +503,7 @@
         }
         
         //diappend
-        if(tampung_id_user != id_user_login){
+        if(tampung_id_user != id_user_login && data.id_pesan == id_pesan){
             if (data.id_tipe == 2) {
                 var html = '<li class="text-center clearfix list_chat" style="width: 32%;border-radius: 10px 10px 10px 10px;background: #c6cbdf;margin-left: 35%;padding:5px">\
                     <small class="">\

@@ -149,7 +149,7 @@ class CAPesan extends Controller
 						'judul' => $document['judul'],
 						'id_booking' => $document['id_booking'],
                         'judul_mobile' => $document['judul_mobile'],
-						'penerima_lihat' => $document['penerima_lihat'],
+						'penerima_lihat' => 0,
 						'pengirim_lihat' => $document['pengirim_lihat'],
 						'pesan_terakhir' => $pesan,
 						'updated_date' => new \Google\Cloud\Core\Timestamp(new \DateTime(date('Y-m-d H:i:s'))),

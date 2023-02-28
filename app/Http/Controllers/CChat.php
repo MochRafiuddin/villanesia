@@ -54,23 +54,25 @@ class CChat extends Controller
         $id = null;
         foreach ($documents as $document) {
             $id = $document->id();
-            $doc = $firestore->collection('h_pesan')->document($id)
-                ->set([
-                    'badge' => $document['badge'],
-                    'created_date' => $document['created_date'],
-                    'id_pesan' => $document['id_pesan'],
-                    'id_ref' => $document['id_ref'],
-                    'id_user_penerima' => $document['id_user_penerima'],
-                    'id_user_pengirim' => $document['id_user_pengirim'],
-                    'judul' => $document['judul'],
-                    'id_booking' => $document['id_booking'],
-                    'judul_mobile' => $document['judul_mobile'],
-                    'penerima_lihat' => 1,
-                    'pengirim_lihat' => $document['pengirim_lihat'],
-                    'pesan_terakhir' => $document['pesan_terakhir'],
-                    'updated_date' => new \Google\Cloud\Core\Timestamp(new \DateTime(date('Y-m-d H:i:s'))),
-                    'waktu_pesan_terakhir' => $document['waktu_pesan_terakhir'],
-                ]);
+            if ($document['penerima_lihat'] == 0) {
+                $doc = $firestore->collection('h_pesan')->document($id)
+                    ->set([
+                        'badge' => $document['badge'],
+                        'created_date' => $document['created_date'],
+                        'id_pesan' => $document['id_pesan'],
+                        'id_ref' => $document['id_ref'],
+                        'id_user_penerima' => $document['id_user_penerima'],
+                        'id_user_pengirim' => $document['id_user_pengirim'],
+                        'judul' => $document['judul'],
+                        'id_booking' => $document['id_booking'],
+                        'judul_mobile' => $document['judul_mobile'],
+                        'penerima_lihat' => 1,
+                        'pengirim_lihat' => $document['pengirim_lihat'],
+                        'pesan_terakhir' => $document['pesan_terakhir'],
+                        'updated_date' => new \Google\Cloud\Core\Timestamp(new \DateTime(date('Y-m-d H:i:s'))),
+                        'waktu_pesan_terakhir' => $document['waktu_pesan_terakhir'],
+                    ]);
+            }
         }
         return response()->json(['data'=>$pesan,'title'=>$title]);
     }
@@ -130,7 +132,7 @@ class CChat extends Controller
                     'judul' => $document['judul'],
                     'id_booking' => $document['id_booking'],
                     'judul_mobile' => $document['judul_mobile'],
-                    'penerima_lihat' => $document['penerima_lihat'],
+                    'penerima_lihat' => 0,
                     'pengirim_lihat' => $pengirim_lihat,
                     'pesan_terakhir' => $pesan->pesan,
                     'updated_date' => new \Google\Cloud\Core\Timestamp(new \DateTime(date('Y-m-d H:i:s'))),

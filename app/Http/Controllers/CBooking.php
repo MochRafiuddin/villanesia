@@ -85,6 +85,7 @@ class CBooking extends Controller
 			$id_user_penerima = 1;
 			$pesan_terakhir = 'Confirm Availability';
 			$id_ref_p = $booking->kode_booking;
+            $waktu_pesan = date('Y-m-d H:i:s');
             
             $hpesan = HPesan::where('id_ref',$id_ref_p)->first();
 
@@ -133,9 +134,15 @@ class CBooking extends Controller
 						'pengirim_lihat' => $document['pengirim_lihat'],
 						'pesan_terakhir' => $pesan_terakhir,
 						'updated_date' => new \Google\Cloud\Core\Timestamp(new \DateTime(date('Y-m-d H:i:s'))),
-						'waktu_pesan_terakhir' => date('Y-m-d H:i:s')
+						'waktu_pesan_terakhir' => $waktu_pesan
 					]);
 			}
+
+        $hpes = HPesan::find($hpesan->id_pesan);
+		$hpes->pesan_terakhir = $pesan_terakhir;
+		$hpes->waktu_pesan_terakhir = $waktu_pesan;
+		$hpes->update();
+
         if ($booking->id_tipe_booking == 5) {
             $isi = 'Inquiry #'.$booking->kode_booking.' - '.$booking->judul.' for '.date('d-m-Y',strtotime($booking->tanggal_mulai)).' at '.$booking->jam_mulai.' to '.date('d-m-Y',strtotime($booking->tanggal_mulai)).' at '.$booking->jam_selesai.', has been confirmed';
         }else {
