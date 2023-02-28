@@ -26,7 +26,7 @@ $name[] = 'id_role';
                     <div class="row">
                         <div class="form-group col">
                             <label for="exampleInputEmail1">Password</label>
-                            <input type="text" class="form-control @error($name[1]) is-invalid @enderror" value="" name="{{$name[1]}}" />
+                            <input type="password" class="form-control @error($name[1]) is-invalid @enderror" value="" name="{{$name[1]}}" />
                         </div>
                     </div>
                     @endif

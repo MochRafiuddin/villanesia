@@ -211,8 +211,12 @@
                 type: "GET",            
                 success: function(res){
                     $('.chat_view').show();
-                    var url = '{{url("booking/detail")}}/'+res.title.id_ref;
-                    var head_chat="<a href='"+url+"' class='text-white'> #"+res.title.id_ref+'</a>'+' - '+res.title.nama_depan+' '+res.title.nama_belakang+' - '+res.title.judul;
+                    var url = '{{url("booking/detail")}}/'+res.title.id_ref;                    
+                    var title_nama_belakang = '';
+                    if (res.title.nama_belakang !== null) {
+                        title_nama_belakang = res.title.nama_belakang;
+                    }
+                    var head_chat="<a href='"+url+"' class='text-white'> #"+res.title.id_ref+'</a>'+' - '+res.title.nama_depan+' '+title_nama_belakang+' - '+res.title.judul;
                     $('.title_chat').html(head_chat);
                     nilai = res.data.length - 10;
                     awal = res.data.length;
@@ -298,30 +302,32 @@
                 pesan:pesan,
             },            
             success: function(e){
-                var search_user = data_user.find(o => o.id_user === id_user_login); 
-                var mydate = new Date(e.data.created_date);                    
-                var date = moment(mydate).format('DD-MM-YYYY HH:mm:ss');
-                    if (e.data.nama_foto != null) {
-                        var foto ='{{asset("upload/profile_img")}}/'+e.data.nama_foto;
-                    }else{
-                        var foto ='{{asset("assets/images/avatar.png")}}';
-                    }
-                var html = '<li class="left clearfix list_chat" style="width: 50%;border-radius: 10px 10px 0px 10px;background: #7fdbb4;margin-left: 49%;padding:10px">\
-                <div class="chat-body clearfix text-right">\
-                    <div class="header">\
-                        <strong class="primary-font pull-left">'+search_user.nama_depan+' '+search_user.nama_belakang+'</strong> <small class="text-muted">\
-                            <span class="mdi mdi-clock"></span>'+date+'</small>\
+                if (id_pesan == e.data.id_pesan) {
+                    var search_user = data_user.find(o => o.id_user === id_user_login); 
+                    var mydate = new Date(e.data.created_date);                    
+                    var date = moment(mydate).format('DD-MM-YYYY HH:mm:ss');
+                        if (e.data.nama_foto != null) {
+                            var foto ='{{asset("upload/profile_img")}}/'+e.data.nama_foto;
+                        }else{
+                            var foto ='{{asset("assets/images/avatar.png")}}';
+                        }
+                    var html = '<li class="left clearfix list_chat" style="width: 50%;border-radius: 10px 10px 0px 10px;background: #7fdbb4;margin-left: 49%;padding:10px">\
+                    <div class="chat-body clearfix text-right">\
+                        <div class="header">\
+                            <strong class="primary-font pull-left">'+search_user.nama_depan+' '+search_user.nama_belakang+'</strong> <small class="text-muted">\
+                                <span class="mdi mdi-clock"></span>'+date+'</small>\
+                        </div>\
+                        <p id="'+e.data.id_pesan_detail+'">\
+                            '+e.data.pesan+'\
+                        </p>\
                     </div>\
-                    <p id="'+e.data.id_pesan_detail+'">\
-                        '+e.data.pesan+'\
-                    </p>\
-                </div>\
-                </li>';
-                pushJsonDetail(e.data);
-                $('.chat').append(html);
-                $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 100);
-                $('#btn-input').val('');
-                // delete_chat_detail(e.id);
+                    </li>';
+                    pushJsonDetail(e.data);
+                    $('.chat').append(html);
+                    $(".panel-body").animate({ scrollTop: $('.panel-body').prop("scrollHeight") }, 100);
+                    $('#btn-input').val('');
+                    // delete_chat_detail(e.id);
+                }
             }
         });
     }

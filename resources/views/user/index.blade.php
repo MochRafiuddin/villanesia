@@ -45,7 +45,7 @@
       <div class="modal-body">
         <div class="form-group col">
             <label for="exampleInputEmail1">Password</label>
-            <input type="text" class="form-control" name="password" />
+            <input type="password" class="form-control" name="password" />
             <input type="hidden" class="form-control" name="id_user" id="id_user"/>
         </div>
       </div>
