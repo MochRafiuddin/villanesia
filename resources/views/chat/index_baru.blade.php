@@ -110,7 +110,7 @@
             pushJsonUser(data);
         });
         load_kiri();
-        console.log(data_list_awal);
+        // console.log(data_list_awal);
         // load_kanan(0);
     });
     var nilai = 0;
@@ -436,6 +436,12 @@
         if(hasil_search){
             if (hasil_search.penerima_lihat != data.penerima_lihat && hasil_search.pesan_terakhir != data.pesan_terakhir) {
                 pindah(data.id_pesan,data.pesan_terakhir,data.waktu_pesan_terakhir);
+                data_list_awal.forEach(function (data_list_awal) {
+                    if (data_list_awal.id_pesan == data.id_pesan) {
+                        data_list_awal.penerima_lihat = data.penerima_lihat;
+                        data_list_awal.pesan_terakhir = data.pesan_terakhir;
+                    }
+                });
             }else{
                 $("#div_list #div_"+data.id_pesan+" ").find('.badge-cus').remove();
                 data_list_awal.forEach(function (data_list_awal) {
