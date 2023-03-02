@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use App\Mail\KirimEmail;
 use App\Models\TokenFcm;
+use App\Models\Setting;
 use Mail;
 use Auth;
 use DateInterval;
@@ -359,13 +360,20 @@ trait Helper
     }
 
     public function postCURL($kode_booking ,$harga_total, $nama_depan, $nama_belakang, $alamat, $nama_provinsi, $nama_kota, $kode_pos,$no_telfon, $email, $iso_code){
-        $merchant_id = "MCP2022040419";
-		$secret_unbound_id = "0x001d961efa2c3f4fdc";
-		$hash_key = "EtP0y6yGGikjONW";
+        $setting = Setting::where('id',7)->first();
+        $input = json_decode($setting->nilai);
+        $merchant_id = $input->merchant_id;
+        $secret_unbound_id = $input->secret_unbound_id;
+        $hash_key = $input->hash_key;
+        $url = $input->url;
+
+        // $merchant_id = "MCP2022040419";
+		// $secret_unbound_id = "0x001d961efa2c3f4fdc";
+		// $hash_key = "EtP0y6yGGikjONW";
         $signature = hash('sha256',$hash_key.'PG'.$kode_booking.$kode_booking);
         $authorization = $merchant_id.":".$secret_unbound_id;
-
-        $url = "https://api-stage.mcpayment.id/payment-page/payment";
+        // dd($url);
+        // $url = "https://api-stage.mcpayment.id/payment-page/payment";
         $header[] = "Content-Type: application/json";
         $header[] = "Authorization: Basic ".base64_encode($authorization);
         $header[] = "x-req-signature: ".$signature;
