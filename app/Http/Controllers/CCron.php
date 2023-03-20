@@ -13,7 +13,12 @@ class CCron extends Controller
         // dd($book);
         foreach ($book as $key) {
             $expired_time = json_decode($key->respone_payment_page)->data->expired_time;
-            if ($expired_time >= date('Y-m-d H:i:s')) {                
+            $now = date('Y-m-d H:i:s');
+            
+            $str_et = strtotime($expired_time);
+            $str_n = strtotime($now);
+            
+            if ($str_n >= $str_et) {                
                 // dd($expired_time." ---");
 		        $tBooking = DB::table('t_booking')->where('id_booking',$key->id_booking)
                 ->update(array('id_status_booking' => 4, 'alasan_cancel' => "sorry inquiry #".$key->kode_booking." canceled due to expired payment"));;

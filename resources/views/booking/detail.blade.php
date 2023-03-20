@@ -24,10 +24,15 @@ use App\Traits\Helper;
                         </div>
                     @endif -->
                     <table width="100%">
-                    @if($data->id_status_booking == 3 || $data->id_status_booking == 4)
+                    @if($data->id_status_booking == 3)
                         <tr>
                             <td style="padding-bottom: 15px;padding-right: 15px;"><b>Decline Reason</b></td>
                             <td colspan="2" style="padding-bottom: 15px;">{{$data->alasan_reject}}</td>
+                        </tr>
+                    @elseif($data->id_status_booking == 4)
+                        <tr>
+                            <td style="padding-bottom: 15px;padding-right: 15px;"><b>Cancel Reason</b></td>
+                            <td colspan="2" style="padding-bottom: 15px;">{{$data->alasan_cancel}}</td>
                         </tr>
                     @endif
                         <tr>

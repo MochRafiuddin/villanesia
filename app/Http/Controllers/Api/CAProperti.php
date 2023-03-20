@@ -1818,7 +1818,11 @@ class CAProperti extends Controller
                 MBooking::where('id_booking',$id_booking)->update(['respone_payment_page' => $curl, 'pg_order_code' => 'PG'.$kode_booking, 'pg_url' => $payment_url, 'pg_transaction_id' => $data_transaction_id]);
             }else {
                 $expired_time = json_decode($cek_booking->respone_payment_page)->data->expired_time;
-                if ($expired_time < date('Y-m-d H:i:s')) {
+                $now = date('Y-m-d H:i:s');
+            
+                $str_et = strtotime($expired_time);
+                $str_n = strtotime($now);
+                if ($str_et < $str_n) {
                     $curl =  $this->postCURL($kode_booking ,$detail_booking->harga_total, $nama_depan, $nama_belakang, $alamat, $nama_provinsi, $nama_kota, $kode_pos,$no_telfon, $email, $iso_code);            
                     $payment_url = json_decode($curl)->data->payment_url;
                     $data_transaction_id = json_decode($curl)->data->transaction_id;
