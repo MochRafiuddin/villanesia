@@ -30,6 +30,7 @@ use App\Http\Controllers\CChat;
 use App\Http\Controllers\CUser;
 use App\Http\Controllers\CBanner;
 use App\Http\Controllers\CRole;
+use App\Http\Controllers\CCron;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -52,6 +53,7 @@ Route::get('auth/google', [GoogleController::class, 'redirectToGoogle']);
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 Route::get('redirect-invoice-sukses', [CMCPayment::class, 'redirect_invoice_sukses']);
 Route::get('redirect-invoice-gagal', [CMCPayment::class, 'redirect_invoice_gagal']);
+Route::get('update-expired-time', [CCron::class, 'update_expired_time']);
 
 Route::group(['middleware' => 'auth'], function () {
 

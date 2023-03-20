@@ -70,9 +70,15 @@ class CMCPayment extends Controller
 			$notif->save();
 
 			$ceks = $this->send_fcm($judul,$isi,$route,$param,$user,$notif->id_notif);
+		}else if($input->transaction_status == 'EXPIRED'){
+			$mHMCPaymentCallback->status = 2;
+			$tBooking->payment_status = 3;
+			$tBooking->id_status_booking = 4;
+			$tBooking->alasan_cancel = "sorry inquiry #".$input->order_id." canceled due to expired payment";
 		} else {
 			$mHMCPaymentCallback->status = 2;
 			$tBooking->payment_status = 3;
+			$tBooking->pg_url = "";
 		}
 		$tBooking->pg_name = $input->acq;
 		$tBooking->update();
