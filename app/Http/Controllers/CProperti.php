@@ -624,18 +624,18 @@ class CProperti extends Controller
            return response()->json(["message" => "Please try again."]);
         }
                 
-    }
-    function compress($source_image, $compress_image)
-    {
-        $image_info = getimagesize($source_image);
-        if ($image_info['mime'] == 'image/jpeg') {
-            $source_image = imagecreatefromjpeg($source_image);
-            imagejpeg($source_image, $compress_image, 30);             //for jpeg or gif, it should be 0-100
-        } elseif ($image_info['mime'] == 'image/png') {
-            $source_image = imagecreatefrompng($source_image);
-            imagepng($source_image, $compress_image, 3);
+    }    
+    public function compress($source, $destination, $quality = 40) {
+        $info = getimagesize($source);
+        if ($info['mime'] == 'image/jpeg') {
+          $image = imagecreatefromjpeg($source);
+        } elseif ($info['mime'] == 'image/gif') {
+          $image = imagecreatefromgif($source);
+        } elseif ($info['mime'] == 'image/png') {
+          $image = imagecreatefrompng($source);
         }
-        return $compress_image;
+        imagejpeg($image, $destination, $quality);
+        return $destination;
     }
     public function delete_img($img)
     {   
