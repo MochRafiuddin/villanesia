@@ -612,6 +612,7 @@ class CProperti extends Controller
                     $file = $request->file('files'.$x);
                     $name = round(microtime(true) * 1000).'.'.$file->extension();                    
                     $file->move(public_path('upload/properti'), $name);
+                    $this->compress(public_path('upload/properti/'.$name),public_path('upload/properti/'.$name));
                     $insert[] = $name;
                 }
            }            
@@ -623,6 +624,18 @@ class CProperti extends Controller
            return response()->json(["message" => "Please try again."]);
         }
                 
+    }
+    function compress($source_image, $compress_image)
+    {
+        $image_info = getimagesize($source_image);
+        if ($image_info['mime'] == 'image/jpeg') {
+            $source_image = imagecreatefromjpeg($source_image);
+            imagejpeg($source_image, $compress_image, 30);             //for jpeg or gif, it should be 0-100
+        } elseif ($image_info['mime'] == 'image/png') {
+            $source_image = imagecreatefrompng($source_image);
+            imagepng($source_image, $compress_image, 3);
+        }
+        return $compress_image;
     }
     public function delete_img($img)
     {   
