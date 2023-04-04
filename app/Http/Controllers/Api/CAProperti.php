@@ -261,6 +261,7 @@ class CAProperti extends Controller
         $fasilitas = $request->fasilitas;
         $id_bahasa = $request->id_bahasa;
         $nama_properti = $request->nama_properti;
+        $id_kota_tipe = $request->id_kota_tipe;
         // dd($amenities);
 
         $tipe = MProperti::selectRaw('id_properti, id_bahasa, id_ref_bahasa, judul, alamat, harga_tampil, jumlah_kamar_tidur, jumlah_kamar_mandi, (jumlah_tamu+COALESCE(jumlah_tamu_tambahan, 0)) as jumlah_total_tamu, sarapan, latitude, longitude, nama_file')
@@ -270,7 +271,11 @@ class CAProperti extends Controller
             $tipe = $tipe->whereRaw('LOWER(judul) LIKE "%'.$nama_properti.'%"');
         }
         if ($id_kota != null) {
-            $tipe = $tipe->where('id_kota',$id_kota);
+            if($id_kota_tipe == "1"){
+                $tipe = $tipe->where('id_kota',$id_kota);
+            }else if($id_kota_tipe == "2"){
+                $tipe = $tipe->where('id_provinsi',$id_kota);
+            }
         }
         if ($total_tamu != null) {
             $tipe = $tipe->whereRaw('(jumlah_tamu+COALESCE(jumlah_tamu_tambahan, 0)) >= '.$total_tamu);
@@ -288,12 +293,14 @@ class CAProperti extends Controller
             $tipe = $tipe->whereBetween('harga_tampil', [$harga_minimal, $harga_maksimal]);
         }
         if ($amenities != null) {            
+            $amenities = explode(",",$amenities);
             $list_id_properti_ame = MapAmenities::selectRaw('id_properti')
                 ->whereIn('id_amenities',$amenities)
                 ->get()->toArray();
             $tipe = $tipe->whereIn('id_properti',$list_id_properti_ame);
         }
         if ($fasilitas != null) {
+            $fasilitas = explode(",",$fasilitas);
             $list_id_properti_fas = MapFasilitas::selectRaw('id_properti')
                 ->whereIn('id_fasilitas',$fasilitas)
                 ->get()->toArray();

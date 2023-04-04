@@ -77,13 +77,14 @@ class CAKota extends Controller
     {                
         $id_bahasa = $request->id_bahasa;
 
-        $tipe = MKota::selectRaw('m_kota.*')
-                ->join('m_properti', 'm_kota.id_kota','=','m_properti.id_kota')
-                ->where('m_kota.deleted',1)
-                ->where('m_properti.deleted',1)
-                ->where('m_properti.id_bahasa',$id_bahasa)
-                ->groupBy('m_kota.id_kota')                
-                ->get();        
+        // $tipe = MKota::selectRaw('m_kota.*')
+        //         ->join('m_properti', 'm_kota.id_kota','=','m_properti.id_kota')
+        //         ->where('m_kota.deleted',1)
+        //         ->where('m_properti.deleted',1)
+        //         ->where('m_properti.id_bahasa',$id_bahasa)
+        //         ->groupBy('m_kota.id_kota')                
+        //         ->get();        
+        $tipe = DB::select("select id_kota as id_data, nama_kota as nama_data, '1' as tipe_data FROM m_kota where deleted = 1 UNION select id_provinsi as id_data, nama_provinsi as nama_data, '2' as tipe_data from m_provinsi where deleted = 1");
         
         return response()->json([
             'success' => true,

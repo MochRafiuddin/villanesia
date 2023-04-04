@@ -10,7 +10,7 @@
             </a>            
         </li>
         <li><hr></li>
-        @if (Helper::can_akses('Master - Tipe Properti') != null || Helper::can_akses('Master - Negara') != null || Helper::can_akses('Master - Provinsi') != null || Helper::can_akses('Master - Kota') != null || Helper::can_akses('Master - Fasilitas') != null || Helper::can_akses('Master - Promosi Kendaraan') != null || Helper::can_akses('Master - Promosi Wisata') != null || Helper::can_akses('Master - Concierge Sevice') != null || Helper::can_akses('Master - Bank') != null || Helper::can_akses('Master - Bank Admin') != null || Helper::can_akses('Master - Ads') != null || Helper::can_akses('Master - Kupon') != null || Helper::can_akses('Master - About Us') != null || Helper::can_akses('Master - Faq') != null || Helper::can_akses('Master - Term Condition') != null || Helper::can_akses('Master - Privacy Policy') != null || Helper::can_akses('Master - Banner') != null)
+        @if (Helper::can_akses('Master - Tipe Properti') != null || Helper::can_akses('Master - Negara') != null || Helper::can_akses('Master - Provinsi') != null || Helper::can_akses('Master - Kota') != null || Helper::can_akses('Master - Fasilitas') != null || Helper::can_akses('Master - Promosi Kendaraan') != null || Helper::can_akses('Master - Promosi Wisata') != null || Helper::can_akses('Master - Concierge Sevice') != null || Helper::can_akses('Master - Bank') != null || Helper::can_akses('Master - Bank Admin') != null || Helper::can_akses('Master - Ads') != null || Helper::can_akses('Master - Kupon') != null || Helper::can_akses('Master - About Us') != null || Helper::can_akses('Master - Faq') != null || Helper::can_akses('Master - Term Condition') != null || Helper::can_akses('Master - Privacy Policy') != null || Helper::can_akses('Master - Banner') != null || Helper::can_akses('Master - Splash Slide') != null)
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#master" aria-expanded="false" aria-controls="master">
                 <i class="mdi mdi-puzzle-outline menu-icon"></i>
@@ -75,6 +75,9 @@
                     @endif
                     @if (Helper::can_akses('Master - Banner'))
                     <li class="nav-item"> <a class="nav-link" href="{{url('/banner')}}">Banner</a></li>
+                    @endif
+                    @if (Helper::can_akses('Master - Splash Slide'))
+                    <li class="nav-item"> <a class="nav-link" href="{{url('/splash-slide')}}">Splash Slide</a></li>
                     @endif
                 </ul>
             </div>

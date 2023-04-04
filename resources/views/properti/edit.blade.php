@@ -22,7 +22,7 @@ use App\Traits\Helper;
                             <input type="botton" class="btn btn-inverse-dark col-12 btn-sm" value="View" />
                         </div> -->
                         <div class="col-12">                            
-                            <input type="submit" class="btn btn-inverse-dark col-12 btn-sm" value="Simpan" />
+                            <input type="submit" class="btn btn-success col-12 btn-sm" value="Simpan" />
                         </div>
                     </div><br>
                     <ul class="nav nav-tabs" role="tablist">

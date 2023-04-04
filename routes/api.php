@@ -26,6 +26,7 @@ use App\Http\Controllers\Api\CADownload;
 use App\Http\Controllers\Api\CANotif;
 use App\Http\Controllers\Api\CABanner;
 use App\Http\Controllers\Api\CAIntegrasi;
+use App\Http\Controllers\Api\CASplashSlide;
 
 /*
 |--------------------------------------------------------------------------
@@ -87,6 +88,7 @@ Route::group(['middleware' => 'logapi'], function () {
 
     Route::get('/get-property-by-name', [CAProperti::class, 'get_property_by_name']);
     Route::get('/get-property-facilities-filter', [CAProperti::class, 'get_property_facilities_for_filter']);
+    Route::get('/get-splash-slide', [CASplashSlide::class, 'get_splash_slide']);
 });
 
 Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {

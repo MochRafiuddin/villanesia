@@ -31,6 +31,7 @@ use App\Http\Controllers\CUser;
 use App\Http\Controllers\CBanner;
 use App\Http\Controllers\CRole;
 use App\Http\Controllers\CCron;
+use App\Http\Controllers\CSplashSlide;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -366,4 +367,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/role/delete/{id}', [CRole::class,'delete']);
     Route::get('/role/get_menu', [CRole::class,'get_menu']);
     Route::post('/role/save_menu', [CRole::class,'save_menu']);
+
+    //splash_slide
+    Route::get('/splash-slide', [CSplashSlide::class,'index'])->name('splash-slide-index');
+    Route::get('/splash-slide/data', [CSplashSlide::class,'data']);
+    Route::get('/splash-slide/create', [CSplashSlide::class,'create']);
+    Route::post('/splash-slide/create-save', [CSplashSlide::class,'create_save']);
+    Route::get('/splash-slide/show/{id}', [CSplashSlide::class,'show']);
+    Route::get('/splash-slide/detail/{id}', [CSplashSlide::class,'detail']);
+    Route::post('/splash-slide/show-save/{id}', [CSplashSlide::class,'show_save']);
+    Route::get('/splash-slide/delete/{id}', [CSplashSlide::class,'delete']);
 });
