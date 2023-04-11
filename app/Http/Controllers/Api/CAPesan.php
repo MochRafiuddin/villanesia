@@ -251,4 +251,130 @@ class CAPesan extends Controller
             'code' => 1,
         ], 200);        
     }
+
+	public function post_chat_upload_document(Request $request)
+	{                
+		$user = MApiKey::where('token',$request->header('auth-key'))->first();			
+
+			$id_pesan = intval($request->id_pesan);
+			$id_ref = $request->id_ref;
+			$id_tipe = 4;
+			$pesan = 'upload document';
+			$name = '';
+
+			$my_pdf_path_for_example = 'upload/chat/';
+			if (!file_exists(public_path($my_pdf_path_for_example))) {
+				mkdir(public_path($my_pdf_path_for_example), 0777, true);
+			}
+
+			if ($request->file('file')) {            
+
+				$file = $request->file('file');
+				$name = round(microtime(true) * 1000).'.'.$file->extension();
+				$extension = $file->extension();
+                $file->move(public_path('upload/chat/'), $name);
+				
+				if ($extension == 'jpg' || $extension == 'jpeg' || $extension == 'png' || $extension == 'gif') {
+					$this->compress(public_path('upload/chat/'.$name),public_path('upload/chat/'.$name));
+				}
+			}else{
+				return response()->json([
+					'success' => false,
+					'message' => 'error no files',
+					'code' => 0,            
+				], 400);
+			}
+
+			$hdetail = new HPesanDetail();
+			$hdetail->id_pesan = $id_pesan;
+			$hdetail->id_ref = $id_ref;
+			$hdetail->id_tipe = $id_tipe;
+			$hdetail->pesan = $pesan;
+			$hdetail->id_user = $user->id_user;
+			$hdetail->url = $name;
+			$hdetail->save();
+
+			$hpesan = HPesan::find($id_pesan);
+			$hpesan->pesan_terakhir = $pesan;
+			$hpesan->waktu_pesan_terakhir = date('Y-m-d H:i:s');
+			$hpesan->penerima_lihat = 0;
+			$hpesan->update();
+
+			$firestore = Firestore::get();
+
+			$fireDetail = $firestore->collection('h_pesan_detail')->newDocument();
+			$fireDetail->set([    
+				'id_pesan_detail' => $hdetail->id_pesan_detail,
+				'id_pesan' => $id_pesan,
+				'id_ref' => $id_ref,
+				'id_tipe' => $id_tipe,
+				'url' => $name,
+				'pesan' => $pesan,
+				'created_date' => date('Y-m-d H:i:s'),
+				'updated_date' => new \Google\Cloud\Core\Timestamp(new \DateTime(date('Y-m-d H:i:s'))),
+				'id_user' => $user->id_user,
+			]);
+
+			$query = $firestore->collection('h_pesan')
+				->where('id_pesan', '=', $id_pesan);
+			
+			$documents = $query->documents();        
+			$id = null;
+			foreach ($documents as $document) {
+				$id = $document->id();
+				$doc = $firestore->collection('h_pesan')->document($id)
+					->set([
+						'badge' => $document['badge'],
+						'created_date' => $document['created_date'],
+						'id_pesan' => $document['id_pesan'],
+						'id_ref' => $document['id_ref'],
+						'id_user_penerima' => $document['id_user_penerima'],
+						'id_user_pengirim' => $document['id_user_pengirim'],
+						'judul' => $document['judul'],
+						'id_booking' => $document['id_booking'],
+                        'judul_mobile' => $document['judul_mobile'],
+						'penerima_lihat' => 0,
+						'pengirim_lihat' => $document['pengirim_lihat'],
+						'pesan_terakhir' => $pesan,
+						'updated_date' => new \Google\Cloud\Core\Timestamp(new \DateTime(date('Y-m-d H:i:s'))),
+						'waktu_pesan_terakhir' => date('Y-m-d H:i:s')
+					]);
+			}
+				
+		return response()->json([
+			'success' => true,
+			'message' => 'Success',
+			'code' => 1,            
+		], 200);        
+	}
+
+	public function download_upload_document(Request $request)
+    {                
+        $user = MApiKey::where('token',$request->header('auth-key'))->first();
+
+        $id_pesan = $request->id_pesan;
+        $path = $request->nama_file;        
+        $my_pdf_path_for_example = 'upload/chat/';        
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Success',
+            'code' => 1,
+            'url' => url($my_pdf_path_for_example.$path),
+        ], 200);        
+    }
+
+	public function compress($source, $destination, $quality = 40) {
+		// dd($source);
+        $info = getimagesize($source);
+        if ($info['mime'] == 'image/jpeg') {
+          $image = imagecreatefromjpeg($source);
+        } elseif ($info['mime'] == 'image/gif') {
+          $image = imagecreatefromgif($source);
+        } elseif ($info['mime'] == 'image/png') {
+          $image = imagecreatefrompng($source);
+        }
+        imagejpeg($image, $destination, $quality);
+        return $destination;
+    }
 }

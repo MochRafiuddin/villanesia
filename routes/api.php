@@ -133,4 +133,7 @@ Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
 
     Route::post('/update-bahasa-mobile', [CAProfile::class, 'update_bahasa_mobile']);
     Route::post('/update-waktu-banner', [CABanner::class, 'update_waktu_banner']);
+
+    Route::post('/post-chat-upload-document', [CAPesan::class, 'post_chat_upload_document']);
+    Route::get('/download-upload-document', [CAPesan::class, 'download_upload_document']);
 });

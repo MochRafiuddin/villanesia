@@ -1896,7 +1896,15 @@ class CAProperti extends Controller
             ], 400);
         }
 
-        $booking = MBooking::where('id_booking',$id_booking)->first();
+        $booking = MBooking::where('id_booking',$id_booking)->first();        
+        // dd($booking);
+        if ($booking->harga_total < $cek_coupon->min_transaksi) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, the coupon code can be used with a minimum transaction of IDR '.number_format($cek_coupon->min_transaksi),
+                'code' => 0,
+            ], 400);
+        }
 
         if ($cek_coupon->satuan == 1) {
             if ($cek_coupon->maks_diskon == null) {
