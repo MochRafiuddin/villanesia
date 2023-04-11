@@ -315,7 +315,7 @@ use App\Traits\Helper;
                 </div>
                 <div class="form-group">
                     <label for="message-text" class="col-form-label">Expense Value</label>
-                    <input type="text" class="form-control valex" name="valex">
+                    <input type="text" class="form-control valex" name="valex" placeholder='Amount'>
                 </div>
             </div>
             <div class="modal-footer">
@@ -361,7 +361,7 @@ use App\Traits\Helper;
                 </div>
                 <div class="form-group">
                     <label for="message-text" class="col-form-label">Discount Value</label>
-                    <input type="text" class="form-control valdis" name="valdis">
+                    <input type="text" class="form-control valdis" name="valdis" placeholder='Amount'>
                 </div>
             </div>
             <div class="modal-footer">

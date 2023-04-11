@@ -132,4 +132,5 @@ Route::group(['prefix' => 'v','middleware' => 'myauth'], function () {
     Route::post('/update-read-notif', [CANotif::class, 'update_read_notif']);
 
     Route::post('/update-bahasa-mobile', [CAProfile::class, 'update_bahasa_mobile']);
+    Route::post('/update-waktu-banner', [CABanner::class, 'update_waktu_banner']);
 });

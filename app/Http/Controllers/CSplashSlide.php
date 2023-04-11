@@ -83,11 +83,13 @@ class CSplashSlide extends Controller
             $gambar = round(microtime(true) * 1000).'.'.$request->file('gambar')->extension();
             // dd($request->id);
             $request->file('gambar')->move(public_path('upload/splash_slide'), $gambar);
-            MSplashSlide::where('id_ss',$request->id)->update(['nama_ss'=>$request->nama_ss, 'gambar'=>$gambar,'tipe'=>$request->tipe, 'detail_text'=>$request->detail_text]);
+            MSplashSlide::where('id_ss',$request->id)->update(['nama_ss'=>$request->nama_ss, 'gambar'=>$gambar,'tipe'=>$request->tipe]);
         }else{
-            MSplashSlide::where('id_ss',$request->id)->update(['nama_ss'=>$request->nama_ss, 'tipe'=>$request->tipe, 'detail_text'=>$request->detail_text]);
+            MSplashSlide::where('id_ss',$request->id)->update(['nama_ss'=>$request->nama_ss, 'tipe'=>$request->tipe]);
         }        
-
+        if ($request->id == 2) {            
+            MSplashSlide::wherein('id_ss',[3,4])->update(['detail_text'=>$request->detail_text]);
+        }
         return redirect()->route('splash-slide-index')->with('msg','Sukses Menambahkan Data');
     }
     public function delete($id)

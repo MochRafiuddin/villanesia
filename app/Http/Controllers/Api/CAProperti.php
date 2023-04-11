@@ -83,9 +83,12 @@ class CAProperti extends Controller
         }elseif ($order_by == 5) {
             $tipe = $tipe->orderBy('created_date','desc');
             $get_total_all_data = $get_total_all_data->orderBy('created_date','desc');
-        }else {
+        }else if ($order_by == 6) {
             $tipe = $tipe->orderBy('created_date','asc');
             $get_total_all_data = $get_total_all_data->orderBy('created_date','asc');
+        }else {
+            $tipe = $tipe->orderByRaw('RAND()');
+            $get_total_all_data = $get_total_all_data->orderByRaw('RAND()');
         }
         $data = $tipe->get();
         $get_total_all_data = $get_total_all_data->get()->count();
