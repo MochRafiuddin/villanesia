@@ -345,6 +345,7 @@ use App\Traits\Helper;
                                 <input type="file" class="form-control dropify" name="file[]" id="multiupload" multiple disabled/>
                             </div>                                                                
                         </div><br>                                                                                 -->
+                        <label for="">Gambar <b>(1280x960 / ratio 8:6)</b></label>
                         <div class="row pre-gambar">
                             @foreach($galery as $as)
                             <div class="col-3">

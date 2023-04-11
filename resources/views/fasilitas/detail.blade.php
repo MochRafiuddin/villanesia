@@ -45,7 +45,7 @@ $name[] = 'gambar';
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Icon</label><br>                            
+                            <label for="exampleInputEmail1">Icon <b>(128x128 / ratio 1:1)</b></label><br>                            
                             <img class="rounded" src="{{asset('upload/fasilitas/'.$data->icon)}}" alt="{{$data->nama_fasilitas}}">
                         </div>                        
                     </div>

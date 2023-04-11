@@ -39,7 +39,7 @@ $name[] = 'redirect_url';
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Gambar</label>                            
+                            <label for="exampleInputEmail1">Gambar <b>(620x1000 / ratio 3:5)</b></label>                            
                             <input type="file" class="dropify form-control @error($name[2]) is-invalid @enderror" name="{{$name[2]}}" @if($data) data-default-file="{{asset('upload/banner/'.$data->image_banner)}}" @endif/>                            
                         </div>                        
                     </div>

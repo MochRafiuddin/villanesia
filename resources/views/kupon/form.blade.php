@@ -11,6 +11,7 @@ $name[] = 'kuota_kupon';
 $name[] = 'satuan';
 $name[] = 'nominal';
 $name[] = 'maks_diskon';
+$name[] = 'min_transaksi';
 ?>
 <div class="main-panel">
     <div class="content-wrapper">
@@ -71,6 +72,13 @@ $name[] = 'maks_diskon';
                             <label for="exampleInputEmail1">Kuota Kupon</label>
                             <input type="text" class="form-control @error($name[5]) is-invalid @enderror"
                                 value="{{Helper::showData($data,$name[5])}}" name="{{$name[5]}}"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col">
+                            <label for="exampleInputEmail1">Minimum Transaksi</label>
+                            <input type="text" class="form-control @error($name[9]) is-invalid @enderror"
+                                value="{{Helper::showData($data,$name[9])}}" name="{{$name[9]}}"/>
                         </div>
                     </div>                    
                     <div class="row">

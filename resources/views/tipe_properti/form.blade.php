@@ -37,7 +37,7 @@ $name[] = 'urutan';
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Gambar</label>
+                            <label for="exampleInputEmail1">Gambar <b>(1000x500 / ratio 2:1)</b></label>
                             <!-- <input type="text" class="form-control @error($name[1]) is-invalid @enderror" value="{{Helper::showData($data,$name[1])}}" name="{{$name[1]}}" /> -->
                             <input type="file" class="dropify form-control @error($name[1]) is-invalid @enderror" name="{{$name[1]}}"
                              @if($data) data-default-file="{{asset('upload/tipe_properti/'.$data->gambar)}}" @endif/>

@@ -265,6 +265,7 @@
                         <section>
                             <div class="row">
                                 <div class="col-12">
+                                    <label for="">Gambar <b>(1280x960 / ratio 8:6)</b></label>
                                     <input type="file" class="form-control dropify" name="file[]" id="multiupload" multiple/>
                                 </div>                                                                
                             </div><br>                                                                                

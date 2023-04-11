@@ -29,7 +29,7 @@ $name[] = 'icon';
                     </div>                    
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Icon</label>                            
+                            <label for="exampleInputEmail1">Icon <b>(128x128 / ratio 1:1)</b></label>                            
                             <input type="file" class="dropify form-control" name="{{$name[1]}}" @if($data) data-default-file="{{asset('upload/amenities/'.$data->icon)}}" @endif/>                            
                         </div>                        
                     </div>

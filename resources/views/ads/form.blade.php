@@ -110,7 +110,7 @@ $name[] = 'tipe_redirect_url';
                     </div>                    
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Konten</label>
+                            <label for="exampleInputEmail1">Konten <b>(300x600 / ratio 1:2)</b></label>
                             <!-- <input type="text" class="form-control @error($name[5]) is-invalid @enderror"
                                 value="{{Helper::showData($data,$name[5])}}" name="{{$name[5]}}"/> -->
                             <input type="file" class="dropify form-control @error($name[5]) is-invalid @enderror" name="{{$name[5]}}"  @if($data) data-default-file="{{asset('upload/ads/'.$data->konten_ads)}}" @endif/>

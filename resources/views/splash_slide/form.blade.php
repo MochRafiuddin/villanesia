@@ -45,7 +45,7 @@ $name[] = 'gambar';
                     @endif
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Gambar</label>                            
+                            <label for="exampleInputEmail1">Gambar <b>(1024x2048 / ratio 1:2)</b></label>                            
                             <input type="file" class="dropify form-control" name="{{$name[3]}}" @if($data) data-default-file="{{asset('upload/splash_slide/'.$data->gambar)}}" @endif/>                            
                         </div>                        
                     </div>

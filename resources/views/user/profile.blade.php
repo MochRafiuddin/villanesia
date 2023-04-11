@@ -84,7 +84,7 @@ $name[] = 'nama_foto';
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Foto Profile</label>
+                            <label for="exampleInputEmail1">Foto Profile <b>(500x500 / ratio 1:1)</b></label>
                             <input type="file" class="form-control" name="{{$name[9]}}" />
                         </div>
                     </div>

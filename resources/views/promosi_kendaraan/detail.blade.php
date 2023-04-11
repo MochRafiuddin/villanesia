@@ -63,7 +63,7 @@ $name[] = 'gambar';
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Gambar</label><br>
+                            <label for="exampleInputEmail1">Gambar <b>1080x1080 / ratio 1:1</b></label><br>
                             <!-- <input type="text" class="form-control @error($name[1]) is-invalid @enderror" value="{{Helper::showData($data,$name[1])}}" name="{{$name[1]}}" /> -->
                             <img class="rounded" width="40%" src="{{asset('upload/promosi_kendaraan/'.$data->gambar)}}" alt="{{$data->nama_promosi_kendaraan}}">
                         </div>                        

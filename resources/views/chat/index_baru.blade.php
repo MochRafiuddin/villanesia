@@ -231,6 +231,14 @@
                         // console.log(search_user.nama_depan);
                         var mydate = new Date(e.created_date);                    
                         var date = moment(mydate).format('DD-MM-YYYY HH:mm:ss');
+                        var file = e.url;
+                        var ext = file.split(".");
+                        var download = '{{asset("upload/chat/")}}/'+e.url;
+                        if (ext[1] == 'jpg' || ext[1] == 'jpeg' || ext[1] == 'png' || ext[1] == 'gif') {
+                            var icon = 'mdi mdi-file-image';
+                        }else{
+                            var icon = 'mdi mdi-file-document';                            
+                        }
                         var foto ='';
                         if (e.nama_foto != null) {
                             var foto ='{{asset("upload/profile_img/")}}/'+e.nama_foto;
@@ -256,6 +264,22 @@
                                     <small class="">\
                                         Admin has confirmed the availability of the villa\
                                     </small>\
+                                </li>';
+                                $('.chat').append(html);
+                            }else if (e.id_tipe == 4) {
+                                var html = '<li class="clearfix list_chat" style="width: 50%;border-radius: 10px 10px 10px 0px;background: #fbfbfc; padding:10px">\
+                                <div class="chat-body clearfix">\
+                                    <div class="header">\
+                                        <small class=" text-muted">\
+                                            <span class="mdi mdi-clock"></span>'+date+'</small>\
+                                            <strong class="pull-right primary-font" style="margin-right: 10px;">'+search_user.nama_depan+' '+search_user.nama_belakang+'</strong>\
+                                    </div>\
+                                    <p id="'+e.id_pesan_detail+'-message">\
+                                    <i class="'+icon+' mdi-24px"></i>\
+                                        '+e.url+'\
+                                        <a href="'+download+'" download><i class="mdi mdi-download mdi-24px float-right" style="margin-right: 15px;"></i></a>\
+                                    </p>\
+                                </div>\
                                 </li>';
                                 $('.chat').append(html);
                             }else{

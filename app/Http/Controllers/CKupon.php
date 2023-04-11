@@ -53,6 +53,7 @@ class CKupon extends Controller
             'satuan' => 'required',
             'nominal' => 'required',
             'maks_diskon' => 'required',
+            'min_transaksi' => 'required',
         ]);
         
         if ($validator->fails()) {
@@ -72,6 +73,7 @@ class CKupon extends Controller
         $tipe->satuan = $request->satuan;
         $tipe->nominal = $request->nominal;
         $tipe->maks_diskon = $request->maks_diskon;
+        $tipe->min_transaksi = $request->min_transaksi;
         $tipe->save();        
 
         return redirect()->route('kupon-index')->with('msg','Sukses Menambahkan Data');
@@ -88,6 +90,7 @@ class CKupon extends Controller
             'satuan' => 'required',
             'nominal' => 'required',
             'maks_diskon' => 'required',
+            'min_transaksi' => 'required',
         ]);
         
         if ($validator->fails()) {
@@ -105,6 +108,7 @@ class CKupon extends Controller
             'satuan' => $request->satuan,
             'nominal' => $request->nominal,
             'maks_diskon' => $request->maks_diskon,
+            'min_transaksi' => $request->min_transaksi,
         ];
         MKupon::where('id_kupon',$request->id)->update($data);
 

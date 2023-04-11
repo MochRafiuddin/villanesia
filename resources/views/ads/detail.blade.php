@@ -110,7 +110,7 @@ $name[] = 'tipe_redirect_url';
                     </div>                    
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Konten</label><br>
+                            <label for="exampleInputEmail1">Konten <b>(300x600 / ratio 1:2)</b></label><br>
                             <!-- <input type="file" class="dropify form-control @error($name[5]) is-invalid @enderror" name="{{$name[5]}}"  @if($data) data-default-file="{{asset('upload/ads/'.$data->konten_ads)}}" @endif/> -->
                             <!-- {{asset('upload/promosi_kendaraan/1663228135032.jpg')}} -->
                             <img class="rounded" src="{{asset('upload/ads/'.$data->konten_ads)}}" alt="{{$data->nama_ads}}">

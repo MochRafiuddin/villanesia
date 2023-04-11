@@ -37,7 +37,7 @@ $name[] = 'urutan';
                     </div>
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Gambar</label><br>
+                            <label for="exampleInputEmail1">Gambar <b>(1000x500 / ratio 2:1)</b></label><br>
                             <!-- <input type="text" class="form-control @error($name[1]) is-invalid @enderror" value="{{Helper::showData($data,$name[1])}}" name="{{$name[1]}}" /> -->
                             <img class="rounded" width="40%" src="{{asset('upload/tipe_properti/'.$data->gambar)}}" alt="{{$data->nama_tipe_properti}}">
                         </div>                        

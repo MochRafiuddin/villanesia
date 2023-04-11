@@ -46,7 +46,7 @@ $name[] = 'gambar';
                     @endif
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Icon</label><br>                            
+                            <label for="exampleInputEmail1">Gambar <b>(1024x2048 / ratio 1:2)</b></label><br>                            
                             <img class="rounded" width="40%" src="{{asset('upload/splash_slide/'.$data->gambar)}}" alt="{{$data->nama_ss}}">
                         </div>                        
                     </div>
