@@ -45,7 +45,14 @@ $name[] = 'gambar';
                     @endif
                     <div class="row">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Gambar <b>(1024x2048 / ratio 1:2)</b></label>                            
+                            @php
+                                if($data->tipe == 1){
+                                    $desk='(1024x2048 / ratio 1:2)';
+                                }else{
+                                    $desk='(425x425 / ratio 1:1)';
+                                }
+                            @endphp
+                            <label for="exampleInputEmail1">Gambar <b id="desk">{{$desk}}</b></label>                            
                             <input type="file" class="dropify form-control" name="{{$name[3]}}" @if($data) data-default-file="{{asset('upload/splash_slide/'.$data->gambar)}}" @endif/>                            
                         </div>                        
                     </div>
@@ -58,4 +65,13 @@ $name[] = 'gambar';
 @endsection
 @push('js')
 <script src="{{asset('/')}}assets/js/dropify.js"></script>
+<script>
+    $('#tipe').on('change',function(){
+        if (this.value == 1) {
+            $('#desk').html('(1024x2048 / ratio 1:2)');
+        }else{
+            $('#desk').html('(425x425 / ratio 1:1)');
+        }
+    });
+</script>
 @endpush

@@ -526,6 +526,15 @@
             }
         });
 
+        var file = data.url;
+        var ext = file.split(".");
+        var download = '{{asset("upload/chat/")}}/'+data.url;
+        if (ext[1] == 'jpg' || ext[1] == 'jpeg' || ext[1] == 'png' || ext[1] == 'gif') {
+            var icon = 'mdi mdi-file-image';
+        }else{
+            var icon = 'mdi mdi-file-document';                            
+        }
+
         if (foto != null) {
             var foto ='{{asset("upload/profile_img")}}/'+foto;
         }else{
@@ -542,6 +551,22 @@
                 </li>';
                 $('.chat').append(html);
                 pindah(data.id_pesan,pesan,data.created_date)
+            }else if (data.id_tipe == 4) {
+                var html = '<li class="clearfix list_chat" style="width: 50%;border-radius: 10px 10px 10px 0px;background: #fbfbfc; padding:10px">\
+                <div class="chat-body clearfix">\
+                    <div class="header">\
+                        <small class=" text-muted">\
+                            <span class="mdi mdi-clock"></span>'+waktu+'</small>\
+                            <strong class="pull-right primary-font" style="margin-right: 10px;">'+search_user.nama_depan+' '+search_user.nama_belakang+'</strong>\
+                    </div>\
+                        <p id="'+pesan+'-message">\
+                            <i class="'+icon+' mdi-24px"></i>\
+                                '+data.url+'\
+                            <a href="'+download+'" download><i class="mdi mdi-download mdi-24px float-right" style="margin-right: 15px;"></i></a>\
+                    </p>\
+                </div>\
+                </li>';
+                $('.chat').append(html);
             }else{
                 var html = '<li class="clearfix" style="width: 50%;border-radius: 10px 10px 10px 0px;background: #fbfbfc; padding:10px">\
                     <div class="chat-body clearfix">\
