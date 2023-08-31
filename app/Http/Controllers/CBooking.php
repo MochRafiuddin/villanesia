@@ -250,16 +250,16 @@ class CBooking extends Controller
                 ->join('m_status_booking','t_booking.id_status_booking','m_status_booking.id_ref_bahasa','left')
                 ->selectRaw('t_booking.*, m_properti.judul as judul, m_properti.alamat as alamat, m_properti.id_tipe_booking as tipe_booking, m_properti.binatang as binatang, m_status_booking.nama_status_booking as nama_status_booking')
                 ->where('m_status_booking.id_bahasa',1)
-                ->where('t_booking.deleted',1)
-                ->orderBy('t_booking.created_date','desc');
+                ->where('t_booking.deleted',1);
+                // ->orderBy('t_booking.created_date','desc');
         }else {
             $model = MBooking::join('m_properti','t_booking.id_ref','m_properti.id_properti','left')
                 ->join('m_status_booking','t_booking.id_status_booking','m_status_booking.id_ref_bahasa','left')
                 ->selectRaw('t_booking.*, m_properti.judul as judul, m_properti.alamat as alamat, m_properti.id_tipe_booking as tipe_booking, m_properti.binatang as binatang, m_status_booking.nama_status_booking as nama_status_booking')
                 ->where('m_status_booking.id_bahasa',1)
                 ->where('m_status_booking.id_status_booking',$request->status)
-                ->where('t_booking.deleted',1)
-                ->orderBy('t_booking.created_date','desc');
+                ->where('t_booking.deleted',1);
+                // ->orderBy('t_booking.created_date','desc');
         }
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {

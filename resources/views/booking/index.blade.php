@@ -92,7 +92,7 @@
         $('.table').DataTable({
             processing: true,
             serverSide: true,
-
+            "order": [[ 2, "desc" ]],
             "scrollX": true,
             ajax: {
                 url: '{{ url("booking/data") }}',
@@ -116,7 +116,7 @@
                 },
                 {
                     data: 'date',
-                    name: 'date',                        
+                    name: 't_booking.created_date',                        
                 },
                 {
                     data: 'alamat',
@@ -124,11 +124,11 @@
                 },
                 {
                     data: 'in',
-                    name: 'in',                        
+                    name: 't_booking.tanggal_mulai',                        
                 },
                 {
                     data: 'out',
-                    name: 'out',                        
+                    name: 't_booking.tanggal_selesai',                        
                 },
                 {
                     data: 'tamu',
