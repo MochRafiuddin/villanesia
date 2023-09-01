@@ -64,7 +64,7 @@ class CUser extends Controller
             ->with('role',$role)
             ->with('data',$data)
             ->with('title','User')
-            ->with('titlePage','Edit')
+            ->with('titlePage','Detail')
             ->with('url',$url);
     }
     public function create_save(Request $request)
@@ -190,15 +190,23 @@ class CUser extends Controller
 
         return redirect()->route('profile-index')->with('msg','Sukses Mengubah Data');
     }
-    public function data()
+    public function data(Request $request)
     {
-        $model = User::withDeleted()->where('tipe_user',1);
+        if ($request->tipe_user == 0) {
+            $model = User::withDeleted()->orderBy('tipe_user','asc');
+        }else{
+            $model = User::withDeleted()->where('tipe_user',$request->tipe_user)->orderBy('tipe_user','asc');
+        }
         return DataTables::eloquent($model)
             ->addColumn('action', function ($row) {
-                $btn = '';       
-                $btn .= '<a href="javascript:void(0)" data-toggle="modal"  data-id="'.$row->id_user.'" data-original-title="Password" class="text-success editPass mr-2"><span class="mdi mdi-lock-reset" data-toggle="tooltip" data-placement="Top" title="Reset Password"></span></a>';
+                $btn = '';
+                if($row->tipe_user == "1"){
+                    $btn .= '<a href="javascript:void(0)" data-toggle="modal"  data-id="'.$row->id_user.'" data-original-title="Password" class="text-success editPass mr-2"><span class="mdi mdi-lock-reset" data-toggle="tooltip" data-placement="Top" title="Reset Password"></span></a>';
+                }
                 $btn .= '<a href="'.url('user/detail/'.$row->id_user).'" class="text-warning mr-2"><span class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="Top" title="Detail Data"></span></a>';                
-                $btn .= '<a href="'.url('user/show/'.$row->id_user).'" class="text-danger mr-2"><span class="mdi mdi-pen" data-toggle="tooltip" data-placement="Top" title="Edit Data"></span></a>';                
+                if($row->tipe_user == "1"){
+                    $btn .= '<a href="'.url('user/show/'.$row->id_user).'" class="text-danger mr-2"><span class="mdi mdi-pen" data-toggle="tooltip" data-placement="Top" title="Edit Data"></span></a>';                
+                }
                 $btn .= '<a href="'.url('user/delete/'.$row->id_user).'" class="text-primary delete"><span class="mdi mdi-delete" data-toggle="tooltip" data-placement="Top" title="Hapus Data"></span></a>';
                 return $btn;
             })

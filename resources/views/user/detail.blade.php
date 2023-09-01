@@ -36,9 +36,9 @@ $name[] = 'id_role';
                                 value="{{Helper::showData($data,$name[3])}}" name="{{$name[3]}}" readonly/>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" style="display: {{(Helper::showData($data,$name[4]) == '') ? 'none' : 'show'}}">
                         <div class="form-group col">
-                            <label for="exampleInputEmail1">Role</label>
+                            <label for="exampleInputEmail1">Role </label>
                             <select class="form-control js-example-basic-single @error($name[4]) invalid @enderror" name="{{$name[4]}}" id="{{$name[4]}}" style="width:100%">
                                 <option value="" selected disabled>Pilih</option>
                                 @foreach($role as $pro)

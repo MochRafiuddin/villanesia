@@ -5,6 +5,16 @@
         <div class="card">
             <div class="card-body">
                 <h4>Data User</h4><br>
+                <div class="row">
+                    <div class="form-group col-md-3">
+                        <label for="">Tipe User</label>
+                        <select class="form-control js-example-basic-single" name="tipe_user" id="tipe_user" style="width:100%">
+                            <option value="0">All</option>
+                            <option value="1">Admin</option>
+                            <option value="2">Customer</option>
+                        </select>                  
+                    </div>
+                </div>
                 <div class="row mb-4">
                     <div class="col text-right">                        
                         <a href="{{url('user/create')}}" class="btn btn-info">Tambah</a>                        
@@ -70,6 +80,7 @@
         read_data();
 
         function read_data() {
+            let tipe_user = $('#tipe_user').val();
             $('table').DataTable({
                 processing: true,
                 serverSide: true,
@@ -77,6 +88,10 @@
                 "scrollX": true,
                 ajax: {
                     url: '{{ url("user/data") }}',
+                    type: 'GET',    
+                    data: {
+                        tipe_user : tipe_user,
+                    }
                 },
                 rowReorder: {
                     selector: 'td:nth-child(1)'
@@ -104,7 +119,7 @@
                     },
                     {
                         data: 'role',
-                        name: 'role',                        
+                        name: 'tipe_user',                        
                     },
                     {
                         data: 'action',
@@ -155,6 +170,11 @@
                     $('#savedata').html('Simpan');
                 }
             });
+        });
+
+        $('#tipe_user').on('change',function(){            
+            $('.table').DataTable().destroy();            
+            read_data();            
         });
     });
 
